@@ -5,11 +5,12 @@ import {
   Trophy, Drama, Settings as SettingsIcon, ExternalLink,
 } from 'lucide-react'
 import { useGenshinProfile } from '../hooks/useGenshinProfile'
+import { useCharacterRoster } from '../hooks/useCharacterRoster'
 import {
   fetchEnkaProfile, enkaIconUrl, EnkaError,
   type EnkaResponse, type EnkaAvatarInfo,
 } from '../lib/enka'
-import { getCharacterMeta, ELEMENT_COLORS } from '../lib/genshinCharacters'
+import { getCharacterMeta, ELEMENT_COLORS, type CharacterMeta } from '../lib/genshinCharacters'
 import { formatFightProp, fightPropLabel } from '../lib/genshinStats'
 
 const REFRESH_KEYS = [
@@ -30,14 +31,16 @@ function StatPill({ label, value, accent }: { label: string; value: string | num
   )
 }
 
-function CharacterCard({ avatar }: { avatar: EnkaAvatarInfo }) {
-  const meta = getCharacterMeta(avatar.avatarId)
+function CharacterCard({ avatar, roster }: { avatar: EnkaAvatarInfo; roster: Record<string, CharacterMeta> }) {
+  const meta = getCharacterMeta(avatar.avatarId, roster)
   const accent = ELEMENT_COLORS[meta.element]
   const level = avatar.propMap?.['4001']?.val ?? avatar.propMap?.['4001']?.ival
   const weaponEquip = avatar.equipList.find((e) => e.weapon)
   const artifacts = avatar.equipList.filter((e) => e.reliquary)
   const constellations = avatar.talentIdList?.length ?? 0
   const friendship = avatar.fetterInfo?.expLevel ?? 0
+  const [iconFailed, setIconFailed] = useState(false)
+  const showIconImage = meta.iconKey && !iconFailed
 
   return (
     <div className="card stat-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.875rem', position: 'relative', overflow: 'hidden' }}>
@@ -49,30 +52,45 @@ function CharacterCard({ avatar }: { avatar: EnkaAvatarInfo }) {
           background: `${accent}18`, border: `1.5px solid ${accent}40`,
           display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
         }}>
-          {meta.iconKey ? (
+          {showIconImage ? (
             <img
               src={enkaIconUrl(meta.iconKey)}
               alt={meta.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              onError={() => setIconFailed(true)}
             />
           ) : (
+            // Honest fallback glyph rather than a blank tinted square — shown both when there's
+            // no icon key at all (unresolved character) and when the icon URL 404s.
             <Sparkles size={22} color={accent} />
           )}
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#f0f2ff' }}>{meta.name}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.15rem' }}>
-            <span style={{ fontSize: '0.72rem', color: accent, fontWeight: 600 }}>{meta.element}</span>
-            <span style={{ fontSize: '0.7rem', color: '#4a5578' }}>· {meta.weapon}</span>
-            <span style={{ fontSize: '0.7rem', color: '#fbbf24' }}>{'★'.repeat(meta.rarity)}</span>
+        <div style={{ flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
+          <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#f0f2ff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {meta.name}
+            {!meta.resolved && (
+              <span style={{ fontSize: '0.65rem', color: '#4a5578', fontWeight: 500, marginLeft: '0.4rem' }}>(unrecognized)</span>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <span style={{ fontSize: '0.72rem', color: accent, fontWeight: 600, flexShrink: 0 }}>{meta.element}</span>
+            <span style={{ fontSize: '0.7rem', color: '#4a5578', flexShrink: 0 }}>· {meta.weapon}</span>
+            {meta.resolved && (
+              <span style={{ fontSize: '0.7rem', color: '#fbbf24', flexShrink: 0 }}>{'★'.repeat(meta.rarity)}</span>
+            )}
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
           <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.1rem', fontWeight: 700, color: '#f0f2ff' }}>Lv.{level ?? '?'}</div>
           <div style={{ fontSize: '0.68rem', color: '#4a5578' }}>C{constellations} · Friend {friendship}</div>
         </div>
       </div>
+
+      {!meta.resolved && (
+        <div style={{ fontSize: '0.72rem', color: '#4a5578', padding: '0.5rem 0.625rem', borderRadius: '0.5rem', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.12)' }}>
+          This character (ID {avatar.avatarId}) isn't in the live roster yet — likely too new. It'll resolve automatically once the roster syncs.
+        </div>
+      )}
 
       {weaponEquip?.weapon && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.625rem', borderRadius: '0.625rem', background: '#0f1220' }}>
@@ -80,7 +98,7 @@ function CharacterCard({ avatar }: { avatar: EnkaAvatarInfo }) {
           <div style={{ flex: 1, fontSize: '0.78rem', color: '#8892b0' }}>
             Weapon Lv.{weaponEquip.weapon.level}{weaponEquip.weapon.affixMap ? ` · R${(Object.values(weaponEquip.weapon.affixMap)[0] ?? 0) + 1}` : ''}
           </div>
-          <span style={{ fontSize: '0.7rem', color: '#fbbf24' }}>{'★'.repeat(weaponEquip.flat.rankLevel)}</span>
+          <span style={{ fontSize: '0.7rem', color: '#fbbf24', flexShrink: 0 }}>{'★'.repeat(weaponEquip.flat.rankLevel)}</span>
         </div>
       )}
 
@@ -104,7 +122,8 @@ function CharacterCard({ avatar }: { avatar: EnkaAvatarInfo }) {
 
 export default function AccountPage() {
   const navigate = useNavigate()
-  const { genshinUid, loading: profileLoading } = useGenshinProfile()
+const { genshinUid, loading: profileLoading } = useGenshinProfile()
+const { roster, loading: rosterLoading, unavailable: rosterUnavailable } = useCharacterRoster()
   const [data, setData] = useState<EnkaResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -255,14 +274,34 @@ export default function AccountPage() {
 
           {avatars.length > 0 && (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              {!rosterLoading && rosterUnavailable && (
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.875rem 1.125rem',
+                  background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)',
+                  borderRadius: '0.875rem', marginBottom: '1.25rem',
+                }}>
+                  <AlertCircle size={16} color="#fbbf24" style={{ flexShrink: 0, marginTop: 1 }} />
+                  <div style={{ fontSize: '0.8rem', color: '#8892b0' }}>
+                    The live character database hasn't synced yet, so names/elements below may show as
+                    "unrecognized" until it does. This updates automatically — no action needed.
+                  </div>
+                </div>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.375rem' }}>
                 <h3 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#f0f2ff', margin: 0 }}>
                   Character Showcase
                 </h3>
                 <span style={{ fontSize: '0.78rem', color: '#4a5578' }}>{avatars.length} character{avatars.length !== 1 ? 's' : ''}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
-                {avatars.map((a) => <CharacterCard key={a.avatarId} avatar={a} />)}
+              {avatars.length >= 12 && (
+                <p style={{ fontSize: '0.72rem', color: '#4a5578', margin: '0 0 1rem' }}>
+                  This is your in-game Character Showcase, capped at 12 slots by Genshin itself — to feature a
+                  different roster, change which characters are showcased in-game (Profile → Edit Profile →
+                  Character Showcase), then hit Refresh here.
+                </p>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem', marginTop: avatars.length >= 12 ? 0 : '1rem' }}>
+{avatars.map((a) => <CharacterCard key={a.avatarId} avatar={a} roster={roster} />)}
               </div>
             </>
           )}

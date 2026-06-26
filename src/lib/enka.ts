@@ -132,8 +132,15 @@ async function fetchViaWorker<T>(uid: string, infoOnly: boolean): Promise<T> {
   return res.json() as Promise<T>
 }
 
-/** Builds the public icon URL for any Enka icon key, e.g. "UI_AvatarIcon_Side_Ambor". */
+/**
+ * Builds the public icon URL for any Enka icon key, e.g. "UI_AvatarIcon_Side_Ambor".
+ * Defensively passes through anything that's already a full URL unchanged — the character
+ * roster is only ever supposed to hand this a bare icon key, but treating an accidental full URL
+ * as a key (producing "https://enka.network/ui/https://....png") was exactly the kind of silent
+ * image-load failure that showed up as blank icon boxes with no error in the UI.
+ */
 export function enkaIconUrl(iconKey: string | undefined | null): string {
   if (!iconKey) return ''
+  if (/^https?:\/\//i.test(iconKey)) return iconKey
   return `https://enka.network/ui/${iconKey}.png`
 }

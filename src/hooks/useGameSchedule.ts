@@ -15,9 +15,12 @@ export interface GameVersion {
 export interface GameBanner {
   id: string
   name: string
-  characters: string[]  // featured 5-star name(s)
-  startDate: string      // ISO
-  endDate: string        // ISO
+  characters: string[]      // featured 5-star name(s)
+  characterIcons?: string[] // matching icon URLs, same order as characters
+  weapons: string[]         // featured 5-star weapon name(s)
+  weaponIcons?: string[]    // matching icon URLs, same order as weapons
+  startDate: string         // ISO
+  endDate: string           // ISO
   imageUrl?: string
   phase?: number
 }

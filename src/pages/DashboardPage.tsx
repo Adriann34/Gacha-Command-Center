@@ -58,17 +58,35 @@ function BannerCard({ banner }: { banner: GameBanner }) {
   const days = daysUntil(banner.endDate)
   const urgent = days !== null && days <= 3
 
+  // A banner features either characters or weapons (never both) — pair names with icons,
+  // whichever list is actually populated.
+  const featured = banner.characters.length > 0
+    ? banner.characters.map((name, i) => ({ name, icon: banner.characterIcons?.[i] }))
+    : banner.weapons.map((name, i) => ({ name, icon: banner.weaponIcons?.[i] }))
+
   return (
     <div className="card stat-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
-        <div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f0f2ff' }}>{banner.name}</div>
-          <div style={{ fontSize: '0.78rem', color: '#a78bfa', marginTop: '0.2rem' }}>{banner.characters.join(' · ')}</div>
+      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f0f2ff' }}>{banner.name}</div>
+
+      {featured.length > 0 && (
+        <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap' }}>
+          {featured.map((f, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', width: 60 }}>
+              {f.icon ? (
+                <img
+                  src={f.icon}
+                  alt={f.name}
+                  style={{ width: 48, height: 48, borderRadius: '0.625rem', objectFit: 'cover', background: '#0f1220', border: '1px solid #1e2640' }}
+                />
+              ) : (
+                <div style={{ width: 48, height: 48, borderRadius: '0.625rem', background: '#0f1220', border: '1px solid #1e2640' }} />
+              )}
+              <span style={{ fontSize: '0.68rem', color: '#a78bfa', textAlign: 'center', lineHeight: 1.2 }}>{f.name}</span>
+            </div>
+          ))}
         </div>
-        {banner.imageUrl && (
-          <img src={banner.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: '0.625rem', objectFit: 'cover', flexShrink: 0 }} />
-        )}
-      </div>
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
         <span style={{ fontSize: '0.75rem', color: '#4a5578' }}>
           {endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'}
