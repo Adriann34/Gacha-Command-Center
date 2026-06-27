@@ -7,7 +7,6 @@ interface FormState {
   name: string
   email: string
   password: string
-  company: string
 }
 
 interface FieldConfig {
@@ -19,7 +18,7 @@ interface FieldConfig {
 }
 
 export default function SignUpPage() {
-  const [form, setForm] = useState<FormState>({ name: '', email: '', password: '', company: '' })
+  const [form, setForm] = useState<FormState>({ name: '', email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -67,7 +66,7 @@ export default function SignUpPage() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0a0c14',
+      minHeight: '100vh', background: 'var(--color-surface-900)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       position: 'relative', overflow: 'hidden', padding: '2rem 1.5rem',
     }}>
@@ -79,30 +78,30 @@ export default function SignUpPage() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 52, height: 52, borderRadius: 14,
-            background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', marginBottom: '1.25rem',
+            background: 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))', marginBottom: '1.25rem',
           }}>
             <Sparkles size={26} color="white" fill="white" />
           </div>
-          <h1 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.875rem', fontWeight: 700, color: '#f0f2ff', margin: '0 0 0.5rem' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.5rem' }}>
             Start your journey
           </h1>
-          <p style={{ color: '#8892b0', fontSize: '0.9rem', margin: 0 }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
             Set up your Gacha Command Center — free, just for you
           </p>
         </div>
 
-        <div style={{ background: '#111627', border: '1px solid #1e2640', borderRadius: '1.25rem', padding: '2rem' }}>
+        <div style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem', padding: '2rem' }}>
           <button
             onClick={handleGoogle}
             disabled={loading}
             style={{
               width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
-              padding: '0.75rem 1rem', background: '#141729', border: '1px solid #1e2640', borderRadius: '0.75rem',
-              color: '#f0f2ff', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
+              padding: '0.75rem 1rem', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
+              color: 'var(--color-text-primary)', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
               transition: 'border-color 0.2s, background 0.2s', marginBottom: '1.25rem',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2d3554'; e.currentTarget.style.background = '#1a1f35' }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#1e2640'; e.currentTarget.style.background = '#141729' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-400)'; e.currentTarget.style.background = 'var(--color-surface-600)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.background = 'var(--color-surface-700)' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -114,16 +113,16 @@ export default function SignUpPage() {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <div style={{ flex: 1, height: 1, background: '#1e2640' }} />
-            <span style={{ color: '#4a5578', fontSize: '0.75rem' }}>or</span>
-            <div style={{ flex: 1, height: 1, background: '#1e2640' }} />
+            <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
+            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>or</span>
+            <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
           </div>
 
           <form onSubmit={handleSubmit}>
             {error && (
               <div style={{
                 background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#f87171', borderRadius: '0.75rem', padding: '0.75rem 1rem',
+                color: 'var(--color-red-400)', borderRadius: '0.75rem', padding: '0.75rem 1rem',
                 fontSize: '0.85rem', marginBottom: '1rem',
               }}>
                 {error}
@@ -132,11 +131,11 @@ export default function SignUpPage() {
 
             {fields.map(({ key, label, placeholder, type, icon: Icon }) => (
               <div key={key} style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.5rem' }}>
                   {label}
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Icon size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#4a5578' }} />
+                  <Icon size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
                   <input
                     type={key === 'password' ? (showPassword ? 'text' : 'password') : type}
                     value={form[key]}
@@ -150,7 +149,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#4a5578', cursor: 'pointer', padding: 0 }}
+                      style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: 0 }}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -163,15 +162,15 @@ export default function SignUpPage() {
               type="submit"
               disabled={loading}
               className="btn-primary"
-              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'Inter, sans-serif', marginTop: '0.5rem' }}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'var(--font-body)', marginTop: '0.5rem' }}
             >
               {loading ? 'Creating workspace...' : 'Create free account'}
             </button>
           </form>
 
-          <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: '#4a5578' }}>
+          <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
             Already have an account?{' '}
-            <Link to="/signin" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>Sign in</Link>
+            <Link to="/signin" style={{ color: 'var(--color-violet-400)', textDecoration: 'none', fontWeight: 500 }}>Sign in</Link>
           </p>
         </div>
       </div>

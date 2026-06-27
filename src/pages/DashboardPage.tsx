@@ -38,14 +38,14 @@ function ResetCard({ icon: Icon, label, target, accent, periodNote }: {
           <Icon size={20} color={accent} />
         </div>
         <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f0f2ff' }}>{label}</div>
-          <div style={{ fontSize: '0.72rem', color: '#4a5578' }}>{periodNote}</div>
+          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{periodNote}</div>
         </div>
       </div>
-      <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.5rem', fontWeight: 700, color: accent }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: accent }}>
         {countdown}
       </div>
-      <div style={{ fontSize: '0.72rem', color: '#4a5578', marginTop: '0.25rem' }}>
+      <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
         Resets {target.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at 4:00 AM server time
       </div>
     </div>
@@ -66,7 +66,7 @@ function BannerCard({ banner }: { banner: GameBanner }) {
 
   return (
     <div className="card stat-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f0f2ff' }}>{banner.name}</div>
+      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{banner.name}</div>
 
       {featured.length > 0 && (
         <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap' }}>
@@ -76,26 +76,26 @@ function BannerCard({ banner }: { banner: GameBanner }) {
                 <img
                   src={f.icon}
                   alt={f.name}
-                  style={{ width: 48, height: 48, borderRadius: '0.625rem', objectFit: 'cover', background: '#0f1220', border: '1px solid #1e2640' }}
+                  style={{ width: 48, height: 48, borderRadius: '0.625rem', objectFit: 'cover', background: 'var(--color-surface-800)', border: '1px solid var(--color-border)' }}
                 />
               ) : (
-                <div style={{ width: 48, height: 48, borderRadius: '0.625rem', background: '#0f1220', border: '1px solid #1e2640' }} />
+                <div style={{ width: 48, height: 48, borderRadius: '0.625rem', background: 'var(--color-surface-800)', border: '1px solid var(--color-border)' }} />
               )}
-              <span style={{ fontSize: '0.68rem', color: '#a78bfa', textAlign: 'center', lineHeight: 1.2 }}>{f.name}</span>
+              <span style={{ fontSize: '0.68rem', color: 'var(--color-violet-400)', textAlign: 'center', lineHeight: 1.2 }}>{f.name}</span>
             </div>
           ))}
         </div>
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
-        <span style={{ fontSize: '0.75rem', color: '#4a5578' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
           {endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'}
         </span>
         <span style={{
           fontSize: '0.72rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '9999px',
           background: urgent ? 'rgba(248,113,113,0.12)' : 'rgba(139,92,246,0.12)',
-          color: urgent ? '#f87171' : '#a78bfa',
-          fontFamily: 'Space Grotesk, sans-serif',
+          color: urgent ? 'var(--color-red-400)' : 'var(--color-violet-400)',
+          fontFamily: 'var(--font-display)',
         }}>
           {countdown ?? '—'}
         </span>
@@ -111,24 +111,24 @@ function EventCard({ event, upcoming }: { event: GameEvent; upcoming: boolean })
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '0.875rem 0',
-      borderBottom: '1px solid #1e2640',
+      borderBottom: '1px solid var(--color-border)',
     }}>
       <div style={{
         width: 36, height: 36, borderRadius: '0.625rem', flexShrink: 0,
         background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.25)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Sparkles size={16} color="#22d3ee" />
+        <Sparkles size={16} color="var(--color-cyan-400)" />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 500, color: '#f0f2ff' }}>{event.name}</div>
-        <div style={{ fontSize: '0.72rem', color: '#4a5578' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>{event.name}</div>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
           {relevantDate
             ? `${upcoming ? 'Starts' : 'Ends'} ${relevantDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
             : 'Date unavailable'}
         </div>
       </div>
-      <span style={{ fontSize: '0.72rem', color: '#8892b0', flexShrink: 0, fontFamily: 'Space Grotesk, sans-serif' }}>
+      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', flexShrink: 0, fontFamily: 'var(--font-display)' }}>
         {countdown ?? '—'}
       </span>
     </div>
@@ -158,8 +158,8 @@ export default function DashboardPage() {
       {/* Page header */}
       <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ color: '#8892b0', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>{greeting}, {firstName}</p>
-          <h1 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.75rem', fontWeight: 700, color: '#f0f2ff', margin: 0 }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>{greeting}, {firstName}</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             Teyvat Overview
           </h1>
         </div>
@@ -169,8 +169,8 @@ export default function DashboardPage() {
             borderRadius: '0.875rem', background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(6,182,212,0.1))',
             border: '1px solid rgba(139,92,246,0.25)',
           }}>
-            <Sparkles size={16} color="#a78bfa" />
-            <span style={{ fontSize: '0.85rem', color: '#f0f2ff', fontWeight: 600 }}>
+            <Sparkles size={16} color="var(--color-violet-400)" />
+            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', fontWeight: 600 }}>
               v{schedule.currentVersion.version} {schedule.currentVersion.name}
             </span>
           </div>
@@ -183,13 +183,13 @@ export default function DashboardPage() {
           background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)',
           borderRadius: '0.875rem', marginBottom: '1.5rem',
         }}>
-          <Sparkles size={18} color="#a78bfa" style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1, fontSize: '0.85rem', color: '#8892b0' }}>
-            Connect your Genshin UID to see your character showcase on the <strong style={{ color: '#f0f2ff' }}>My Account</strong> page.
+          <Sparkles size={18} color="var(--color-violet-400)" style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1, fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+            Connect your Genshin UID to see your character showcase on the <strong style={{ color: 'var(--color-text-primary)' }}>My Account</strong> page.
           </div>
           <button onClick={() => navigate('/settings')} style={{
-            padding: '0.45rem 0.875rem', borderRadius: '0.625rem', background: '#141729',
-            border: '1px solid #1e2640', color: '#a78bfa', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif', flexShrink: 0,
+            padding: '0.45rem 0.875rem', borderRadius: '0.625rem', background: 'var(--color-surface-700)',
+            border: '1px solid var(--color-border)', color: 'var(--color-violet-400)', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)', flexShrink: 0,
           }}>
             Set up
           </button>
@@ -202,12 +202,12 @@ export default function DashboardPage() {
           background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)',
           borderRadius: '0.875rem', marginBottom: '1.5rem',
         }}>
-          <AlertTriangle size={18} color="#fbbf24" style={{ flexShrink: 0, marginTop: 1 }} />
+          <AlertTriangle size={18} color="var(--color-amber-400)" style={{ flexShrink: 0, marginTop: 1 }} />
           <div>
-            <div style={{ fontSize: '0.875rem', color: '#f0f2ff', fontWeight: 500, marginBottom: '0.25rem' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)', fontWeight: 500, marginBottom: '0.25rem' }}>
               Live schedule not connected yet
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#8892b0' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
               Version, banner, and event data populates here once the Cloudflare Worker is deployed and has run at least once. Abyss and Theater countdowns below work regardless, since those follow a fixed in-game schedule.
             </div>
           </div>
@@ -225,18 +225,18 @@ export default function DashboardPage() {
         {/* Banners */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#f0f2ff', margin: 0 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
               Current Banners
             </h3>
-            <a href="https://genshin.hoyoverse.com/en/news" target="_blank" rel="noreferrer" style={{ fontSize: '0.78rem', color: '#a78bfa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <a href="https://genshin.hoyoverse.com/en/news" target="_blank" rel="noreferrer" style={{ fontSize: '0.78rem', color: 'var(--color-violet-400)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               Official news <ExternalLink size={12} />
             </a>
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#4a5578', fontSize: '0.85rem' }}>Loading...</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Loading...</div>
           ) : !schedule?.currentBanners?.length ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#4a5578', fontSize: '0.85rem' }}>No banner data yet</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>No banner data yet</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
               {schedule.currentBanners.map((b) => <BannerCard key={b.id} banner={b} />)}
@@ -245,7 +245,7 @@ export default function DashboardPage() {
 
           {!!schedule?.upcomingBanners?.length && (
             <>
-              <div style={{ fontSize: '0.78rem', color: '#4a5578', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '1.5rem 0 0.875rem' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '1.5rem 0 0.875rem' }}>
                 Upcoming
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
@@ -258,21 +258,21 @@ export default function DashboardPage() {
         {/* Events */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#f0f2ff', margin: 0 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
               Events
             </h3>
-            <Calendar size={16} color="#4a5578" />
+            <Calendar size={16} color="var(--color-text-muted)" />
           </div>
           <div>
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#4a5578', fontSize: '0.82rem' }}>Loading...</div>
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>Loading...</div>
             ) : !schedule?.currentEvents?.length && !schedule?.upcomingEvents?.length ? (
-              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#4a5578', fontSize: '0.82rem' }}>No event data yet</div>
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>No event data yet</div>
             ) : (
               <>
                 {schedule?.currentEvents?.map((e) => <EventCard key={e.id} event={e} upcoming={false} />)}
                 {!!schedule?.upcomingEvents?.length && (
-                  <div style={{ fontSize: '0.72rem', color: '#4a5578', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '1rem 0 0.25rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '1rem 0 0.25rem' }}>
                     Upcoming
                   </div>
                 )}
@@ -286,16 +286,16 @@ export default function DashboardPage() {
       {/* Next version */}
       {schedule?.nextVersion && (
         <div className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-          <Clock size={20} color="#22d3ee" style={{ flexShrink: 0 }} />
+          <Clock size={20} color="var(--color-cyan-400)" style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f0f2ff' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
               Next: v{schedule.nextVersion.version} {schedule.nextVersion.name}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#4a5578' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
               Expected {new Date(schedule.nextVersion.releaseDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
           </div>
-          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22d3ee', fontFamily: 'Space Grotesk, sans-serif' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-cyan-400)', fontFamily: 'var(--font-display)' }}>
             {daysUntil(schedule.nextVersion.releaseDate) ?? '—'}d
           </span>
         </div>
@@ -304,7 +304,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button onClick={() => navigate('/settings')} style={{
           display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none',
-          color: '#4a5578', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+          color: 'var(--color-text-muted)', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
         }}>
           <SettingsIcon size={13} /> Server region: {server ?? 'America'}
         </button>

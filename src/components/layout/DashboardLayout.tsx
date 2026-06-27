@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import Avatar from '../Avatar'
 import {
   LayoutDashboard, ListChecks, UserCircle2, Settings,
   Sparkles, Bell, Search, Menu, X, LogOut, ChevronDown,
@@ -30,12 +31,8 @@ export default function DashboardLayout() {
     navigate('/signin')
   }
 
-  const initials = user?.displayName
-    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : user?.email?.[0]?.toUpperCase() ?? 'U'
-
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0a0c14' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-surface-900)' }}>
       {/* Sidebar overlay on mobile */}
       {sidebarOpen && (
         <div
@@ -48,8 +45,8 @@ export default function DashboardLayout() {
       <aside
         style={{
           width: 240,
-          background: '#0f1220',
-          borderRight: '1px solid #1e2640',
+          background: 'var(--color-surface-800)',
+          borderRight: '1px solid var(--color-border)',
           display: 'flex',
           flexDirection: 'column',
           position: 'fixed',
@@ -62,28 +59,28 @@ export default function DashboardLayout() {
         className="lg-sidebar"
       >
         {/* Logo */}
-        <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid #1e2640' }}>
+        <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+              background: 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}>
               <Sparkles size={18} color="white" fill="white" />
             </div>
             <div>
-              <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontWeight: 700, fontSize: '0.92rem', color: '#f0f2ff', lineHeight: 1.2 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
                 Gacha Command Center
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#4a5578' }}>Genshin Impact Tracker</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Genshin Impact Tracker</div>
             </div>
           </div>
         </div>
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#4a5578', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0 0.5rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0 0.5rem', marginBottom: '0.5rem' }}>
             Main Menu
           </div>
           {navItems.map(({ to, icon: Icon, label }) => (
@@ -100,7 +97,7 @@ export default function DashboardLayout() {
         </nav>
 
         {/* User section */}
-        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid #1e2640' }}>
+        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--color-border)' }}>
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: '0.625rem',
@@ -109,31 +106,24 @@ export default function DashboardLayout() {
               position: 'relative',
             }}
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#141729' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-700)' }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
           >
-            <div style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '0.8rem', fontWeight: 700, color: 'white', flexShrink: 0,
-            }}>
-              {initials}
-            </div>
+            <Avatar size={34} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#f0f2ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.displayName ?? 'User'}
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#4a5578', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.email}
               </div>
             </div>
-            <ChevronDown size={14} color="#4a5578" />
+            <ChevronDown size={14} color="var(--color-text-muted)" />
 
             {userMenuOpen && (
               <div style={{
                 position: 'absolute', bottom: '110%', left: 0, right: 0,
-                background: '#141729', border: '1px solid #1e2640',
+                background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
                 borderRadius: '0.75rem', padding: '0.375rem',
                 zIndex: 100,
               }}>
@@ -142,8 +132,8 @@ export default function DashboardLayout() {
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem',
                     padding: '0.625rem 0.75rem', borderRadius: '0.5rem',
-                    background: 'none', border: 'none', color: '#f87171',
-                    fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                    background: 'none', border: 'none', color: 'var(--color-red-400)',
+                    fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     transition: 'background 0.15s',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)' }}
@@ -171,7 +161,7 @@ export default function DashboardLayout() {
           height: 64,
           background: 'rgba(15, 18, 32, 0.85)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #1e2640',
+          borderBottom: '1px solid var(--color-border)',
           display: 'flex',
           alignItems: 'center',
           padding: '0 1.5rem',
@@ -184,7 +174,7 @@ export default function DashboardLayout() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="mobile-menu-btn"
             style={{
-              background: 'none', border: 'none', color: '#8892b0', cursor: 'pointer',
+              background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer',
               padding: '0.375rem', borderRadius: '0.5rem', display: 'flex',
             }}
           >
@@ -193,7 +183,7 @@ export default function DashboardLayout() {
 
           {/* Search */}
           <div style={{ flex: 1, maxWidth: 400, position: 'relative' }}>
-            <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#4a5578' }} />
+            <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
             <input
               type="text"
               placeholder="Search characters, tasks..."
@@ -212,25 +202,20 @@ export default function DashboardLayout() {
 
           {/* Notif bell */}
           <button style={{
-            position: 'relative', background: '#141729', border: '1px solid #1e2640',
-            borderRadius: '0.75rem', padding: '0.5rem', cursor: 'pointer', color: '#8892b0',
+            position: 'relative', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
+            borderRadius: '0.75rem', padding: '0.5rem', cursor: 'pointer', color: 'var(--color-text-secondary)',
             display: 'flex', alignItems: 'center',
           }}>
             <Bell size={18} />
             <span style={{
               position: 'absolute', top: 6, right: 6, width: 7, height: 7,
-              borderRadius: '50%', background: '#8b5cf6', border: '1.5px solid #0f1220',
+              borderRadius: '50%', background: 'var(--color-violet-500)', border: '1.5px solid var(--color-surface-800)',
             }} />
           </button>
 
           {/* Avatar */}
-          <div style={{
-            width: 36, height: 36, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '0.8rem', fontWeight: 700, color: 'white', cursor: 'pointer', flexShrink: 0,
-          }}>
-            {initials}
+          <div style={{ cursor: 'pointer' }}>
+            <Avatar size={36} />
           </div>
         </header>
 

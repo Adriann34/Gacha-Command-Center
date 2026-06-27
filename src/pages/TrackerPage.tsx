@@ -37,10 +37,10 @@ const STATUS_OPTIONS: GoalStatus[] = ['Planned', 'In Progress', 'Blocked', 'Done
 const CATEGORY_OPTIONS: GoalCategory[] = ['Event', 'Farming', 'Abyss Prep', 'Theater Prep', 'Wish Planning', 'Exploration', 'Other']
 
 const STATUS_COLORS: Record<GoalStatus, { bg: string; color: string; border: string }> = {
-  'Planned':     { bg: 'rgba(34,211,238,0.1)',   color: '#22d3ee', border: 'rgba(34,211,238,0.25)' },
-  'In Progress': { bg: 'rgba(139,92,246,0.1)',   color: '#a78bfa', border: 'rgba(139,92,246,0.25)' },
-  'Blocked':     { bg: 'rgba(248,113,113,0.1)',  color: '#f87171', border: 'rgba(248,113,113,0.25)' },
-  'Done':        { bg: 'rgba(52,211,153,0.1)',   color: '#34d399', border: 'rgba(52,211,153,0.25)' },
+  'Planned':     { bg: 'rgba(34,211,238,0.1)',   color: 'var(--color-cyan-400)', border: 'rgba(34,211,238,0.25)' },
+  'In Progress': { bg: 'rgba(139,92,246,0.1)',   color: 'var(--color-violet-400)', border: 'rgba(139,92,246,0.25)' },
+  'Blocked':     { bg: 'rgba(248,113,113,0.1)',  color: 'var(--color-red-400)', border: 'rgba(248,113,113,0.25)' },
+  'Done':        { bg: 'rgba(52,211,153,0.1)',   color: 'var(--color-green-400)', border: 'rgba(52,211,153,0.25)' },
 }
 
 const CATEGORY_ICONS: Record<GoalCategory, React.ElementType> = {
@@ -103,56 +103,56 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
       padding: '1rem',
     }}>
       <div className="fade-in" style={{
-        background: '#111627', border: '1px solid #1e2640', borderRadius: '1.25rem',
+        background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem',
         padding: '2rem', width: '100%', maxWidth: 480,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.125rem', fontWeight: 700, color: '#f0f2ff', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {initial ? 'Edit Goal' : 'New Goal'}
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#4a5578', cursor: 'pointer', display: 'flex', borderRadius: '0.5rem', padding: '0.25rem' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', display: 'flex', borderRadius: '0.5rem', padding: '0.25rem' }}>
             <X size={20} />
           </button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>What do you need to do? *</label>
+            <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>What do you need to do? *</label>
             <input value={form.name} onChange={update('name')} placeholder="e.g. Clear Spiral Abyss 12-3" className="input-dark" />
           </div>
           <div>
-            <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Notes</label>
+            <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Notes</label>
             <textarea value={form.description} onChange={update('description')} placeholder="Team comp, mats needed, anything to remember" className="input-dark" style={{ resize: 'vertical', minHeight: 80 }} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Category</label>
+              <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Category</label>
               <select value={form.category} onChange={update('category')} className="input-dark" style={{ cursor: 'pointer' }}>
                 {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Status</label>
+              <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Status</label>
               <select value={form.status} onChange={update('status')} className="input-dark" style={{ cursor: 'pointer' }}>
                 {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', color: '#8892b0', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Deadline</label>
+            <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Deadline</label>
             <input type="date" value={form.dueDate} onChange={update('dueDate')} className="input-dark" style={{ colorScheme: 'dark' }} />
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
           <button onClick={onClose} style={{
-            flex: 1, padding: '0.7rem', borderRadius: '0.75rem', background: '#141729',
-            border: '1px solid #1e2640', color: '#8892b0', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif',
+            flex: 1, padding: '0.7rem', borderRadius: '0.75rem', background: 'var(--color-surface-700)',
+            border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
           }}>
             Cancel
           </button>
           <button onClick={handleSave} disabled={saving || !form.name.trim()} className="btn-primary" style={{
-            flex: 2, padding: '0.7rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', fontWeight: 600,
+            flex: 2, padding: '0.7rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontFamily: 'var(--font-body)', fontWeight: 600,
           }}>
             {saving ? 'Saving...' : initial ? 'Save Changes' : 'Add Goal'}
           </button>
@@ -197,24 +197,24 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
           </div>
         </div>
         <div style={{ position: 'relative' }}>
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: '#4a5578', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}>
+          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}>
             <MoreHorizontal size={18} />
           </button>
           {menuOpen && (
             <div style={{
               position: 'absolute', top: '110%', right: 0, zIndex: 10,
-              background: '#141729', border: '1px solid #1e2640', borderRadius: '0.75rem',
+              background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
               padding: '0.375rem', minWidth: 140,
             }}>
               <button
                 onClick={() => { setMenuOpen(false); onEdit(goal) }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: '#f0f2ff', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
               >
                 <Edit3 size={14} /> Edit
               </button>
               <button
                 onClick={() => { setMenuOpen(false); onDelete(goal.id) }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: '#f87171', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: 'var(--color-red-400)', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
               >
                 <Trash2 size={14} /> Delete
               </button>
@@ -224,10 +224,10 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
       </div>
 
       <div>
-        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#f0f2ff', marginBottom: '0.375rem', textDecoration: isDone ? 'line-through' : 'none' }}>
+        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.375rem', textDecoration: isDone ? 'line-through' : 'none' }}>
           {goal.name}
         </div>
-        <p style={{ fontSize: '0.8rem', color: '#8892b0', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.5 }}>
           {goal.description || 'No notes added.'}
         </p>
       </div>
@@ -243,7 +243,7 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
           {goal.status}
         </span>
         {goal.dueDate && (
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#4a5578' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
             <Calendar size={12} /> {goal.dueDate}
           </span>
         )}
@@ -324,12 +324,12 @@ export default function TrackerPage() {
     <div className="fade-in">
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ color: '#8892b0', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>Things to do in-game</p>
-          <h1 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.75rem', fontWeight: 700, color: '#f0f2ff', margin: 0 }}>Tracker</h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>Things to do in-game</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Tracker</h1>
         </div>
         <button onClick={() => { setEditing(null); setModalOpen(true) }} className="btn-primary" style={{
           padding: '0.65rem 1.25rem', borderRadius: '0.75rem', fontSize: '0.875rem',
-          fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'Inter, sans-serif',
+          fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
         }}>
           <Plus size={16} /> New Goal
         </button>
@@ -343,10 +343,10 @@ export default function TrackerPage() {
           return (
             <button key={s} onClick={() => setFilter(s)} style={{
               padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 500,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif', transition: 'all 0.2s',
-              background: active ? 'linear-gradient(135deg, #8b5cf6, #06b6d4)' : '#141729',
-              color: active ? 'white' : '#8892b0',
-              border: active ? 'none' : '1px solid #1e2640',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s',
+              background: active ? 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))' : 'var(--color-surface-700)',
+              color: active ? 'white' : 'var(--color-text-secondary)',
+              border: active ? 'none' : '1px solid var(--color-border)',
             }}>
               {s} {count > 0 && <span style={{ opacity: 0.75 }}>({count})</span>}
             </button>
@@ -354,7 +354,7 @@ export default function TrackerPage() {
         })}
 
         <div style={{ marginLeft: 'auto', position: 'relative' }}>
-          <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#4a5578' }} />
+          <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
           <input
             value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search goals..." className="input-dark"
@@ -365,15 +365,15 @@ export default function TrackerPage() {
 
       {/* Grid */}
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: '#4a5578' }}>Loading goals...</div>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: 'var(--color-text-muted)' }}>Loading goals...</div>
       ) : filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#4a5578' }}>
+        <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--color-text-muted)' }}>
           <ListChecks size={48} style={{ margin: '0 auto 1rem', opacity: 0.4 }} />
-          <p style={{ fontSize: '1rem', color: '#8892b0', marginBottom: '0.5rem' }}>Nothing tracked yet</p>
+          <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>Nothing tracked yet</p>
           <p style={{ fontSize: '0.85rem' }}>Add a goal — an event to finish, materials to farm, a banner to save for.</p>
           <button onClick={() => setModalOpen(true)} className="btn-primary" style={{
             marginTop: '1rem', padding: '0.65rem 1.25rem', borderRadius: '0.75rem',
-            fontSize: '0.875rem', fontWeight: 600, fontFamily: 'Inter, sans-serif',
+            fontSize: '0.875rem', fontWeight: 600, fontFamily: 'var(--font-body)',
           }}>
             <Plus size={16} style={{ display: 'inline', marginRight: 4 }} /> New Goal
           </button>

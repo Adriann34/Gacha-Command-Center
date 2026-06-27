@@ -100,6 +100,38 @@ service cloud.firestore {
 }
 ```
 
+The `users/{userId}` rule above already covers the `avatarBase64` field (see "Profile Photo
+Uploads" below) — it's just another field on the same document, so no rule changes are needed if
+you're already using this block.
+
+---
+
+## Profile Photo Uploads
+
+Settings → Profile lets you upload a photo, which is compressed client-side to roughly 150KB and
+stored as a base64 string directly on your Firestore user document
+(`users/{uid}.avatarBase64`) — there's no Firebase Storage involved.
+
+This is deliberate, not a shortcut: **Cloud Storage for Firebase has required the paid Blaze plan
+to provision or even keep using a bucket since Feb 3, 2026**, even for usage that would otherwise
+be free. A project on the Spark (free, no card on file) plan can't use Storage at all as of that
+date. Firestore has no such requirement and stays fully usable on Spark, and a compressed ~150KB
+image (~200KB once base64-encoded) fits comfortably inside Firestore's 1 MiB per-document limit
+alongside the rest of the settings fields.
+
+How it works:
+- `lib/imageCompress.ts` draws the upload onto a `<canvas>`, center-crops it to a square, and
+  sweeps quality (then dimension, if needed) until the result is under the 150KB target —
+  entirely in the browser, no network calls.
+- `SettingsPage.tsx` saves the resulting data URL straight to the user's Firestore doc.
+- `components/Avatar.tsx` subscribes live (`useUserProfile.ts`) to that doc, so the new photo
+  shows up immediately in the sidebar and topbar without a page refresh, and falls back to the
+  original gradient-with-initials look if no photo has been uploaded (or it fails to load).
+
+If you outgrow the 150KB/Firestore approach later (e.g. you want full-resolution photos, not just
+small compressed avatars), that's the point at which Cloud Storage + Blaze becomes worth it — but
+nothing here requires that today.
+
 ---
 
 ## Pages
@@ -120,6 +152,7 @@ service cloud.firestore {
 ```
 src/
 ├── components/
+│   ├── Avatar.tsx                 # Shared avatar (uploaded photo, or initials fallback)
 │   └── layout/
 │       └── DashboardLayout.tsx   # Sidebar + topbar shell
 ├── context/
@@ -127,13 +160,15 @@ src/
 ├── hooks/
 │   ├── useGenshinProfile.ts      # Reads saved UID/server from Firestore
 │   ├── useGameSchedule.ts        # Live-reads the Worker-fed schedule doc
+│   ├── useUserProfile.ts         # Live-reads the signed-in user's profile doc (for Avatar)
 │   └── useCountdown.ts           # Ticking countdown string
 ├── lib/
 │   ├── firebase.ts                # Firebase app init
 │   ├── enka.ts                    # Enka.Network API client + types
 │   ├── genshinCharacters.ts       # avatarId -> name/element/icon lookup
 │   ├── genshinStats.ts            # FIGHT_PROP_* label/formatting helpers
-│   └── genshinResets.ts           # Deterministic Abyss/Theater reset math
+│   ├── genshinResets.ts           # Deterministic Abyss/Theater reset math
+│   └── imageCompress.ts           # Client-side avatar compression (canvas -> base64 JPEG)
 ├── pages/
 │   ├── DashboardPage.tsx
 │   ├── TrackerPage.tsx
@@ -144,6 +179,11 @@ src/
 ├── App.tsx                       # Router + protected routes
 ├── index.css                     # Tailwind v4 + global styles
 └── main.tsx                      # React root entry point
+
+public/
+└── characters/
+    └── zibai.png                 # Bundled avatar for the one hardcoded character fallback
+                                   # (Zibai / avatarId 10000126 — see genshinCharacters.ts)
 ```
 
 ---
@@ -152,10 +192,21 @@ src/
 
 - **Character showcase** (Account page): live from `enka.network/api/uid/{uid}` — public, no
   key needed. Requires your in-game Character Showcase to be set up and public.
-- **Character name/icon lookup**: maintained by hand in `lib/genshinCharacters.ts` since Enka's
-  API returns numeric `avatarId`s only. Covers the roster through patch 6.6 (Luna VII). If a
-  brand-new character doesn't show a name, add their `avatarId` there (visible in the raw Enka
-  response) — everything else falls back gracefully to "Character #&lt;id&gt;" in the meantime.
+- **Character name/icon lookup**: resolved live from the dynamic character roster the Cloudflare
+  Worker writes to Firestore (`characterRoster/current`), built fresh from Enka.Network's own
+  datamined character data (`characters.json` + `loc.json`) on every run — see
+  `../cloudflare-worker/README.md` for the full details. `lib/genshinCharacters.ts` reads that
+  roster first; there's no hand-typed table for the general case. New characters appear
+  automatically as soon as Enka's data picks them up — usually within a day of release. If a
+  character hasn't synced yet, it shows as "Character #&lt;id&gt;" until it does, rather than
+  guessing a name.
+  **One documented exception:** avatarId `10000126` (Zibai) is hardcoded as a single fallback
+  entry in `genshinCharacters.ts`, used only if the dynamic roster has nothing for that ID. She
+  shipped Feb 3, 2026 (v6.3) but is confirmed entirely absent from `characters.json` upstream (not
+  just unresolved — the key itself is missing), so unlike a normal new-character gap this one has
+  no self-healing path. Her icon is a bundled static asset (`public/characters/zibai.png`) rather
+  than an Enka CDN key, for the same reason. If you ever need to add a second character here, fix
+  the Worker's roster build instead — see the comment above `ZIBAI_FALLBACK_META` for why.
 - **Abyss / Theater resets**: computed deterministically (16th / 1st of month, 4 AM fixed server
   UTC offset) — no API dependency, always accurate.
 - **Version / banners / events**: written to Firestore by the separate Cloudflare Worker project.
