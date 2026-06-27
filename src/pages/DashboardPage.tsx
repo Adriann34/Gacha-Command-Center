@@ -23,8 +23,8 @@ function daysUntil(iso: string | undefined | null): number | null {
   return Math.max(0, Math.ceil((target.getTime() - Date.now()) / 86_400_000))
 }
 
-function ResetCard({ icon: Icon, label, target, accent, periodNote }: {
-  icon: React.ElementType; label: string; target: Date; accent: string; periodNote: string
+function ResetCard({ icon: Icon, label, target, accent, periodNote, serverIsGuessed }: {
+  icon: React.ElementType; label: string; target: Date; accent: string; periodNote: string; serverIsGuessed: boolean
 }) {
   const countdown = useCountdown(target)
   return (
@@ -48,6 +48,12 @@ function ResetCard({ icon: Icon, label, target, accent, periodNote }: {
       <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
         Resets {target.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at 4:00 AM server time
       </div>
+      {serverIsGuessed && (
+        <div style={{ fontSize: '0.68rem', color: 'var(--color-amber-400)', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+          <AlertTriangle size={11} style={{ flexShrink: 0 }} />
+          Assuming America server — set yours in Settings for an accurate countdown
+        </div>
+      )}
     </div>
   )
 }
@@ -216,8 +222,8 @@ export default function DashboardPage() {
 
       {/* Reset countdowns — always available, computed locally */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <ResetCard icon={Swords} label="Spiral Abyss" target={abyssReset.nextReset} accent="#a78bfa" periodNote="Resets on the 16th" />
-        <ResetCard icon={Trophy} label="Imaginarium Theater" target={theaterReset.nextReset} accent="#f472b6" periodNote="Resets on the 1st" />
+        <ResetCard icon={Swords} label="Spiral Abyss" target={abyssReset.nextReset} accent="#a78bfa" periodNote="Resets on the 16th" serverIsGuessed={!server} />
+        <ResetCard icon={Trophy} label="Imaginarium Theater" target={theaterReset.nextReset} accent="#f472b6" periodNote="Resets on the 1st" serverIsGuessed={!server} />
       </div>
 
       {/* Banners + Events row */}

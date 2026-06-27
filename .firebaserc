@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "says-bb541"
-  }
+    "default": "gacha-command-center"
+  },
+  "targets": {},
+  "etags": {}
 }
