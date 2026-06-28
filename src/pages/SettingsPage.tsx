@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext'
 import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { updateProfile } from 'firebase/auth'
 import { db, auth } from '../lib/firebase'
-import { User, Gamepad2, Bell, Shield, Palette, Save, Check, Sparkles, Loader2, AlertCircle, CheckCircle2, Upload, Trash2 } from 'lucide-react'
+import { User, Gamepad2, Bell, Shield, Palette, Save, Check, Loader2, AlertCircle, CheckCircle2, Upload, Trash2 } from 'lucide-react'
 import { fetchEnkaPlayerInfo, EnkaError } from '../lib/enka'
 import { compressImageToTarget, ImageCompressError, TARGET_MAX_BYTES } from '../lib/imageCompress'
 import Avatar from '../components/Avatar'
+import { useNotifSettings, type NotifState } from '../hooks/useNotifSettings'
 
 type TabId = 'profile' | 'genshin' | 'notifications' | 'security' | 'appearance'
 
@@ -23,14 +24,6 @@ const TABS: Tab[] = [
   { id: 'security',      label: 'Security',       icon: Shield },
   { id: 'appearance',    label: 'Appearance',     icon: Palette },
 ]
-
-interface NotifState {
-  banners: boolean
-  events: boolean
-  abyssReset: boolean
-  theaterReset: boolean
-  dailyReminder: boolean
-}
 
 const SERVERS = [
   { value: 'os_usa', label: 'America' },
@@ -81,10 +74,7 @@ export default function SettingsPage() {
   const [uidStatus, setUidStatus] = useState<UidStatus>('idle')
   const [uidError, setUidError] = useState<string>('')
   const [verifiedNickname, setVerifiedNickname] = useState('')
-  const [notifs, setNotifs] = useState<NotifState>({
-    banners: true, events: true, abyssReset: true, theaterReset: true, dailyReminder: false,
-  })
-  const [appearance, setAppearance] = useState({ accentColor: 'var(--color-violet-500)' })
+  const { notifs, saveNotifs } = useNotifSettings()
 
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [avatarError, setAvatarError] = useState<string | null>(null)
@@ -103,7 +93,6 @@ export default function SettingsPage() {
           setUidStatus('valid')
         }
         if (d['server']) setServer(d['server'] as string)
-        if (d['notifs']) setNotifs(d['notifs'] as NotifState)
       }
     })
   }, [user])
@@ -134,7 +123,6 @@ export default function SettingsPage() {
         displayName: profile.displayName,
         genshinUid,
         server,
-        notifs,
         updatedAt: new Date().toISOString(),
       })
       if (profile.displayName !== user.displayName && auth.currentUser) {
@@ -197,8 +185,6 @@ export default function SettingsPage() {
     }
     setAvatarUploading(false)
   }
-
-  const ACCENT_COLORS = ['var(--color-violet-500)', 'var(--color-cyan-500)', 'var(--color-pink-400)', 'var(--color-green-400)', '#f59e0b', '#ef4444']
 
   return (
     <div className="fade-in">
@@ -374,17 +360,18 @@ export default function SettingsPage() {
           {activeTab === 'notifications' && (
             <div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Notifications</h2>
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>Control what alerts show up on your dashboard.</p>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>
+                Control what shows up in your reminders. Changes save automatically and sync to the bell icon right away.
+              </p>
 
               {([
-                { key: 'banners',       label: 'Banner Changes',     sub: 'When a new banner phase goes live' },
-                { key: 'events',        label: 'Event Reminders',    sub: 'When events are about to start or end' },
-                { key: 'abyssReset',    label: 'Spiral Abyss Reset', sub: 'Reminder before the bi-weekly reset' },
-                { key: 'theaterReset',  label: 'Imaginarium Theater Reset', sub: 'Reminder before the monthly reset' },
-                { key: 'dailyReminder', label: 'Daily Commissions',  sub: 'Reminder to clear daily commissions' },
+                { key: 'banners',       label: 'Banner Changes',     sub: 'When a current banner has 2 days or less left' },
+                { key: 'events',        label: 'Event Reminders',    sub: 'When a current event has 2 days or less left' },
+                { key: 'abyssReset',    label: 'Spiral Abyss Reset', sub: 'When the bi-weekly reset has 2 days or less left' },
+                { key: 'theaterReset',  label: 'Imaginarium Theater Reset', sub: 'When the monthly reset has 2 days or less left' },
               ] as { key: keyof NotifState; label: string; sub: string }[]).map(({ key, label, sub }) => (
                 <FormField key={key} label={label} sublabel={sub}>
-                  <Toggle checked={notifs[key]} onChange={(v) => setNotifs((p) => ({ ...p, [key]: v }))} />
+                  <Toggle checked={notifs[key]} onChange={(v) => void saveNotifs({ ...notifs, [key]: v })} />
                 </FormField>
               ))}
             </div>
@@ -426,49 +413,20 @@ export default function SettingsPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Appearance</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>Customize the look of your dashboard.</p>
 
-              <FormField label="Theme" sublabel="Gacha Command Center is designed for dark mode">
+              <FormField label="Theme" sublabel="Designed for dark mode — light mode is coming soon">
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   {['Dark', 'System'].map((t) => (
-                    <button key={t} style={{
+                    <button key={t} disabled={t === 'System'} style={{
                       padding: '0.5rem 1rem', borderRadius: '0.625rem', fontSize: '0.82rem', fontFamily: 'var(--font-body)',
                       background: t === 'Dark' ? 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))' : 'var(--color-surface-700)',
                       border: t === 'Dark' ? 'none' : '1px solid var(--color-border)',
-                      color: t === 'Dark' ? 'white' : 'var(--color-text-secondary)', cursor: 'pointer',
+                      color: t === 'Dark' ? 'white' : 'var(--color-text-muted)',
+                      cursor: t === 'Dark' ? 'pointer' : 'not-allowed',
+                      opacity: t === 'Dark' ? 1 : 0.6,
                     }}>{t}</button>
                   ))}
                 </div>
               </FormField>
-
-              <FormField label="Accent Color" sublabel="Primary color used across the interface">
-                <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap' }}>
-                  {ACCENT_COLORS.map((c) => (
-                    <div key={c} onClick={() => setAppearance((p) => ({ ...p, accentColor: c }))} style={{
-                      width: 32, height: 32, borderRadius: '50%', background: c, cursor: 'pointer',
-                      border: appearance.accentColor === c ? '3px solid white' : '3px solid transparent',
-                      boxSizing: 'border-box', transition: 'border 0.15s',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {appearance.accentColor === c && <Check size={13} color="white" />}
-                    </div>
-                  ))}
-                </div>
-              </FormField>
-
-              <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', borderRadius: '0.875rem' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Preview</div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${appearance.accentColor}, var(--color-cyan-500))`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Sparkles size={18} color="white" fill="white" />
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>Gacha Command Center</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Genshin Impact Tracker</div>
-                  </div>
-                  <button style={{ marginLeft: 'auto', padding: '0.4rem 0.875rem', borderRadius: '0.5rem', background: `linear-gradient(135deg, ${appearance.accentColor}, var(--color-cyan-500))`, border: 'none', color: 'white', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-                    Sample Button
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
