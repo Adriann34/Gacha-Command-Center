@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Eye, EyeOff, Mail, Lock, User, Sparkles } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, } from 'lucide-react'
 
 interface FormState {
   name: string
