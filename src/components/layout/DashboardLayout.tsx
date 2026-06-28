@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import Avatar from '../Avatar'
+import NotificationBell from '../NotificationBell'
 import {
   LayoutDashboard, ListChecks, UserCircle2, Settings,
-  Sparkles, Bell, Search, Menu, X, LogOut, ChevronDown,
+  Search, Menu, X, LogOut, ChevronDown,
 } from 'lucide-react'
 
 interface NavItem {
@@ -61,14 +62,7 @@ export default function DashboardLayout() {
         {/* Logo */}
         <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
-            }}>
-              <Sparkles size={18} color="white" fill="white" />
-            </div>
+            <img src="/branding/logo.png" alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain', flexShrink: 0 }} />
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
                 Gacha Command Center
@@ -201,17 +195,7 @@ export default function DashboardLayout() {
           <div style={{ flex: 1 }} />
 
           {/* Notif bell */}
-          <button style={{
-            position: 'relative', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
-            borderRadius: '0.75rem', padding: '0.5rem', cursor: 'pointer', color: 'var(--color-text-secondary)',
-            display: 'flex', alignItems: 'center',
-          }}>
-            <Bell size={18} />
-            <span style={{
-              position: 'absolute', top: 6, right: 6, width: 7, height: 7,
-              borderRadius: '50%', background: 'var(--color-violet-500)', border: '1.5px solid var(--color-surface-800)',
-            }} />
-          </button>
+          <NotificationBell />
 
           {/* Avatar */}
           <div style={{ cursor: 'pointer' }}>
