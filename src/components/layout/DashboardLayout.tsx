@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import Avatar from '../Avatar'
 import NotificationBell from '../NotificationBell'
+import GlobalSearch from '../GlobalSearch'
 import {
   LayoutDashboard, ListChecks, UserCircle2, Settings,
-  Search, Menu, X, LogOut, ChevronDown,
+  Menu, X, LogOut, ChevronDown, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react'
 
 interface NavItem {
@@ -21,16 +22,40 @@ const navItems: NavItem[] = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
+const SIDEBAR_COLLAPSE_KEY = 'gcc:sidebarCollapsed'
+const SIDEBAR_WIDTH_OPEN = 240
+const SIDEBAR_WIDTH_COLLAPSED = 76
+
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  // Desktop-only "collapse to icon rail" state, independent of the mobile open/close
+  // drawer above. Persisted so the choice survives a refresh.
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSE_KEY, collapsed ? '1' : '0')
+    } catch {
+      // localStorage may be unavailable (e.g. private browsing) — collapse still
+      // works for the session, it just won't persist across reloads.
+    }
+  }, [collapsed])
 
   const handleLogout = async () => {
     await logout()
     navigate('/signin')
   }
+
+  const sidebarWidth = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_OPEN
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-surface-900)' }}>
@@ -45,7 +70,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside
         style={{
-          width: 240,
+          width: sidebarWidth,
           background: 'var(--color-surface-800)',
           borderRight: '1px solid var(--color-border)',
           display: 'flex',
@@ -55,68 +80,101 @@ export default function DashboardLayout() {
           left: sidebarOpen ? 0 : '-260px',
           bottom: 0,
           zIndex: 50,
-          transition: 'left 0.25s ease',
+          transition: 'left 0.25s ease, width 0.2s ease',
+          overflow: 'hidden',
         }}
         className="lg-sidebar"
       >
         {/* Logo */}
-        <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid var(--color-border)' }}>
+        <div style={{
+          padding: collapsed ? '1.5rem 0' : '1.5rem 1.25rem', borderBottom: '1px solid var(--color-border)',
+          display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <img src="/branding/logo.png" alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
-                Gacha Command Center
+            {!collapsed && (
+              <div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', lineHeight: 1.25 }}>
+                  Gacha Command Center
+                </div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Genshin Impact Tracker</div>
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Genshin Impact Tracker</div>
-            </div>
+            )}
           </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0 0.5rem', marginBottom: '0.5rem' }}>
-            Main Menu
-          </div>
+        <nav style={{ flex: 1, padding: collapsed ? '1rem 0.5rem' : '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          {!collapsed && (
+            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0 0.5rem', marginBottom: '0.5rem' }}>
+              Main Menu
+            </div>
+          )}
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               onClick={() => setSidebarOpen(false)}
+              title={collapsed ? label : undefined}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              style={collapsed ? { justifyContent: 'center', paddingLeft: 0, paddingRight: 0 } : undefined}
             >
               <Icon size={18} />
-              {label}
+              {!collapsed && label}
             </NavLink>
           ))}
         </nav>
 
+        {/* Collapse toggle — desktop only, hidden on the mobile drawer */}
+        <button
+          onClick={() => setCollapsed((v) => !v)}
+          className="sidebar-collapse-btn"
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: '0.625rem', margin: '0 0.75rem', padding: '0.55rem 0.75rem',
+            background: 'none', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
+            color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'var(--color-surface-700)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.background = 'none' }}
+        >
+          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          {!collapsed && 'Collapse'}
+        </button>
+
         {/* User section */}
-        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--color-border)' }}>
+        <div style={{ padding: collapsed ? '1rem 0.5rem' : '1rem 0.75rem', borderTop: '1px solid var(--color-border)', marginTop: '1rem' }}>
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: '0.625rem',
-              padding: '0.5rem 0.625rem', borderRadius: '0.75rem',
+              padding: collapsed ? '0.5rem' : '0.5rem 0.625rem', borderRadius: '0.75rem',
               cursor: 'pointer', transition: 'background 0.2s',
-              position: 'relative',
+              position: 'relative', justifyContent: collapsed ? 'center' : 'flex-start',
             }}
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-700)' }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
           >
             <Avatar size={34} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user?.displayName ?? 'User'}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user?.email}
-              </div>
-            </div>
-            <ChevronDown size={14} color="var(--color-text-muted)" />
+            {!collapsed && (
+              <>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user?.displayName ?? 'User'}
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user?.email}
+                  </div>
+                </div>
+                <ChevronDown size={14} color="var(--color-text-muted)" />
+              </>
+            )}
 
             {userMenuOpen && (
               <div style={{
-                position: 'absolute', bottom: '110%', left: 0, right: 0,
+                position: 'absolute', bottom: '110%', left: 0, right: collapsed ? 'auto' : 0,
+                width: collapsed ? 180 : undefined,
                 background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
                 borderRadius: '0.75rem', padding: '0.375rem',
                 zIndex: 100,
@@ -149,7 +207,8 @@ export default function DashboardLayout() {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
-      }} className="main-content">
+        transition: 'margin-left 0.2s ease',
+      }} className="main-content" data-collapsed={collapsed ? '1' : '0'}>
         {/* Top bar */}
         <header style={{
           height: 64,
@@ -176,21 +235,7 @@ export default function DashboardLayout() {
           </button>
 
           {/* Search */}
-          <div style={{ flex: 1, maxWidth: 400, position: 'relative' }}>
-            <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-            <input
-              type="text"
-              placeholder="Search characters, tasks..."
-              className="input-dark"
-              style={{
-                paddingLeft: '2.25rem',
-                paddingTop: '0.5rem',
-                paddingBottom: '0.5rem',
-                fontSize: '0.8rem',
-                borderRadius: '0.625rem',
-              }}
-            />
-          </div>
+          <GlobalSearch />
 
           <div style={{ flex: 1 }} />
 
@@ -213,11 +258,13 @@ export default function DashboardLayout() {
       <style>{`
         @media (min-width: 1024px) {
           .lg-sidebar { left: 0 !important; }
-          .main-content { margin-left: 240px !important; }
+          .main-content { margin-left: ${sidebarWidth}px !important; }
           .mobile-menu-btn { display: none !important; }
+          .sidebar-collapse-btn { display: flex !important; }
         }
         @media (max-width: 1023px) {
           .mobile-menu-btn { display: flex !important; }
+          .sidebar-collapse-btn { display: none !important; }
         }
       `}</style>
     </div>

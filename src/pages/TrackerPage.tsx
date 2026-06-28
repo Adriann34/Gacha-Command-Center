@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   collection, addDoc, getDocs, updateDoc, deleteDoc, doc,
@@ -205,20 +206,12 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
       <div style={{ position: 'absolute', top: 0, left: '1.5rem', right: '1.5rem', height: 3, borderRadius: '0 0 3px 3px', background: `linear-gradient(90deg, ${accent}, transparent)` }} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <input
-            type="checkbox"
-            checked={isDone}
-            onChange={() => onToggleDone(goal)}
-            style={{ width: 18, height: 18, cursor: 'pointer', accentColor: accent, flexShrink: 0 }}
-          />
-          <div style={{
-            width: 40, height: 40, borderRadius: '0.75rem',
-            background: `${accent}18`, border: `1px solid ${accent}30`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            <CategoryIcon size={18} color={accent} />
-          </div>
+        <div style={{
+          width: 40, height: 40, borderRadius: '0.75rem',
+          background: `${accent}18`, border: `1px solid ${accent}30`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <CategoryIcon size={18} color={accent} />
         </div>
         <div style={{ position: 'relative' }}>
           <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}>
@@ -273,19 +266,48 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
         )}
       </div>
 
-      <div style={{ fontSize: '0.72rem', color: accent, fontWeight: 600 }}>{goal.category}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+        <div style={{ fontSize: '0.72rem', color: accent, fontWeight: 600 }}>{goal.category}</div>
+        <label
+          title={isDone ? 'Mark as not done' : 'Mark as done'}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', flexShrink: 0 }}
+        >
+          <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', userSelect: 'none' }}>Done</span>
+          <input
+            type="checkbox"
+            checked={isDone}
+            onChange={() => onToggleDone(goal)}
+            style={{ width: 18, height: 18, cursor: 'pointer', accentColor: accent, flexShrink: 0 }}
+          />
+        </label>
+      </div>
     </div>
   )
 }
 
 export default function TrackerPage() {
   const { user } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '')
   const [filter, setFilter] = useState<GoalStatus | 'All'>('All')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Goal | null>(null)
+
+  // Keep the URL's ?q= in sync so the search is shareable/bookmarkable and so
+  // navigating here again from the header search updates the box even if the
+  // page was already mounted.
+  useEffect(() => {
+    const urlQ = searchParams.get('q') ?? ''
+    if (urlQ !== search) setSearch(urlQ)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    setSearchParams(value ? { q: value } : {}, { replace: true })
+  }
 
   const fetchGoals = async () => {
     if (!user) return
@@ -334,7 +356,8 @@ export default function TrackerPage() {
   }
 
   const filtered = goals.filter((g) => {
-    const matchSearch = g.name?.toLowerCase().includes(search.toLowerCase())
+    const t = search.toLowerCase()
+    const matchSearch = !t || g.name?.toLowerCase().includes(t) || g.description?.toLowerCase().includes(t)
     const matchFilter = filter === 'All' || g.status === filter
     return matchSearch && matchFilter
   })
@@ -380,7 +403,7 @@ export default function TrackerPage() {
         <div style={{ marginLeft: 'auto', position: 'relative' }}>
           <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
           <input
-            value={search} onChange={(e) => setSearch(e.target.value)}
+            value={search} onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search goals..." className="input-dark"
             style={{ paddingLeft: '2.25rem', paddingTop: '0.45rem', paddingBottom: '0.45rem', fontSize: '0.8rem', borderRadius: '9999px', width: 220 }}
           />

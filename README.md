@@ -163,6 +163,35 @@ currently no "Daily Commissions" reminder, since the app doesn't track commissio
 
 ---
 
+## Header Search
+
+The search bar in the topbar (`components/GlobalSearch.tsx`) is functional, not a placeholder.
+Typing into it searches two things at once:
+
+- **Pages** — Dashboard, Tracker, My Account, Settings — matched against each page's name and a
+  short list of related keywords (e.g. typing "banner" surfaces Dashboard).
+- **Your Tracker goals** — matched against goal name and description. Goals are fetched lazily
+  the first time you start typing (or hit the shortcut below), not on every page load, and only
+  if you're signed in. Picking a goal jumps straight to `/tracker?q=<goal name>`, which
+  `TrackerPage.tsx` reads on mount to land you already filtered to that goal.
+
+Results only appear once there's something typed — focusing an empty search box doesn't show
+anything, since page navigation already lives in the sidebar. Supports `↑`/`↓` to move through
+results and `Enter` to select, plus a `Cmd/Ctrl+K` shortcut to focus it from anywhere in the app.
+
+---
+
+## Collapsible Sidebar
+
+The sidebar (`components/layout/DashboardLayout.tsx`) can collapse to an icon-only rail on
+desktop via the toggle at the bottom of the nav — useful on smaller laptop screens or if you just
+want more room for the page content. Nav items keep working as icon-only buttons with tooltips,
+and the choice is remembered in `localStorage` so it persists across reloads. This is separate
+from the existing mobile drawer (the hamburger menu that slides the full sidebar in/out on small
+screens), which is unaffected.
+
+---
+
 ## Pages
 
 | Route | File | Description |
@@ -170,7 +199,7 @@ currently no "Daily Commissions" reminder, since the app doesn't track commissio
 | `/signin` | `SignInPage.tsx` | Sign in with email/password or Google |
 | `/signup` | `SignUpPage.tsx` | Create a new account |
 | `/dashboard` | `DashboardPage.tsx` | Version, banners, events, Abyss/Theater countdowns |
-| `/tracker` | `TrackerPage.tsx` | Your personal goal/to-do tracker (events, farming, prep). Deadline is optional — check "No deadline" in the goal modal to leave it unset. |
+| `/tracker` | `TrackerPage.tsx` | Your personal goal/to-do tracker (events, farming, prep). Deadline is optional — check "No deadline" in the goal modal to leave it unset. Supports `?q=` to land pre-filtered (used by the header search). |
 | `/account` | `AccountPage.tsx` | Character showcase pulled live from Enka.Network |
 | `/settings` | `SettingsPage.tsx` | Profile, Genshin UID, notification toggles, appearance |
 
@@ -183,8 +212,9 @@ src/
 ├── components/
 │   ├── Avatar.tsx                 # Shared avatar (uploaded photo, or initials fallback)
 │   ├── NotificationBell.tsx       # Topbar dropdown — "2 days left" reminders (see below)
+│   ├── GlobalSearch.tsx           # Topbar search — pages + Tracker goals (see below)
 │   └── layout/
-│       └── DashboardLayout.tsx   # Sidebar + topbar shell
+│       └── DashboardLayout.tsx   # Sidebar (collapsible, see below) + topbar shell
 ├── context/
 │   └── AuthContext.tsx           # Firebase auth context + hooks
 ├── hooks/
