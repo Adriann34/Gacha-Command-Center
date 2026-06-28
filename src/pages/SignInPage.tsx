@@ -68,14 +68,7 @@ export default function SignInPage() {
       <div className="fade-in" style={{ width: '100%', maxWidth: 420, padding: '0 1.5rem', position: 'relative', zIndex: 10 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 52, height: 52, borderRadius: 14,
-            background: 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))',
-            marginBottom: '1.25rem',
-          }}>
-            <Sparkles size={26} color="white" fill="white" />
-          </div>
+          <img src="/branding/logo.png" alt="Logo" style={{ width: 60, height: 60, objectFit: 'contain', marginBottom: '1.25rem', display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, marginBottom: '0.5rem' }}>
             Welcome back, Traveler
           </h1>
