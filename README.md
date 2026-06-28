@@ -134,6 +134,35 @@ nothing here requires that today.
 
 ---
 
+## Notifications
+
+The bell icon in the topbar (`components/NotificationBell.tsx`) is a working dropdown, not just
+decoration. It surfaces a reminder whenever any of the following have **2 days or less**
+remaining:
+
+- Spiral Abyss reset
+- Imaginarium Theater reset
+- Each current banner
+- Each current event
+
+How it's wired:
+- `hooks/useNotifSettings.ts` is the single source of truth for which categories are on, read
+  live (`onSnapshot`) from `users/{uid}.notifs`. Settings → Notifications writes to this same
+  field the instant you flip a toggle — there's no separate "Save" step for these, and the bell
+  reflects the change immediately since it's reading the same live document.
+- `hooks/useReminders.ts` combines those toggles with the existing schedule/reset data (the same
+  `useGameSchedule.ts` and `lib/genshinResets.ts` the Dashboard already uses) to build the actual
+  list shown in the dropdown.
+- `hooks/useDismissedReminders.ts` persists which reminders you've dismissed to
+  `users/{uid}.dismissedReminders`, so closing one stays closed across reloads and devices until
+  that specific cycle/banner/event is naturally replaced by the next one.
+
+All of this reuses the existing `users/{userId}` Firestore document and rule — no extra
+collections, and no rule changes needed beyond what's already in the block above. There's
+currently no "Daily Commissions" reminder, since the app doesn't track commissions anywhere.
+
+---
+
 ## Pages
 
 | Route | File | Description |
@@ -141,9 +170,9 @@ nothing here requires that today.
 | `/signin` | `SignInPage.tsx` | Sign in with email/password or Google |
 | `/signup` | `SignUpPage.tsx` | Create a new account |
 | `/dashboard` | `DashboardPage.tsx` | Version, banners, events, Abyss/Theater countdowns |
-| `/tracker` | `TrackerPage.tsx` | Your personal goal/to-do tracker (events, farming, prep) |
+| `/tracker` | `TrackerPage.tsx` | Your personal goal/to-do tracker (events, farming, prep). Deadline is optional — check "No deadline" in the goal modal to leave it unset. |
 | `/account` | `AccountPage.tsx` | Character showcase pulled live from Enka.Network |
-| `/settings` | `SettingsPage.tsx` | Profile, Genshin UID, notifications, appearance |
+| `/settings` | `SettingsPage.tsx` | Profile, Genshin UID, notification toggles, appearance |
 
 ---
 
@@ -153,6 +182,7 @@ nothing here requires that today.
 src/
 ├── components/
 │   ├── Avatar.tsx                 # Shared avatar (uploaded photo, or initials fallback)
+│   ├── NotificationBell.tsx       # Topbar dropdown — "2 days left" reminders (see below)
 │   └── layout/
 │       └── DashboardLayout.tsx   # Sidebar + topbar shell
 ├── context/
@@ -160,7 +190,11 @@ src/
 ├── hooks/
 │   ├── useGenshinProfile.ts      # Reads saved UID/server from Firestore
 │   ├── useGameSchedule.ts        # Live-reads the Worker-fed schedule doc
+│   ├── useCharacterRoster.ts     # Live-reads the Worker-fed character roster doc
 │   ├── useUserProfile.ts         # Live-reads the signed-in user's profile doc (for Avatar)
+│   ├── useNotifSettings.ts       # Single source of truth for notification toggles (Firestore)
+│   ├── useReminders.ts           # Builds the "2 days left" reminder list for the bell
+│   ├── useDismissedReminders.ts  # Persists which reminders the user has dismissed
 │   └── useCountdown.ts           # Ticking countdown string
 ├── lib/
 │   ├── firebase.ts                # Firebase app init
