@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { useGenshinProfile } from '../hooks/useGenshinProfile'
 import { useCharacterRoster } from '../hooks/useCharacterRoster'
+import Avatar from '../components/Avatar'
 import {
   fetchEnkaProfile, enkaIconUrl, EnkaError,
   type EnkaResponse, type EnkaAvatarInfo,
@@ -228,14 +229,7 @@ export default function AccountPage() {
           {/* Player summary */}
           <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.4rem', fontWeight: 700, color: 'white',
-              }}>
-                {player.nickname?.[0]?.toUpperCase() ?? 'T'}
-              </div>
+              <Avatar size={64} />
               <div style={{ flex: 1, minWidth: 200 }}>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                   {player.nickname}
