@@ -1,9 +1,6 @@
 # Gacha Command Center
 
-A personal Genshin Impact dashboard: live version/banner/event tracking, your character
-showcase pulled from Enka.Network, and a goal tracker for everything you want to keep on top of
-in-game. Built with **React + Vite + TypeScript**, **Tailwind CSS v4**, and **Firebase**
-(Auth + Firestore).
+Genshin Impact Dashboard Tracker — Personal dashboard with live version, banner, and event tracking (Cloudflare Worker + HoYoLAB scraping), character showcases via the Enka.Network API, and a personal in-game goal tracker. Built with React + Vite + TypeScript, Tailwind CSS v4, and Firebase (Authentication + Firestore).
 
 ---
 
