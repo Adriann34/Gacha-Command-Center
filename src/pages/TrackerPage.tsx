@@ -55,6 +55,12 @@ const CATEGORY_ICONS: Record<GoalCategory, React.ElementType> = {
 
 const CARD_ACCENTS = ['#8b5cf6', '#22d3ee', '#f472b6', '#34d399', '#fbbf24', '#06b6d4']
 
+/** Today's date as YYYY-MM-DD, used to give the date input a sensible starting value
+ * when the user unchecks "No deadline". */
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
 interface GoalModalProps {
   open: boolean
   onClose: () => void
@@ -139,8 +145,26 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Deadline</label>
-            <input type="date" value={form.dueDate} onChange={update('dueDate')} className="input-dark" style={{ colorScheme: 'dark' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+              <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500 }}>Deadline</label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--color-text-muted)', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.dueDate === ''}
+                  onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.checked ? '' : todayIso() }))}
+                  style={{ cursor: 'pointer', accentColor: 'var(--color-violet-500)' }}
+                />
+                No deadline
+              </label>
+            </div>
+            <input
+              type="date"
+              value={form.dueDate}
+              onChange={update('dueDate')}
+              disabled={form.dueDate === ''}
+              className="input-dark"
+              style={{ colorScheme: 'dark', opacity: form.dueDate === '' ? 0.5 : 1, cursor: form.dueDate === '' ? 'not-allowed' : 'text' }}
+            />
           </div>
         </div>
 
