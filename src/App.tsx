@@ -17,8 +17,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
         <div style={{
           width: 48, height: 48, borderRadius: '50%',
           border: '3px solid transparent',
-          borderTopColor: 'var(--color-violet-500)',
-          borderRightColor: 'var(--color-cyan-400)',
+          borderTopColor: 'var(--color-gold-bright)',
+          borderRightColor: 'var(--color-gold-deep)',
           animation: 'spin 0.8s linear infinite',
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

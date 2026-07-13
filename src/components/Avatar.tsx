@@ -38,9 +38,9 @@ export default function Avatar({ size = 36 }: { size?: number }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%', flexShrink: 0,
-      background: showPhoto ? 'var(--color-surface-700)' : 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))',
+      background: showPhoto ? 'var(--color-surface-700)' : 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))',
       display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-      fontSize: size * 0.36, fontWeight: 700, color: 'white',
+      fontSize: size * 0.36, fontWeight: 700, color: '#241d0c',
     }}>
       {showPhoto && avatarSrc ? (
         <img

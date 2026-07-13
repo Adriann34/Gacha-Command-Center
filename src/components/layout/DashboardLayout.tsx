@@ -23,8 +23,25 @@ const navItems: NavItem[] = [
 ]
 
 const SIDEBAR_COLLAPSE_KEY = 'gcc:sidebarCollapsed'
-const SIDEBAR_WIDTH_OPEN = 240
+const SIDEBAR_WIDTH_OPEN = 264
 const SIDEBAR_WIDTH_COLLAPSED = 76
+
+/** The eight-pointed gold sigil used as the app mark — an unmistakably Teyvat glyph
+ *  that reads at any size and needs no external asset. */
+function Sigil({ size = 38 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" style={{ flexShrink: 0, filter: 'drop-shadow(0 0 6px rgba(211,188,142,.55))' }}>
+      <defs>
+        <linearGradient id="sigil-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f0dcac" />
+          <stop offset="1" stopColor="#a4854c" />
+        </linearGradient>
+      </defs>
+      <path d="M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16 Z" fill="url(#sigil-grad)" />
+      <path d="M20 9 L22 18 L31 20 L22 22 L20 31 L18 22 L9 20 L18 18 Z" fill="#12182a" opacity=".55" />
+    </svg>
+  )
+}
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -58,7 +75,7 @@ export default function DashboardLayout() {
   const sidebarWidth = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_OPEN
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-surface-900)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Sidebar overlay on mobile */}
       {sidebarOpen && (
         <div
@@ -71,42 +88,50 @@ export default function DashboardLayout() {
       <aside
         style={{
           width: sidebarWidth,
-          background: 'var(--color-surface-800)',
-          borderRight: '1px solid var(--color-border)',
+          background: 'linear-gradient(180deg, rgba(18,24,41,0.94), rgba(13,17,28,0.94))',
+          borderRight: '1px solid var(--gold-line)',
           display: 'flex',
           flexDirection: 'column',
           position: 'fixed',
           top: 0,
-          left: sidebarOpen ? 0 : '-260px',
+          left: sidebarOpen ? 0 : '-280px',
           bottom: 0,
           zIndex: 50,
           transition: 'left 0.25s ease, width 0.2s ease',
           overflow: 'hidden',
+          backdropFilter: 'blur(6px)',
         }}
         className="lg-sidebar"
       >
         {/* Logo */}
         <div style={{
-          padding: collapsed ? '1.5rem 0' : '1.5rem 1.25rem', borderBottom: '1px solid var(--color-border)',
+          padding: collapsed ? '1.375rem 0' : '1.375rem 1.25rem',
           display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <img src="/branding/logo.png" alt="Logo" style={{ width: 38, height: 38, objectFit: 'contain', flexShrink: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Sigil size={38} />
             {!collapsed && (
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', lineHeight: 1.25 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-gold-bright)', lineHeight: 1.15, letterSpacing: '0.02em' }}>
                   Gacha Command Center
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Genshin Impact Tracker</div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', letterSpacing: '0.02em' }}>Genshin Impact Companion</div>
               </div>
             )}
           </div>
         </div>
 
+        {/* Diamond divider */}
+        {!collapsed && (
+          <div style={{ position: 'relative', height: 1, margin: '0.25rem 1.25rem 1rem', background: 'linear-gradient(90deg, transparent, var(--gold-line), transparent)' }}>
+            <span style={{ position: 'absolute', left: '50%', top: -3, width: 7, height: 7, transform: 'translateX(-50%) rotate(45deg)', border: '1px solid var(--gold-line)', background: 'var(--color-surface-800)' }} />
+          </div>
+        )}
+
         {/* Nav */}
-        <nav style={{ flex: 1, padding: collapsed ? '1rem 0.5rem' : '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <nav style={{ flex: 1, padding: collapsed ? '0.5rem 0.5rem' : '0 0.85rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           {!collapsed && (
-            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0 0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.22em', textTransform: 'uppercase', padding: '0 0.5rem 0.65rem' }}>
               Main Menu
             </div>
           )}
@@ -119,7 +144,7 @@ export default function DashboardLayout() {
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               style={collapsed ? { justifyContent: 'center', paddingLeft: 0, paddingRight: 0 } : undefined}
             >
-              <Icon size={18} />
+              <Icon size={19} strokeWidth={1.7} />
               {!collapsed && label}
             </NavLink>
           ))}
@@ -132,11 +157,11 @@ export default function DashboardLayout() {
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start',
-            gap: '0.625rem', margin: '0 0.75rem', padding: '0.55rem 0.75rem',
-            background: 'none', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
-            color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)',
+            gap: '0.625rem', margin: '0 0.85rem', padding: '0.55rem 0.75rem',
+            background: 'none', border: '1px solid var(--gold-line-soft)', borderRadius: '0.5rem',
+            color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)', fontWeight: 600,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'var(--color-surface-700)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-gold)'; e.currentTarget.style.background = 'rgba(211,188,142,0.06)' }}
           onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.background = 'none' }}
         >
           {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
@@ -144,24 +169,25 @@ export default function DashboardLayout() {
         </button>
 
         {/* User section */}
-        <div style={{ padding: collapsed ? '1rem 0.5rem' : '1rem 0.75rem', borderTop: '1px solid var(--color-border)', marginTop: '1rem' }}>
+        <div style={{ padding: collapsed ? '1rem 0.5rem' : '1rem 0.85rem', marginTop: '1rem' }}>
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: '0.625rem',
-              padding: collapsed ? '0.5rem' : '0.5rem 0.625rem', borderRadius: '0.75rem',
+              padding: collapsed ? '0.5rem' : '0.55rem 0.625rem', borderRadius: '0.5rem',
               cursor: 'pointer', transition: 'background 0.2s',
               position: 'relative', justifyContent: collapsed ? 'center' : 'flex-start',
+              border: '1px solid var(--gold-line-soft)', background: 'rgba(255,255,255,0.02)',
             }}
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-700)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(211,188,142,0.06)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
           >
             <Avatar size={34} />
             {!collapsed && (
               <>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {user?.displayName ?? 'User'}
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user?.displayName ?? 'Traveler'}
                   </div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {user?.email}
@@ -172,11 +198,10 @@ export default function DashboardLayout() {
             )}
 
             {userMenuOpen && (
-              <div style={{
+              <div className="card" style={{
                 position: 'absolute', bottom: '110%', left: 0, right: collapsed ? 'auto' : 0,
                 width: collapsed ? 180 : undefined,
-                background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
-                borderRadius: '0.75rem', padding: '0.375rem',
+                padding: '0.375rem',
                 zIndex: 100,
               }}>
                 <button
@@ -185,10 +210,10 @@ export default function DashboardLayout() {
                     width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem',
                     padding: '0.625rem 0.75rem', borderRadius: '0.5rem',
                     background: 'none', border: 'none', color: 'var(--color-red-400)',
-                    fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600,
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,128,113,0.1)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
                 >
                   <LogOut size={15} />
@@ -212,9 +237,9 @@ export default function DashboardLayout() {
         {/* Top bar */}
         <header style={{
           height: 64,
-          background: 'rgba(15, 18, 32, 0.85)',
+          background: 'rgba(15, 18, 32, 0.7)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--color-border)',
+          borderBottom: '1px solid var(--gold-line-soft)',
           display: 'flex',
           alignItems: 'center',
           padding: '0 1.5rem',
@@ -227,7 +252,7 @@ export default function DashboardLayout() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="mobile-menu-btn"
             style={{
-              background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer',
+              background: 'none', border: 'none', color: 'var(--color-gold)', cursor: 'pointer',
               padding: '0.375rem', borderRadius: '0.5rem', display: 'flex',
             }}
           >
@@ -249,7 +274,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page content */}
-        <main style={{ flex: 1, padding: '2rem 1.5rem', maxWidth: 1400, width: '100%', margin: '0 auto' }}>
+        <main style={{ flex: 1, padding: '2rem 1.75rem 4rem', maxWidth: 1500, width: '100%', margin: '0 auto' }}>
           <Outlet />
         </main>
       </div>

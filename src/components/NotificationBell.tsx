@@ -10,10 +10,10 @@ const KIND_ICON: Record<ReminderKind, React.ElementType> = {
 }
 
 const KIND_ACCENT: Record<ReminderKind, string> = {
-  abyss: '#a78bfa',
-  theater: '#f472b6',
-  banner: 'var(--color-violet-400)',
-  event: 'var(--color-cyan-400)',
+  abyss: 'var(--color-electro)',
+  theater: 'var(--color-pyro)',
+  banner: 'var(--color-gold)',
+  event: 'var(--color-hydro)',
 }
 
 function ReminderRow({ reminder, onDismiss }: { reminder: Reminder; onDismiss: (id: string) => void }) {
@@ -79,8 +79,8 @@ export default function NotificationBell() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Notifications"
         style={{
-          position: 'relative', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
-          borderRadius: '0.75rem', padding: '0.5rem', cursor: 'pointer', color: 'var(--color-text-secondary)',
+          position: 'relative', background: 'rgba(13,17,28,0.6)', border: '1px solid var(--gold-line-soft)',
+          borderRadius: '0.5rem', padding: '0.5rem', cursor: 'pointer', color: 'var(--color-gold)',
           display: 'flex', alignItems: 'center',
         }}
       >
@@ -88,7 +88,8 @@ export default function NotificationBell() {
         {hasReminders && (
           <span style={{
             position: 'absolute', top: 6, right: 6, width: 7, height: 7,
-            borderRadius: '50%', background: 'var(--color-violet-500)', border: '1.5px solid var(--color-surface-800)',
+            borderRadius: '50%', background: 'var(--color-pyro)', border: '1.5px solid var(--color-surface-800)',
+            boxShadow: '0 0 6px var(--color-pyro)',
           }} />
         )}
       </button>

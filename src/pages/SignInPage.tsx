@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AuthSigil from '../components/AuthSigil'
 import { Eye, EyeOff, Mail, Lock, } from 'lucide-react'
 
 export default function SignInPage() {
@@ -33,10 +34,33 @@ export default function SignInPage() {
     try {
       await signInWithGoogle()
       navigate('/dashboard')
-    } catch {
-      setError('Could not sign in with Google. Please try again.')
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code
+      // User dismissing the popup themselves isn't an error worth shouting about.
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // no-op
+      } else {
+        setError(getGoogleErrorMessage(code))
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Surfaces the *actual* Firebase reason instead of a generic message, so problems like an
+  // unauthorized domain or a blocked popup are diagnosable rather than hidden.
+  const getGoogleErrorMessage = (code: string | undefined): string => {
+    switch (code) {
+      case 'auth/unauthorized-domain':
+        return "This domain isn't authorized for Google sign-in. In Firebase Console → Authentication → Settings → Authorized domains, add the domain you're on (e.g. localhost)."
+      case 'auth/popup-blocked':
+        return 'Your browser blocked the sign-in popup. Allow popups for this site and try again.'
+      case 'auth/operation-not-allowed':
+        return 'Google sign-in is disabled for this project. Enable it in Firebase Console → Authentication → Sign-in method.'
+      case 'auth/network-request-failed':
+        return 'Network error reaching Google. Check your connection and try again.'
+      default:
+        return `Could not sign in with Google${code ? ` (${code})` : ''}. Please try again.`
     }
   }
 
@@ -53,23 +77,22 @@ export default function SignInPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'var(--color-surface-900)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Background orbs */}
-      <div className="orb" style={{ width: 500, height: 500, background: 'radial-gradient(circle, var(--color-violet-500), #6d28d9)', top: -120, left: -120 }} />
-      <div className="orb" style={{ width: 400, height: 400, background: 'radial-gradient(circle, var(--color-cyan-500), #0284c7)', bottom: -100, right: -80, opacity: 0.12 }} />
-      <div className="orb" style={{ width: 200, height: 200, background: 'radial-gradient(circle, var(--color-pink-500), #be185d)', top: '40%', right: '15%', opacity: 0.08 }} />
+      {/* Background orbs — Teyvat night tones */}
+      <div className="orb" style={{ width: 500, height: 500, background: 'radial-gradient(circle, #46568c, #1a2038)', top: -120, left: -120, opacity: 0.35 }} />
+      <div className="orb" style={{ width: 400, height: 400, background: 'radial-gradient(circle, var(--color-gold-deep), #6b542a)', bottom: -100, right: -80, opacity: 0.14 }} />
+      <div className="orb" style={{ width: 200, height: 200, background: 'radial-gradient(circle, #266060, #12303a)', top: '40%', right: '15%', opacity: 0.12 }} />
 
       <div className="fade-in" style={{ width: '100%', maxWidth: 420, padding: '0 1.5rem', position: 'relative', zIndex: 10 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <img src="/branding/logo.png" alt="Logo" style={{ width: 60, height: 60, objectFit: 'contain', marginBottom: '1.25rem', display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, marginBottom: '0.5rem' }}>
+          <AuthSigil />
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '1.25rem 0 0.5rem' }}>
             Welcome back, Traveler
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
@@ -78,7 +101,7 @@ export default function SignInPage() {
         </div>
 
         {/* Card */}
-        <div style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem', padding: '2rem' }}>
+        <div className="ornate" style={{ padding: '2rem' }}>
           {/* Google button */}
           <button
             onClick={handleGoogle}
@@ -175,7 +198,7 @@ export default function SignInPage() {
 
           <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--color-text-muted)', margin: '1.25rem 0 0' }}>
             Don't have an account?{' '}
-            <Link to="/signup" style={{ color: 'var(--color-violet-400)', textDecoration: 'none', fontWeight: 500 }}>
+            <Link to="/signup" style={{ color: 'var(--color-gold)', textDecoration: 'none', fontWeight: 700 }}>
               Create one free
             </Link>
           </p>

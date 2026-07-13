@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AuthSigil from '../components/AuthSigil'
 import { Eye, EyeOff, Mail, Lock, User, } from 'lucide-react'
 
 interface FormState {
@@ -51,32 +52,41 @@ export default function SignUpPage() {
     try {
       await signInWithGoogle()
       navigate('/dashboard')
-    } catch {
-      setError('Could not sign in with Google. Please try again.')
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // User dismissed the popup — not an error worth showing.
+      } else if (code === 'auth/unauthorized-domain') {
+        setError("This domain isn't authorized for Google sign-in. Add it in Firebase Console → Authentication → Settings → Authorized domains.")
+      } else if (code === 'auth/popup-blocked') {
+        setError('Your browser blocked the sign-in popup. Allow popups for this site and try again.')
+      } else {
+        setError(`Could not sign in with Google${code ? ` (${code})` : ''}. Please try again.`)
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const fields: FieldConfig[] = [
-    { key: 'name', label: 'Full name', placeholder: 'Jane Smith', type: 'text', icon: User },
-    { key: 'email', label: 'Work email', placeholder: 'jane@company.com', type: 'email', icon: Mail },
+    { key: 'name', label: 'Traveler name', placeholder: 'Aether', type: 'text', icon: User },
+    { key: 'email', label: 'Email', placeholder: 'you@example.com', type: 'email', icon: Mail },
     { key: 'password', label: 'Password', placeholder: '6+ characters', type: 'password', icon: Lock },
   ]
 
   return (
     <div style={{
-      minHeight: '100vh', background: 'var(--color-surface-900)',
+      minHeight: '100vh',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       position: 'relative', overflow: 'hidden', padding: '2rem 1.5rem',
     }}>
-      <div className="orb" style={{ width: 450, height: 450, background: 'radial-gradient(circle, #6d28d9, #4c1d95)', top: -100, right: -80 }} />
-      <div className="orb" style={{ width: 350, height: 350, background: 'radial-gradient(circle, #0891b2, #0e7490)', bottom: -80, left: -60, opacity: 0.12 }} />
+      <div className="orb" style={{ width: 450, height: 450, background: 'radial-gradient(circle, #46568c, #1a2038)', top: -100, right: -80, opacity: 0.32 }} />
+      <div className="orb" style={{ width: 350, height: 350, background: 'radial-gradient(circle, var(--color-gold-deep), #6b542a)', bottom: -80, left: -60, opacity: 0.13 }} />
 
       <div className="fade-in" style={{ width: '100%', maxWidth: 440, position: 'relative', zIndex: 10 }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img src="/branding/logo.png" alt="Logo" style={{ width: 60, height: 60, objectFit: 'contain', marginBottom: '1.25rem', display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.5rem' }}>
+          <AuthSigil />
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '1.25rem 0 0.5rem' }}>
             Start your journey
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
@@ -84,7 +94,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <div style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem', padding: '2rem' }}>
+        <div className="ornate" style={{ padding: '2rem' }}>
           <button
             onClick={handleGoogle}
             disabled={loading}
@@ -158,13 +168,13 @@ export default function SignUpPage() {
               className="btn-primary"
               style={{ width: '100%', padding: '0.8rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'var(--font-body)', marginTop: '0.5rem' }}
             >
-              {loading ? 'Creating workspace...' : 'Create free account'}
+              {loading ? 'Creating account...' : 'Create free account'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
             Already have an account?{' '}
-            <Link to="/signin" style={{ color: 'var(--color-violet-400)', textDecoration: 'none', fontWeight: 500 }}>Sign in</Link>
+            <Link to="/signin" style={{ color: 'var(--color-gold)', textDecoration: 'none', fontWeight: 700 }}>Sign in</Link>
           </p>
         </div>
       </div>

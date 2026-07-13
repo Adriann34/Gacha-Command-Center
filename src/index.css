@@ -1,41 +1,89 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   TEYVAT DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The whole app styles itself through these CSS variables and the shared
+   classes below. The variable NAMES are kept stable (surface-*, text-*, violet,
+   cyan, ...) so every existing inline style re-skins automatically; only their
+   VALUES are retuned to Genshin's own signatures — muted gold filigree, a
+   Teyvat night-sky, parchment content surfaces, elemental Vision colors, and
+   the amber/violet rarity gradients pulled from the wish screen.
+   ========================================================================== */
 @theme {
-  --color-surface-900: #0a0c14;
-  --color-surface-800: #0f1220;
-  --color-surface-700: #141729;
-  --color-surface-600: #1a1f35;
-  --color-surface-500: #222844;
-  --color-surface-400: #2d3554;
+  /* Teyvat night-sky base ---------------------------------------------------- */
+  --color-surface-900: #0d111c;
+  --color-surface-800: #121829;
+  --color-surface-700: #161d33;
+  --color-surface-600: #1d2540;
+  --color-surface-500: #222a48;
+  --color-surface-400: #33406a;
 
-  --color-card: #111627;
-  --color-card-hover: #161d30;
-  --color-border: #1e2640;
-  --color-border-light: #253050;
+  --color-card: #181f34;
+  --color-card-hover: #1d2540;
 
-  --color-violet-400: #a78bfa;
-  --color-violet-500: #8b5cf6;
+  /* Borders read as faint gold filigree everywhere they appear */
+  --color-border: rgba(211, 188, 142, 0.16);
+  --color-border-light: rgba(211, 188, 142, 0.32);
+
+  /* Signature gold ----------------------------------------------------------- */
+  --color-gold: #d3bc8e;
+  --color-gold-bright: #f0dcac;
+  --color-gold-deep: #a4854c;
+  --gold-line: rgba(211, 188, 142, 0.28);
+  --gold-line-soft: rgba(211, 188, 142, 0.14);
+
+  /* Parchment (in-game menu surface) ---------------------------------------- */
+  --color-parch: #efe4c8;
+  --color-parch-2: #e6d8b8;
+  --color-parch-ink: #4a4231;
+  --color-parch-ink-dim: #7c7358;
+
+  /* Warm off-white ink ------------------------------------------------------- */
+  --color-text-primary: #e9e4d4;
+  --color-text-secondary: #a6a691;
+  --color-text-muted: #757891;
+
+  /* Accents — retuned toward Genshin's Vision palette ----------------------- */
+  --color-violet-400: #c8a2e8;
+  --color-violet-500: #9d6ff0;
   --color-violet-600: #7c3aed;
 
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
+  --color-cyan-400: #3fbdf1;
+  --color-cyan-500: #1c9dd8;
 
-  --color-pink-400: #f472b6;
-  --color-pink-500: #ec4899;
+  --color-pink-400: #f28fb0;
+  --color-pink-500: #e26591;
 
-  --color-text-primary: #f0f2ff;
-  --color-text-secondary: #8892b0;
-  --color-text-muted: #4a5578;
+  --color-red-400: #ff8071;
+  --color-green-400: #5fd6ac;
+  --color-amber-400: #e9c37c;
 
-  --color-red-400: #f87171;
-  --color-green-400: #34d399;
-  --color-amber-400: #fbbf24;
+  /* Elemental Vision colors -------------------------------------------------- */
+  --color-pyro: #ff7a49;
+  --color-hydro: #3fbdf1;
+  --color-anemo: #5fd6ac;
+  --color-electro: #c08ce6;
+  --color-dendro: #a3c73f;
+  --color-cryo: #9fd8e6;
+  --color-geo: #f5c445;
 
-  --font-display: "Space Grotesk", sans-serif;
-  --font-body: "Inter", sans-serif;
+  /* Rarity gradients (wish-screen amber 5★ / violet 4★) --------------------- */
+  --r5-a: #ecca86;
+  --r5-b: #b98a45;
+  --r4-a: #b48bd8;
+  --r4-b: #6b4a93;
 
-  --radius-card: 1rem;
+  --font-display: "Cinzel", serif;
+  --font-body: "Nunito Sans", system-ui, sans-serif;
+
+  --radius-card: 0.55rem;
   --radius-pill: 9999px;
+}
+
+/* Gold diamond corner-stud used by ornate panels & rules */
+:root {
+  --diamond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 0 13 6.5 6.5 13 0 6.5Z' fill='none' stroke='%23d3bc8e' stroke-width='1.1'/%3E%3Ccircle cx='6.5' cy='6.5' r='1.5' fill='%23f0dcac'/%3E%3C/svg%3E");
 }
 
 * {
@@ -47,19 +95,49 @@ body {
   color: var(--color-text-primary);
   font-family: var(--font-body);
   margin: 0;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Gradient text utility */
+/* Ambient Teyvat night: gradient wash + faint starfield, fixed behind everything */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 700px at 12% -5%, rgba(70, 86, 140, 0.30), transparent 60%),
+    radial-gradient(1000px 800px at 100% 110%, rgba(38, 96, 96, 0.26), transparent 55%),
+    linear-gradient(160deg, #0e131f 0%, #121829 45%, #0f1622 100%);
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 20% 30%, rgba(240, 220, 172, 0.8), transparent),
+    radial-gradient(1.2px 1.2px at 70% 20%, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1.6px 1.6px at 40% 70%, rgba(240, 220, 172, 0.6), transparent),
+    radial-gradient(1.1px 1.1px at 85% 60%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.3px 1.3px at 60% 85%, rgba(240, 220, 172, 0.55), transparent),
+    radial-gradient(1px 1px at 32% 52%, rgba(255, 255, 255, 0.45), transparent);
+  background-repeat: no-repeat;
+}
+
+/* ---- Gradient text: gold filigree ---- */
 .gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #22d3ee);
+  background: linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-warm {
-  background: linear-gradient(135deg, #f472b6, #a78bfa, #22d3ee);
+  background: linear-gradient(135deg, #f0dcac, #d3bc8e, #a4854c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -67,57 +145,141 @@ body {
 
 /* Glow effects */
 .glow-violet {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(192, 140, 230, 0.3);
 }
-
 .glow-cyan {
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  box-shadow: 0 0 20px rgba(63, 189, 241, 0.3);
+}
+.glow-gold {
+  box-shadow: 0 0 22px rgba(211, 188, 142, 0.28);
 }
 
-/* Card base */
+/* ---- Card base: a night panel with a faint gold edge ---- */
 .card {
   background: var(--color-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--gold-line-soft);
   border-radius: var(--radius-card);
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 40%);
+}
+
+/* ---- Ornate gold panel with diamond corner studs (hero surfaces) ---- */
+.ornate {
+  position: relative;
+  border: 1px solid var(--gold-line);
+  border-radius: var(--radius-card);
+  background-color: rgba(24, 31, 52, 0.72);
+  background-image: var(--diamond), var(--diamond), var(--diamond), var(--diamond);
+  background-position: 6px 6px, right 6px top 6px, left 6px bottom 6px, right 6px bottom 6px;
+  background-repeat: no-repeat;
+  backdrop-filter: blur(2px);
+}
+
+/* ---- Parchment surface (in-game menu look) ---- */
+.parchment {
+  background: linear-gradient(180deg, var(--color-parch), var(--color-parch-2));
+  color: var(--color-parch-ink);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--radius-card);
+}
+
+/* ---- Page title kit ---- */
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text-primary);
+}
+/* Diamond + fading rule shown under a page title */
+.title-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.title-rule .dia {
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  border: 1px solid var(--color-gold);
+  flex: none;
+}
+.title-rule .dia.fill {
+  width: 6px;
+  height: 6px;
+  background: var(--color-gold);
+}
+.title-rule .ln {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, var(--gold-line), transparent);
+}
+
+/* ---- Section heading: Cinzel gold with a leading diamond ---- */
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-gold-bright);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+}
+.section-heading::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background: var(--color-gold);
+  flex: none;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--color-surface-800);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--color-surface-500);
+  background: var(--gold-line);
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-violet-600);
+  background: var(--color-gold-deep);
 }
 
-/* Gradient button */
+/* ---- Primary button: forged gold ---- */
 .btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-  color: white;
+  background: linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep));
+  color: #241d0c;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  font-weight: 700;
+  transition: filter 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 10px rgba(164, 133, 76, 0.25);
 }
-
 .btn-primary:hover {
-  opacity: 0.92;
+  filter: brightness(1.06);
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(164, 133, 76, 0.3);
 }
-
 .btn-primary:active {
   transform: translateY(0);
 }
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 
-/* Animated orbs background */
+/* Animated orbs background (auth pages) */
 .orb {
   position: absolute;
   border-radius: 50%;
@@ -128,15 +290,14 @@ body {
 
 /* Progress bar */
 .progress-bar {
-  background: var(--color-surface-500);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
   overflow: hidden;
 }
-
 .progress-fill {
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, #8b5cf6, #22d3ee);
+  background: linear-gradient(90deg, var(--color-gold-deep), var(--color-gold-bright));
   transition: width 0.6s ease;
 }
 
@@ -145,33 +306,43 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.65rem 1rem;
-  border-radius: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.5rem;
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   transition: all 0.2s;
   cursor: pointer;
   text-decoration: none;
+  border: 1px solid transparent;
+  position: relative;
 }
-
 .nav-item:hover {
-  background: var(--color-surface-600);
+  background: rgba(211, 188, 142, 0.06);
   color: var(--color-text-primary);
 }
-
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(34, 211, 238, 0.1));
-  color: var(--color-text-primary);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(90deg, rgba(211, 188, 142, 0.16), rgba(211, 188, 142, 0.03));
+  color: var(--color-gold-bright);
+  border-color: var(--gold-line);
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--color-gold-bright), var(--color-gold-deep));
 }
 
 /* Input styles */
 .input-dark {
-  background: var(--color-surface-700);
-  border: 1px solid var(--color-border);
+  background: rgba(13, 17, 28, 0.6);
+  border: 1px solid var(--gold-line-soft);
   color: var(--color-text-primary);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   width: 100%;
@@ -179,14 +350,12 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s;
   font-family: var(--font-body);
 }
-
 .input-dark::placeholder {
   color: var(--color-text-muted);
 }
-
 .input-dark:focus {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(211, 188, 142, 0.14);
 }
 
 /* Status badge */
@@ -197,50 +366,45 @@ body {
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.025em;
   text-transform: uppercase;
 }
-
 .badge-success {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(95, 214, 172, 0.15);
+  color: var(--color-anemo);
+  border: 1px solid rgba(95, 214, 172, 0.3);
 }
-
 .badge-warning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(233, 195, 124, 0.15);
+  color: var(--color-gold-bright);
+  border: 1px solid rgba(233, 195, 124, 0.3);
 }
-
 .badge-violet {
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(192, 140, 230, 0.15);
+  color: var(--color-electro);
+  border: 1px solid rgba(192, 140, 230, 0.3);
 }
-
 .badge-cyan {
-  background: rgba(34, 211, 238, 0.15);
-  color: #22d3ee;
-  border: 1px solid rgba(34, 211, 238, 0.3);
+  background: rgba(63, 189, 241, 0.15);
+  color: var(--color-hydro);
+  border: 1px solid rgba(63, 189, 241, 0.3);
 }
 
 /* Stat card hover */
 .stat-card {
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
-
 .stat-card:hover {
   transform: translateY(-2px);
-  border-color: var(--color-border-light);
+  border-color: var(--gold-line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 /* Transitions */
 .fade-in {
   animation: fadeIn 0.3s ease;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -250,7 +414,13 @@ body {
 .spin {
   animation: spin 0.8s linear infinite;
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

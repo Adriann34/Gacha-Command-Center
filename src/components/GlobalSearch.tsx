@@ -238,7 +238,7 @@ export default function GlobalSearch() {
                       color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >
-                    <Icon size={15} color="var(--color-violet-400)" />
+                    <Icon size={15} color="var(--color-gold)" />
                     {p.label}
                     {active && <CornerDownLeft size={12} style={{ marginLeft: 'auto', color: 'var(--color-text-muted)' }} />}
                   </button>
@@ -275,7 +275,7 @@ export default function GlobalSearch() {
                       color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >
-                    <ListChecks size={15} color="var(--color-cyan-400)" style={{ flexShrink: 0 }} />
+                    <ListChecks size={15} color="var(--color-hydro)" style={{ flexShrink: 0 }} />
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.name}</span>
                     <span style={{ marginLeft: 'auto', fontSize: '0.68rem', color: 'var(--color-text-muted)', flexShrink: 0 }}>{g.status}</span>
                   </button>

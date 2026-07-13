@@ -54,7 +54,8 @@ const CATEGORY_ICONS: Record<GoalCategory, React.ElementType> = {
   'Other': ListChecks,
 }
 
-const CARD_ACCENTS = ['#8b5cf6', '#22d3ee', '#f472b6', '#34d399', '#fbbf24', '#06b6d4']
+// Elemental Vision colors, cycled across goal cards for a Teyvat feel.
+const CARD_ACCENTS = ['#c08ce6', '#3fbdf1', '#ff7a49', '#5fd6ac', '#f5c445', '#9fd8e6']
 
 /** Today's date as YYYY-MM-DD, used to give the date input a sensible starting value
  * when the user unchecks "No deadline". */
@@ -369,17 +370,20 @@ export default function TrackerPage() {
 
   return (
     <div className="fade-in">
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>Things to do in-game</p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Tracker</h1>
+          <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>Things to do in-game</div>
+          <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Adventurer's Log</h1>
         </div>
         <button onClick={() => { setEditing(null); setModalOpen(true) }} className="btn-primary" style={{
-          padding: '0.65rem 1.25rem', borderRadius: '0.75rem', fontSize: '0.875rem',
-          fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
+          padding: '0.65rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.875rem',
+          fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
         }}>
           <Plus size={16} /> New Goal
         </button>
+      </div>
+      <div className="title-rule" style={{ margin: '0.9rem 0 1.75rem' }}>
+        <span className="dia" /><span className="dia fill" /><span className="ln" />
       </div>
 
       {/* Filters */}
@@ -389,11 +393,11 @@ export default function TrackerPage() {
           const active = filter === s
           return (
             <button key={s} onClick={() => setFilter(s)} style={{
-              padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 500,
+              padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 700,
               cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s',
-              background: active ? 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))' : 'var(--color-surface-700)',
-              color: active ? 'white' : 'var(--color-text-secondary)',
-              border: active ? 'none' : '1px solid var(--color-border)',
+              background: active ? 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))' : 'rgba(13,17,28,0.5)',
+              color: active ? '#241d0c' : 'var(--color-text-secondary)',
+              border: active ? 'none' : '1px solid var(--gold-line-soft)',
             }}>
               {s} {count > 0 && <span style={{ opacity: 0.75 }}>({count})</span>}
             </button>

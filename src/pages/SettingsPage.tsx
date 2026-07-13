@@ -36,7 +36,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <div onClick={() => onChange(!checked)} style={{
       width: 44, height: 24, borderRadius: 12, cursor: 'pointer',
-      background: checked ? 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))' : 'var(--color-border)',
+      background: checked ? 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))' : 'rgba(255,255,255,0.12)',
       position: 'relative', transition: 'background 0.3s', flexShrink: 0,
     }}>
       <div style={{
@@ -188,9 +188,10 @@ export default function SettingsPage() {
 
   return (
     <div className="fade-in">
-      <div style={{ marginBottom: '2rem' }}>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', margin: '0 0 0.25rem' }}>Manage your account</p>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Settings</h1>
+      <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>Manage your account</div>
+      <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Settings</h1>
+      <div className="title-rule" style={{ margin: '0.9rem 0 1.75rem' }}>
+        <span className="dia" /><span className="dia fill" /><span className="ln" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '1.5rem', alignItems: 'start' }}>
@@ -199,11 +200,11 @@ export default function SettingsPage() {
           {TABS.map(({ id, label, icon: Icon }) => (
             <button key={id} onClick={() => setActiveTab(id)} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
-              padding: '0.65rem 0.875rem', borderRadius: '0.625rem',
-              background: activeTab === id ? 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(34,211,238,0.1))' : 'none',
-              border: activeTab === id ? '1px solid rgba(139,92,246,0.3)' : '1px solid transparent',
-              color: activeTab === id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-              fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)',
+              padding: '0.65rem 0.875rem', borderRadius: '0.5rem',
+              background: activeTab === id ? 'linear-gradient(90deg, rgba(211,188,142,0.16), rgba(211,188,142,0.03))' : 'none',
+              border: activeTab === id ? '1px solid var(--gold-line)' : '1px solid transparent',
+              color: activeTab === id ? 'var(--color-gold-bright)' : 'var(--color-text-secondary)',
+              fontSize: '0.85rem', fontWeight: activeTab === id ? 700 : 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
               textAlign: 'left', transition: 'all 0.2s', marginBottom: '0.125rem',
             }}>
               <Icon size={16} />
@@ -417,10 +418,10 @@ export default function SettingsPage() {
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   {['Dark', 'System'].map((t) => (
                     <button key={t} disabled={t === 'System'} style={{
-                      padding: '0.5rem 1rem', borderRadius: '0.625rem', fontSize: '0.82rem', fontFamily: 'var(--font-body)',
-                      background: t === 'Dark' ? 'linear-gradient(135deg, var(--color-violet-500), var(--color-cyan-500))' : 'var(--color-surface-700)',
-                      border: t === 'Dark' ? 'none' : '1px solid var(--color-border)',
-                      color: t === 'Dark' ? 'white' : 'var(--color-text-muted)',
+                      padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.82rem', fontFamily: 'var(--font-body)', fontWeight: 700,
+                      background: t === 'Dark' ? 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))' : 'rgba(13,17,28,0.5)',
+                      border: t === 'Dark' ? 'none' : '1px solid var(--gold-line-soft)',
+                      color: t === 'Dark' ? '#241d0c' : 'var(--color-text-muted)',
                       cursor: t === 'Dark' ? 'pointer' : 'not-allowed',
                       opacity: t === 'Dark' ? 1 : 0.6,
                     }}>{t}</button>
