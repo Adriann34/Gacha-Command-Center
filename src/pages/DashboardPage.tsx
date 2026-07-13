@@ -154,10 +154,10 @@ function BannerCard({ banner }: { banner: GameBanner }) {
           {items.map((i) => i.name).join(' · ') || banner.name}
         </div>
         <div style={{ color: '#e0a52e', fontSize: '0.72rem', letterSpacing: '1px', marginBottom: '0.55rem' }}>★★★★★</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', gap: '0.4rem' }}>
-          <span>{endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', gap: '0.4rem', flexWrap: 'wrap', rowGap: '0.35rem' }}>
+          <span style={{ whiteSpace: 'nowrap' }}>{endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'}</span>
           <span style={{
-            fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: 20, fontVariantNumeric: 'tabular-nums',
+            fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: 20, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
             color: urgent ? '#a63a2a' : '#8a5a2a', background: urgent ? 'rgba(166,58,42,0.12)' : 'rgba(138,90,42,0.1)',
           }}>
             {countdown ?? '—'}
@@ -228,7 +228,7 @@ function BannerGroup({ banners }: { banners: GameBanner[] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {compact.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           {compact.map((b) => <BannerCard key={b.id} banner={b} />)}
         </div>
       )}
