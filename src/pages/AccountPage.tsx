@@ -270,7 +270,7 @@ export default function AccountPage() {
 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <StatPill label="Achievements" value={player.finishAchievementNum ?? 0} accent="var(--color-gold-bright)" />
-              <StatPill label="Abyss Floor" value={player.towerFloorIndex ? `${Math.floor(player.towerFloorIndex / 10) || player.towerFloorIndex}-${player.towerLevelIndex ?? ''}` : '—'} accent="var(--color-electro)" />
+              <StatPill label="Abyss Floor" value={player.towerFloorIndex ? `${player.towerFloorIndex}-${player.towerLevelIndex ?? ''}` : '—'} accent="var(--color-electro)" />
               <StatPill label="Abyss Stars" value={player.towerStarIndex ?? 0} accent="var(--color-hydro)" />
               <StatPill label="Theater Act" value={player.theaterActIndex ?? '—'} accent="var(--color-pyro)" />
               <StatPill label="Theater Stars" value={player.theaterStarIndex ?? 0} accent="var(--color-anemo)" />
