@@ -278,7 +278,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const h = new Date().getHours()
     if (h < 12) setGreeting('Good morning')
-    else if (h < 17) setGreeting('Good afternoon')
+    else if (h < 18) setGreeting('Good afternoon')
     else setGreeting('Good evening')
   }, [])
 

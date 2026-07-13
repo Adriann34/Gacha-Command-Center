@@ -169,7 +169,7 @@ export default function GlobalSearch() {
 
   return (
     <div ref={containerRef} style={{ flex: 1, maxWidth: 400, position: 'relative' }}>
-      <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)', pointerEvents: 'none' }} />
+      <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gold)', pointerEvents: 'none' }} />
       <input
         ref={inputRef}
         type="text"
@@ -202,8 +202,8 @@ export default function GlobalSearch() {
       ) : (
         <kbd style={{
           position: 'absolute', right: '0.625rem', top: '50%', transform: 'translateY(-50%)',
-          fontSize: '0.65rem', color: 'var(--color-text-muted)', background: 'var(--color-surface-600)',
-          border: '1px solid var(--color-border)', borderRadius: '0.35rem', padding: '0.1rem 0.35rem',
+          fontSize: '0.65rem', color: 'var(--color-gold)', background: 'rgba(211,188,142,0.08)',
+          border: '1px solid var(--gold-line)', borderRadius: '0.35rem', padding: '0.1rem 0.35rem',
           fontFamily: 'var(--font-body)', pointerEvents: 'none',
         }}>
           ⌘K
@@ -219,7 +219,7 @@ export default function GlobalSearch() {
         }}>
           {matchedPages.length > 0 && (
             <div style={{ padding: '0.5rem' }}>
-              <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
                 Pages
               </div>
               {matchedPages.map((p, i) => {
@@ -234,7 +234,7 @@ export default function GlobalSearch() {
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
                       padding: '0.55rem 0.625rem', borderRadius: '0.6rem', textAlign: 'left',
-                      background: active ? 'var(--color-surface-600)' : 'none', border: 'none',
+                      background: active ? 'rgba(211,188,142,0.1)' : 'none', border: 'none',
                       color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >
@@ -248,7 +248,7 @@ export default function GlobalSearch() {
           )}
 
           <div style={{ padding: '0.5rem', borderTop: matchedPages.length > 0 ? '1px solid var(--color-border)' : 'none' }}>
-            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
               Tracker Goals
             </div>
             {!user ? (
@@ -271,7 +271,7 @@ export default function GlobalSearch() {
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
                       padding: '0.55rem 0.625rem', borderRadius: '0.6rem', textAlign: 'left',
-                      background: active ? 'var(--color-surface-600)' : 'none', border: 'none',
+                      background: active ? 'rgba(211,188,142,0.1)' : 'none', border: 'none',
                       color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >

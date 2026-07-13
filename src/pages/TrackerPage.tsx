@@ -37,11 +37,13 @@ interface GoalForm {
 const STATUS_OPTIONS: GoalStatus[] = ['Planned', 'In Progress', 'Blocked', 'Done']
 const CATEGORY_OPTIONS: GoalCategory[] = ['Event', 'Farming', 'Abyss Prep', 'Theater Prep', 'Wish Planning', 'Exploration', 'Other']
 
-const STATUS_COLORS: Record<GoalStatus, { bg: string; color: string; border: string }> = {
-  'Planned':     { bg: 'rgba(34,211,238,0.1)',   color: 'var(--color-cyan-400)', border: 'rgba(34,211,238,0.25)' },
-  'In Progress': { bg: 'rgba(139,92,246,0.1)',   color: 'var(--color-violet-400)', border: 'rgba(139,92,246,0.25)' },
-  'Blocked':     { bg: 'rgba(248,113,113,0.1)',  color: 'var(--color-red-400)', border: 'rgba(248,113,113,0.25)' },
-  'Done':        { bg: 'rgba(52,211,153,0.1)',   color: 'var(--color-green-400)', border: 'rgba(52,211,153,0.25)' },
+// Status pill colors tuned for legibility on the parchment goal card (dark text on a light
+// elemental tint), so each state still reads at a glance without washing out on the cream surface.
+const STATUS_COLORS: Record<GoalStatus, { bg: string; text: string; dot: string; border: string }> = {
+  'Planned':     { bg: 'rgba(63,189,241,0.16)',  text: '#2f6d94', dot: '#3fbdf1', border: 'rgba(63,189,241,0.45)' },
+  'In Progress': { bg: 'rgba(192,140,230,0.16)', text: '#7a4bae', dot: '#c08ce6', border: 'rgba(192,140,230,0.45)' },
+  'Blocked':     { bg: 'rgba(224,96,63,0.16)',   text: '#b23f2c', dot: '#e0603f', border: 'rgba(224,96,63,0.45)' },
+  'Done':        { bg: 'rgba(75,191,144,0.18)',  text: '#2c7d5e', dot: '#4bbf90', border: 'rgba(75,191,144,0.45)' },
 }
 
 const CATEGORY_ICONS: Record<GoalCategory, React.ElementType> = {
@@ -110,12 +112,11 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
       background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
       padding: '1rem',
     }}>
-      <div className="fade-in" style={{
-        background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem',
+      <div className="fade-in ornate" style={{
         padding: '2rem', width: '100%', maxWidth: 480,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-gold-bright)', margin: 0, letterSpacing: '0.02em' }}>
             {initial ? 'Edit Goal' : 'New Goal'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', display: 'flex', borderRadius: '0.5rem', padding: '0.25rem' }}>
@@ -154,7 +155,7 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
                   type="checkbox"
                   checked={form.dueDate === ''}
                   onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.checked ? '' : todayIso() }))}
-                  style={{ cursor: 'pointer', accentColor: 'var(--color-violet-500)' }}
+                  style={{ cursor: 'pointer', accentColor: 'var(--color-gold)' }}
                 />
                 No deadline
               </label>
@@ -203,84 +204,94 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
   const isDone = goal.status === 'Done'
 
   return (
-    <div className="card stat-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative', opacity: isDone ? 0.6 : 1 }}>
-      <div style={{ position: 'absolute', top: 0, left: '1.5rem', right: '1.5rem', height: 3, borderRadius: '0 0 3px 3px', background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+    <div className="parchment stat-card" style={{ display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', opacity: isDone ? 0.72 : 1 }}>
+      {/* Elemental accent ribbon along the top edge */}
+      <div style={{ height: 4, background: `linear-gradient(90deg, ${accent}, ${accent}44 60%, transparent)`, flexShrink: 0 }} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: '0.75rem',
-          background: `${accent}18`, border: `1px solid ${accent}30`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          <CategoryIcon size={18} color={accent} />
+      <div style={{ padding: '1.1rem 1.2rem 1.2rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: '0.5rem',
+            background: `${accent}26`, border: `1px solid ${accent}66`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <CategoryIcon size={18} color={accent} />
+          </div>
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--color-parch-ink-dim)', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}>
+              <MoreHorizontal size={18} />
+            </button>
+            {menuOpen && (
+              <div style={{
+                position: 'absolute', top: '110%', right: 0, zIndex: 10,
+                background: '#f3ead1', border: '1px solid var(--gold-line)', borderRadius: '0.5rem',
+                padding: '0.375rem', minWidth: 140, boxShadow: '0 10px 24px rgba(0,0,0,0.28)',
+              }}>
+                <button
+                  onClick={() => { setMenuOpen(false); onEdit(goal) }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: 'var(--color-parch-ink)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(74,66,49,0.1)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
+                >
+                  <Edit3 size={14} /> Edit
+                </button>
+                <button
+                  onClick={() => { setMenuOpen(false); onDelete(goal.id) }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: '#b23f2c', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(178,63,44,0.1)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
+                >
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div style={{ position: 'relative' }}>
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}>
-            <MoreHorizontal size={18} />
-          </button>
-          {menuOpen && (
-            <div style={{
-              position: 'absolute', top: '110%', right: 0, zIndex: 10,
-              background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
-              padding: '0.375rem', minWidth: 140,
-            }}>
-              <button
-                onClick={() => { setMenuOpen(false); onEdit(goal) }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
-              >
-                <Edit3 size={14} /> Edit
-              </button>
-              <button
-                onClick={() => { setMenuOpen(false); onDelete(goal.id) }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.5rem', background: 'none', border: 'none', color: 'var(--color-red-400)', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
-              >
-                <Trash2 size={14} /> Delete
-              </button>
-            </div>
+
+        <div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--color-parch-ink)', marginBottom: '0.35rem', lineHeight: 1.25, textDecoration: isDone ? 'line-through' : 'none' }}>
+            {goal.name}
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--color-parch-ink-dim)', margin: 0, lineHeight: 1.5 }}>
+            {goal.description || 'No notes added.'}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+            padding: '0.22rem 0.6rem', borderRadius: '9999px',
+            fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
+            background: st.bg, color: st.text, border: `1px solid ${st.border}`,
+          }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: st.dot }} />
+            {goal.status}
+          </span>
+          {goal.dueDate && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.74rem', color: 'var(--color-parch-ink-dim)', fontWeight: 600 }}>
+              <Calendar size={12} /> {goal.dueDate}
+            </span>
           )}
         </div>
-      </div>
 
-      <div>
-        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.375rem', textDecoration: isDone ? 'line-through' : 'none' }}>
-          {goal.name}
-        </div>
-        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.5 }}>
-          {goal.description || 'No notes added.'}
-        </p>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
-          padding: '0.2rem 0.6rem', borderRadius: '9999px',
-          fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em',
-          background: st.bg, color: st.color, border: `1px solid ${st.border}`,
-        }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: st.color }} />
-          {goal.status}
-        </span>
-        {goal.dueDate && (
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-            <Calendar size={12} /> {goal.dueDate}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', borderTop: '1px solid rgba(74,66,49,0.14)', paddingTop: '0.8rem' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem', color: 'var(--color-parch-ink)', fontWeight: 700 }}>
+            <span style={{ width: 7, height: 7, transform: 'rotate(45deg)', background: accent, flexShrink: 0 }} />
+            {goal.category}
           </span>
-        )}
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-        <div style={{ fontSize: '0.72rem', color: accent, fontWeight: 600 }}>{goal.category}</div>
-        <label
-          title={isDone ? 'Mark as not done' : 'Mark as done'}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', flexShrink: 0 }}
-        >
-          <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', userSelect: 'none' }}>Done</span>
-          <input
-            type="checkbox"
-            checked={isDone}
-            onChange={() => onToggleDone(goal)}
-            style={{ width: 18, height: 18, cursor: 'pointer', accentColor: accent, flexShrink: 0 }}
-          />
-        </label>
+          <label
+            title={isDone ? 'Mark as not done' : 'Mark as done'}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', flexShrink: 0 }}
+          >
+            <span style={{ fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', userSelect: 'none', fontWeight: 600 }}>Done</span>
+            <input
+              type="checkbox"
+              checked={isDone}
+              onChange={() => onToggleDone(goal)}
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: accent, flexShrink: 0 }}
+            />
+          </label>
+        </div>
       </div>
     </div>
   )
@@ -405,7 +416,7 @@ export default function TrackerPage() {
         })}
 
         <div style={{ marginLeft: 'auto', position: 'relative' }}>
-          <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+          <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gold)' }} />
           <input
             value={search} onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search goals..." className="input-dark"

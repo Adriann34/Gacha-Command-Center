@@ -158,11 +158,11 @@ export default function DashboardLayout() {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start',
             gap: '0.625rem', margin: '0 0.85rem', padding: '0.55rem 0.75rem',
-            background: 'none', border: '1px solid var(--gold-line-soft)', borderRadius: '0.5rem',
-            color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)', fontWeight: 600,
+            background: 'rgba(211,188,142,0.05)', border: '1px solid var(--gold-line)', borderRadius: '0.5rem',
+            color: 'var(--color-gold)', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)', fontWeight: 600,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-gold)'; e.currentTarget.style.background = 'rgba(211,188,142,0.06)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.background = 'none' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-gold-bright)'; e.currentTarget.style.background = 'rgba(211,188,142,0.12)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-gold)'; e.currentTarget.style.background = 'rgba(211,188,142,0.05)' }}
         >
           {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
           {!collapsed && 'Collapse'}
