@@ -136,13 +136,13 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Category</label>
-              <select value={form.category} onChange={update('category')} className="input-dark" style={{ cursor: 'pointer' }}>
+              <select value={form.category} onChange={update('category')} className="input-dark select-dark" style={{ cursor: 'pointer' }}>
                 {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label style={{ display: 'block', color: 'var(--color-text-secondary)', fontSize: '0.8rem', fontWeight: 500, marginBottom: '0.4rem' }}>Status</label>
-              <select value={form.status} onChange={update('status')} className="input-dark" style={{ cursor: 'pointer' }}>
+              <select value={form.status} onChange={update('status')} className="input-dark select-dark" style={{ cursor: 'pointer' }}>
                 {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>

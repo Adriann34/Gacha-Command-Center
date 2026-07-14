@@ -86,11 +86,18 @@ export default function NotificationBell() {
       >
         <Bell size={18} />
         {hasReminders && (
-          <span style={{
-            position: 'absolute', top: 6, right: 6, width: 7, height: 7,
-            borderRadius: '50%', background: 'var(--color-pyro)', border: '1.5px solid var(--color-surface-800)',
-            boxShadow: '0 0 6px var(--color-pyro)',
-          }} />
+          <span
+            aria-label={`${reminders.length} reminder${reminders.length !== 1 ? 's' : ''}`}
+            style={{
+              position: 'absolute', top: -5, right: -5, minWidth: 17, height: 17, padding: '0 4px',
+              borderRadius: 9, background: 'var(--color-pyro)', color: '#241d0c',
+              fontSize: '0.62rem', fontWeight: 800, lineHeight: '17px', textAlign: 'center',
+              fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums',
+              border: '1.5px solid var(--color-surface-800)', boxShadow: '0 0 6px rgba(255,122,73,0.55)',
+            }}
+          >
+            {reminders.length > 9 ? '9+' : reminders.length}
+          </span>
         )}
       </button>
 

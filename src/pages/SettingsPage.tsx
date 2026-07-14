@@ -350,7 +350,7 @@ export default function SettingsPage() {
               </FormField>
 
               <FormField label="Server Region" sublabel="Used for reset-time calculations">
-                <select value={server} onChange={(e) => setServer(e.target.value)} className="input-dark" style={{ cursor: 'pointer' }}>
+                <select value={server} onChange={(e) => setServer(e.target.value)} className="input-dark select-dark" style={{ cursor: 'pointer' }}>
                   {SERVERS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
               </FormField>

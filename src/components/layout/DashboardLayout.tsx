@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
-const SIDEBAR_WIDTH_OPEN = 264
+const SIDEBAR_WIDTH_OPEN = 284
 const SIDEBAR_WIDTH_COLLAPSED = 76
 
 /** The eight-pointed gold sigil used as the app mark — an unmistakably Teyvat glyph
@@ -105,7 +105,7 @@ export default function DashboardLayout() {
             <Sigil size={38} />
             {expanded && (
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-gold-bright)', lineHeight: 1.15, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.92rem', color: 'var(--color-gold-bright)', lineHeight: 1.15, letterSpacing: '0.01em' }}>
                   Gacha Command Center
                 </div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>Genshin Impact Companion</div>
@@ -249,7 +249,7 @@ export default function DashboardLayout() {
             src="/branding/genshin-logo.png"
             alt="Genshin Impact"
             style={{
-              width: 38, height: 38, borderRadius: '0.4rem', objectFit: 'cover', flexShrink: 0,
+              width: 36, height: 36, borderRadius: '0.4rem', objectFit: 'cover', flexShrink: 0,
               border: '1px solid var(--gold-line)', background: 'rgba(13,17,28,0.6)',
             }}
           />
