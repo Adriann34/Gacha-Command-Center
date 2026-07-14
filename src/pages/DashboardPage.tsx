@@ -346,13 +346,13 @@ export default function DashboardPage() {
         <ResetCard
           icon={Swords} label="Spiral Abyss" target={abyssReset.nextReset} accent="var(--color-electro)"
           periodNote="Resets on the 16th"
-          footNote={`Resets ${abyssReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server`}
+          footNote={`Resets ${abyssReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
           serverIsGuessed={!server}
         />
         <ResetCard
           icon={Trophy} label="Imaginarium Theater" target={theaterReset.nextReset} accent="var(--color-pyro)"
           periodNote="Resets on the 1st"
-          footNote={`Resets ${theaterReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server`}
+          footNote={`Resets ${theaterReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
           serverIsGuessed={!server}
         />
       </div>

@@ -180,14 +180,14 @@ export default function GlobalSearch() {
         className="input-dark"
         style={{
           paddingLeft: '2.25rem',
-          paddingRight: term ? '2.25rem' : '3.25rem',
+          paddingRight: term ? '2.25rem' : '1rem',
           paddingTop: '0.5rem',
           paddingBottom: '0.5rem',
           fontSize: '0.8rem',
           borderRadius: '0.625rem',
         }}
       />
-      {term ? (
+      {term && (
         <button
           onClick={() => { setTerm(''); setOpen(false); inputRef.current?.focus() }}
           aria-label="Clear search"
@@ -199,15 +199,6 @@ export default function GlobalSearch() {
         >
           <X size={14} />
         </button>
-      ) : (
-        <kbd style={{
-          position: 'absolute', right: '0.625rem', top: '50%', transform: 'translateY(-50%)',
-          fontSize: '0.65rem', color: 'var(--color-gold)', background: 'rgba(211,188,142,0.08)',
-          border: '1px solid var(--gold-line)', borderRadius: '0.35rem', padding: '0.1rem 0.35rem',
-          fontFamily: 'var(--font-body)', pointerEvents: 'none',
-        }}>
-          ⌘K
-        </kbd>
       )}
 
       {open && term.trim() && (

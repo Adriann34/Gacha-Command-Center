@@ -50,12 +50,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 function FormField({ label, sublabel, children }: { label: string; sublabel?: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '1.25rem 0', borderBottom: '1px solid var(--color-border)', gap: '2rem' }}>
-      <div style={{ flex: 1 }}>
+    <div className="settings-field" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '1.25rem 0', borderBottom: '1px solid var(--color-border)', gap: '2rem' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)', marginBottom: '0.2rem' }}>{label}</div>
         {sublabel && <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{sublabel}</div>}
       </div>
-      <div style={{ flexShrink: 0, minWidth: 260 }}>{children}</div>
+      <div className="settings-field-control" style={{ flexShrink: 0, minWidth: 260 }}>{children}</div>
     </div>
   )
 }
@@ -194,9 +194,9 @@ export default function SettingsPage() {
         <span className="dia" /><span className="dia fill" /><span className="ln" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '1.5rem', alignItems: 'start' }}>
+      <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '1.5rem', alignItems: 'start' }}>
         {/* Sidebar tabs */}
-        <div className="card" style={{ padding: '0.75rem' }}>
+        <div className="card settings-tabs" style={{ padding: '0.75rem' }}>
           {TABS.map(({ id, label, icon: Icon }) => (
             <button key={id} onClick={() => setActiveTab(id)} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
@@ -214,7 +214,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="card" style={{ padding: '2rem' }}>
+        <div className="card settings-content" style={{ padding: '2rem', minWidth: 0 }}>
           {/* Profile tab */}
           {activeTab === 'profile' && (
             <div>
@@ -444,6 +444,19 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .settings-grid { grid-template-columns: 1fr !important; }
+          /* Tabs become a horizontal, scrollable row above the content */
+          .settings-tabs { display: flex; gap: 0.375rem; overflow-x: auto; padding: 0.5rem; }
+          .settings-tabs button { width: auto !important; flex: 0 0 auto; margin-bottom: 0 !important; white-space: nowrap; }
+          .settings-content { padding: 1.25rem !important; }
+          /* Label / control stack vertically instead of squeezing side by side */
+          .settings-field { flex-direction: column; gap: 0.75rem !important; }
+          .settings-field-control { min-width: 0 !important; width: 100%; }
+        }
+      `}</style>
     </div>
   )
 }

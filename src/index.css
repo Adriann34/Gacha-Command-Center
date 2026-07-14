@@ -424,3 +424,11 @@ body::after {
     transition: none !important;
   }
 }
+
+/* Mobile: shrink the big Cinzel page titles so they don't dominate or wrap awkwardly
+   on narrow screens. Applies everywhere .page-title is used. */
+@media (max-width: 640px) {
+  .page-title {
+    font-size: 1.6rem !important;
+  }
+}

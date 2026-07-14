@@ -415,7 +415,7 @@ export default function TrackerPage() {
           )
         })}
 
-        <div style={{ marginLeft: 'auto', position: 'relative' }}>
+        <div className="tracker-search" style={{ marginLeft: 'auto', position: 'relative' }}>
           <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gold)' }} />
           <input
             value={search} onChange={(e) => handleSearchChange(e.target.value)}
@@ -424,6 +424,13 @@ export default function TrackerPage() {
           />
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .tracker-search { margin-left: 0 !important; width: 100%; }
+          .tracker-search input { width: 100% !important; }
+        }
+      `}</style>
 
       {/* Grid */}
       {loading ? (

@@ -36,7 +36,7 @@ function StatPill({ label, value, accent }: { label: string; value: string | num
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem',
-      padding: '0.75rem 0.5rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.4)', border: '1px solid var(--gold-line-soft)', flex: 1, minWidth: 0,
+      padding: '0.75rem 0.5rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.4)', border: '1px solid var(--gold-line-soft)', flex: '1 1 88px', minWidth: 88,
     }}>
       <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: accent }}>{value}</div>
       <div style={{ fontSize: '0.64rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{label}</div>
