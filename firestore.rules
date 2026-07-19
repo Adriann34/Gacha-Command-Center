@@ -1,0 +1,77 @@
+rules_version = '2';
+
+// Firestore Security Rules — version-controlled so they can be reviewed in git and deployed
+// reproducibly with:  firebase deploy --only firestore:rules
+//
+// These rules are the ONLY server-side authorization boundary in this app: the browser talks to
+// Firestore directly via the client SDK, so anything not denied here is reachable by anyone who
+// can craft an SDK/REST call. Firebase App Check (see src/lib/firebase.ts) is layered on top to
+// block requests that don't originate from the real deployed app, but rules remain the source of
+// truth for WHO can touch WHAT.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Per-user profile document. Owner-only by document path — no user can read or write another
+    // user's document. Covers displayName/email/genshinUid/server/notifs/dismissedReminders and
+    // the inlined avatarBase64 image (there is no Firebase Storage — see README "Profile Photo
+    // Uploads").
+    match /users/{userId} {
+      allow read, delete: if isOwner(userId);
+
+      // Cheap server-side guard: reject a crafted oversized avatar write. The client compresses to
+      // ~150KB (~200K base64 chars); 400,000 leaves generous headroom while still staying well
+      // under Firestore's 1 MiB per-document limit. The `in` check makes this a no-op for updates
+      // that don't touch the avatar (e.g. toggling a notification), where the field may be absent.
+      allow create, update: if isOwner(userId)
+        && (
+          !('avatarBase64' in request.resource.data)
+          || request.resource.data.avatarBase64 is string
+          && request.resource.data.avatarBase64.size() < 400000
+        );
+    }
+
+    // Personal goal/to-do documents. Ownership is carried in a `uid` field (not the path), so the
+    // rules must enforce it explicitly on every operation.
+    match /goals/{goalId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+
+      // create must stamp the caller's own uid — this is what stops a signed-in user forging a
+      // goal under someone else's uid.
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid;
+
+      // update must remain owned by the caller AND must not reassign ownership.
+      allow update: if isSignedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid;
+    }
+
+    // Global game data written only by the Cloudflare Worker's Admin SDK (which bypasses rules).
+    // Clients may read but never write. Read requires auth: these are only ever read from behind
+    // the authenticated dashboard, so requiring sign-in costs nothing and removes the anonymous
+    // hammering surface against your free-tier read quota.
+    match /gameSchedule/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /characterRoster/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Deny-by-default for any collection not explicitly matched above, so a future collection is
+    // never accidentally left open.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
