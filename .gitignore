@@ -79,3 +79,5 @@ node_modules/
 
 # claude.md
 CLAUDE.md
+
+.mcp.json
