@@ -68,6 +68,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Encrypted HoYoLAB cookies, keyed by auth uid. This is the single most sensitive collection in
+    // the app: even though the cookies are AES-256-GCM encrypted at rest (the key lives only in the
+    // Cloudflare Worker's HOYO_ENC_KEY secret, never here), the client has NO legitimate reason to
+    // ever read or write the ciphertext. Only the Worker's Admin SDK (which bypasses these rules)
+    // touches it, via POST /hoyolab/link and /hoyolab/unlink after verifying the caller's ID token.
+    match /hoyoCredentials/{userId} {
+      allow read, write: if false;
+    }
+
+    // Per-user Battle Chronicle snapshot (resin, expeditions, realm currency, etc.). Written only by
+    // the Worker's Admin SDK; the owner may read it live via onSnapshot to render the dashboard.
+    // Contains NO secrets — just the display data + sync timestamps.
+    match /hoyoNotes/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
     // Deny-by-default for any collection not explicitly matched above, so a future collection is
     // never accidentally left open.
     match /{document=**} {

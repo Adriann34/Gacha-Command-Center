@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Swords, Trophy, Sparkles, AlertTriangle,
+  Sparkles, AlertTriangle,
   Settings as SettingsIcon, ExternalLink, Clock, Star,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
@@ -9,6 +9,7 @@ import { useGenshinProfile } from '../hooks/useGenshinProfile'
 import { useGameSchedule, type GameBanner, type GameEvent } from '../hooks/useGameSchedule'
 import { useCountdown, useCountdownWithSeconds } from '../hooks/useCountdown'
 import { getNextAbyssReset, getNextTheaterReset } from '../lib/genshinResets'
+import BattleChroniclePanel from '../components/BattleChroniclePanel'
 
 /** Parses an ISO string into a Date, or null if it's missing/unparsable — never "Invalid Date". */
 function safeDate(iso: string | undefined | null): Date | null {
@@ -34,8 +35,8 @@ function SectionHeading({ title, action }: { title: string; action?: React.React
 }
 
 /** Ornate reset-countdown card — glyph + Cinzel timer, tinted by an elemental accent. */
-function ResetCard({ icon: Icon, label, target, accent, periodNote, footNote, serverIsGuessed }: {
-  icon: React.ElementType; label: string; target: Date; accent: string; periodNote: string; footNote: string; serverIsGuessed: boolean
+function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, footNote, serverIsGuessed }: {
+  icon?: React.ElementType; imgSrc?: string; label: string; target: Date; accent: string; periodNote: string; footNote: string; serverIsGuessed: boolean
 }) {
   const countdown = useCountdown(target)
   return (
@@ -45,10 +46,14 @@ function ResetCard({ icon: Icon, label, target, accent, periodNote, footNote, se
         <div style={{
           width: 42, height: 42, borderRadius: '0.5rem', flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: '1px solid var(--gold-line)', color: accent,
-          boxShadow: `inset 0 0 20px ${accent}22`,
+          border: '1px solid var(--gold-line)',
+          ...(imgSrc
+            ? { background: 'radial-gradient(circle, rgba(255,255,255,0.14), rgba(255,255,255,0.02))' }
+            : { color: accent, boxShadow: `inset 0 0 20px ${accent}22` }),
         }}>
-          <Icon size={21} strokeWidth={1.6} />
+          {imgSrc
+            ? <img src={imgSrc} alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+            : Icon ? <Icon size={21} strokeWidth={1.6} /> : null}
         </div>
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
@@ -248,10 +253,11 @@ function EventCard({ event, upcoming }: { event: GameEvent; upcoming: boolean })
     }}>
       <div style={{
         width: 38, height: 38, borderRadius: '0.5rem', flexShrink: 0,
-        border: '1px solid var(--gold-line)', color: 'var(--color-hydro)',
+        border: '1px solid var(--gold-line)',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.14), rgba(255,255,255,0.02))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Sparkles size={17} strokeWidth={1.6} />
+        <img src="/icons/events.webp" alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{event.name}</div>
@@ -340,17 +346,20 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Live account data from HoYoLAB Battle Chronicle (resin, expeditions, realm currency, etc.) */}
+      <BattleChroniclePanel />
+
       {/* Reset countdowns — always available, computed locally */}
       <SectionHeading title="Reset Countdowns" />
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
         <ResetCard
-          icon={Swords} label="Spiral Abyss" target={abyssReset.nextReset} accent="var(--color-electro)"
+          imgSrc="/icons/spiral-abyss.webp" label="Spiral Abyss" target={abyssReset.nextReset} accent="var(--color-electro)"
           periodNote="Resets on the 16th"
           footNote={`Resets ${abyssReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
           serverIsGuessed={!server}
         />
         <ResetCard
-          icon={Trophy} label="Imaginarium Theater" target={theaterReset.nextReset} accent="var(--color-pyro)"
+          imgSrc="/icons/imaginarium-theater.webp" label="Imaginarium Theater" target={theaterReset.nextReset} accent="var(--color-pyro)"
           periodNote="Resets on the 1st"
           footNote={`Resets ${theaterReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
           serverIsGuessed={!server}

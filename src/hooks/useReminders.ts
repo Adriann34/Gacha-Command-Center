@@ -4,8 +4,10 @@ import { useGenshinProfile } from './useGenshinProfile'
 import { getNextAbyssReset, getNextTheaterReset } from '../lib/genshinResets'
 import { useNotifSettings } from './useNotifSettings'
 import { useDismissedReminders } from './useDismissedReminders'
+import { useBattleChronicle } from './useBattleChronicle'
+import { extrapolateResin, extrapolateTransformer, finishedExpeditionCount } from '../lib/hoyoExtrapolate'
 
-export type ReminderKind = 'abyss' | 'theater' | 'banner' | 'event'
+export type ReminderKind = 'abyss' | 'theater' | 'banner' | 'event' | 'resin' | 'expedition' | 'commission' | 'transformer'
 
 export interface Reminder {
   /** Stable id used for the "seen/dismissed" set saved to Firestore. */
@@ -44,11 +46,50 @@ export function useReminders(): { reminders: Reminder[]; loading: boolean; dismi
   const { server, loading: profileLoading } = useGenshinProfile()
   const { notifs, loading: notifsLoading } = useNotifSettings()
   const { dismissed, dismiss } = useDismissedReminders()
+  const chronicle = useBattleChronicle()
+
+  // Only the fields that actually drive reminders — kept minimal so the memo below isn't rebuilt
+  // on every 1s extrapolation tick (which the dashboard panel does, but the bell doesn't need to).
+  const chronicleFresh = chronicle.status === 'ok'
+  const notes = chronicle.notes
+  const syncedAtMs = chronicle.syncedAt?.getTime() ?? 0
 
   const reminders = useMemo(() => {
     const now = new Date()
     const list: Reminder[] = []
     const srv = server ?? 'os_usa'
+    const today = now.toISOString().slice(0, 10) // day-granularity so a dismissal lasts the day
+
+    // HoYoLAB Battle Chronicle alerts — derived locally from the last successful sync. Only surfaced
+    // when data is fresh (status ok); stale/expired data must never assert a live condition.
+    if (chronicleFresh && notes && syncedAtMs > 0) {
+      const syncedAt = new Date(syncedAtMs)
+
+      if (notifs.resinCapped) {
+        const resin = extrapolateResin(notes, syncedAt, now)
+        if (resin.full && resin.max > 0) {
+          list.push({ id: `resin-capped-${today}`, kind: 'resin', title: 'Original Resin is capped', detail: `${resin.max}/${resin.max} — spend it before it overflows`, at: now })
+        }
+      }
+
+      if (notifs.expeditionsDone) {
+        const total = notes.expeditions.length
+        if (total > 0 && finishedExpeditionCount(notes, syncedAt, now) === total) {
+          list.push({ id: `expeditions-done-${today}`, kind: 'expedition', title: 'All expeditions complete', detail: 'Collect rewards and redeploy', at: now })
+        }
+      }
+
+      if (notifs.commissionBonus && notes.totalTaskNum > 0 && notes.finishedTaskNum >= notes.totalTaskNum && !notes.isExtraTaskRewardReceived) {
+        list.push({ id: `commission-bonus-${today}`, kind: 'commission', title: 'Daily commission bonus unclaimed', detail: 'Claim your extra reward from Katheryne', at: now })
+      }
+
+      if (notifs.transformerReady) {
+        const t = extrapolateTransformer(notes, syncedAt, now)
+        if (t.obtained && t.ready) {
+          list.push({ id: `transformer-ready-${today}`, kind: 'transformer', title: 'Parametric Transformer is ready', detail: 'Use it to farm materials', at: now })
+        }
+      }
+    }
 
     if (notifs.abyssReset) {
       const { nextReset } = getNextAbyssReset(srv, now)
@@ -107,7 +148,7 @@ export function useReminders(): { reminders: Reminder[]; loading: boolean; dismi
     }
 
     return list.sort((a, b) => a.at.getTime() - b.at.getTime()).filter((r) => !dismissed.includes(r.id))
-  }, [schedule, server, notifs, dismissed])
+  }, [schedule, server, notifs, dismissed, chronicleFresh, notes, syncedAtMs])
 
   return { reminders, loading: scheduleLoading || profileLoading || notifsLoading, dismiss }
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Bell, Swords, Trophy, Sparkles, Calendar, X, BellOff } from 'lucide-react'
+import { Bell, Swords, Trophy, Sparkles, Calendar, X, BellOff, Droplets, Compass, ClipboardCheck, Recycle } from 'lucide-react'
 import { useReminders, type Reminder, type ReminderKind } from '../hooks/useReminders'
 
 const KIND_ICON: Record<ReminderKind, React.ElementType> = {
@@ -7,6 +7,10 @@ const KIND_ICON: Record<ReminderKind, React.ElementType> = {
   theater: Trophy,
   banner: Sparkles,
   event: Calendar,
+  resin: Droplets,
+  expedition: Compass,
+  commission: ClipboardCheck,
+  transformer: Recycle,
 }
 
 const KIND_ACCENT: Record<ReminderKind, string> = {
@@ -14,6 +18,10 @@ const KIND_ACCENT: Record<ReminderKind, string> = {
   theater: 'var(--color-pyro)',
   banner: 'var(--color-gold)',
   event: 'var(--color-hydro)',
+  resin: 'var(--color-hydro)',
+  expedition: 'var(--color-geo)',
+  commission: 'var(--color-dendro)',
+  transformer: 'var(--color-electro)',
 }
 
 function ReminderRow({ reminder, onDismiss }: { reminder: Reminder; onDismiss: (id: string) => void }) {

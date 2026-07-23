@@ -8,6 +8,11 @@ export interface NotifState {
   events: boolean
   abyssReset: boolean
   theaterReset: boolean
+  // HoYoLAB Battle Chronicle alerts (computed locally from the last sync while the app is open).
+  resinCapped: boolean
+  expeditionsDone: boolean
+  commissionBonus: boolean
+  transformerReady: boolean
 }
 
 export const DEFAULT_NOTIFS: NotifState = {
@@ -15,6 +20,10 @@ export const DEFAULT_NOTIFS: NotifState = {
   events: true,
   abyssReset: true,
   theaterReset: true,
+  resinCapped: true,
+  expeditionsDone: true,
+  commissionBonus: true,
+  transformerReady: true,
 }
 
 /**
