@@ -85,6 +85,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Per-user rate-limit markers for the /hoyolab/link cooldown. Worker Admin SDK only; the client
+    // has no reason to read or write it (the deny-by-default catch-all would cover this too, but it
+    // is spelled out explicitly for clarity, matching the other hoyo* collections).
+    match /hoyoRateLimit/{userId} {
+      allow read, write: if false;
+    }
+
     // Deny-by-default for any collection not explicitly matched above, so a future collection is
     // never accidentally left open.
     match /{document=**} {
