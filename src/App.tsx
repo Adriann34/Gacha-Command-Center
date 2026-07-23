@@ -7,7 +7,9 @@ import DashboardPage from './pages/DashboardPage'
 import TrackerPage from './pages/TrackerPage'
 import AccountPage from './pages/AccountPage'
 import SettingsPage from './pages/SettingsPage'
+import DevChroniclePage from './pages/DevChroniclePage'
 import DashboardLayout from './components/layout/DashboardLayout'
+import { isDevUser } from './lib/devAccess'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
@@ -35,6 +37,16 @@ function PublicRoute({ children }: { children: ReactNode }) {
   return !user ? children : <Navigate to="/dashboard" replace />
 }
 
+// Email-gated route for developer-only pages. This is a client-side convenience gate (hides the
+// page from other users); the sensitive Worker endpoint it calls independently enforces the same
+// email from the verified Firebase ID token, so this is not the security boundary.
+function DevRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (!user) return <Navigate to="/signin" replace />
+  return isDevUser(user) ? children : <Navigate to="/dashboard" replace />
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -52,6 +64,7 @@ export default function App() {
             <Route path="tracker" element={<TrackerPage />} />
             <Route path="account" element={<AccountPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="dev/chronicle" element={<DevRoute><DevChroniclePage /></DevRoute>} />
           </Route>
         </Routes>
       </BrowserRouter>

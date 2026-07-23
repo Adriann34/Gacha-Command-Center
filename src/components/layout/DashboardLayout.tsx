@@ -6,8 +6,9 @@ import NotificationBell from '../NotificationBell'
 import GlobalSearch from '../GlobalSearch'
 import {
   LayoutDashboard, ListChecks, UserCircle2, Settings,
-  Menu, X, LogOut, ChevronDown,
+  Menu, X, LogOut, ChevronDown, Terminal,
 } from 'lucide-react'
+import { isDevUser } from '../../lib/devAccess'
 
 interface NavItem {
   to: string
@@ -21,6 +22,10 @@ const navItems: NavItem[] = [
   { to: '/account', icon: UserCircle2, label: 'My Account' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
+
+// Developer-only nav entry (Battle Chronicle raw payload inspector). Appended only for the dev
+// account; the route + Worker endpoint enforce access independently (see devAccess.ts).
+const devNavItem: NavItem = { to: '/dev/chronicle', icon: Terminal, label: 'Dev · Chronicle' }
 
 const SIDEBAR_WIDTH_OPEN = 284
 const SIDEBAR_WIDTH_COLLAPSED = 76
@@ -128,7 +133,7 @@ export default function DashboardLayout() {
               Main Menu
             </div>
           )}
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {(isDevUser(user) ? [...navItems, devNavItem] : navItems).map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
