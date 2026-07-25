@@ -22,6 +22,13 @@ export interface ChronicleExpedition {
   avatarSideIcon: string
 }
 
+export type RewardSlotState = 'unfinished' | 'finished' | 'claimed'
+
+export interface ChronicleAttendanceReward {
+  state: RewardSlotState
+  progress: number
+}
+
 export interface ChronicleNotes {
   currentResin: number
   maxResin: number
@@ -35,6 +42,11 @@ export interface ChronicleNotes {
   finishedTaskNum: number
   totalTaskNum: number
   isExtraTaskRewardReceived: boolean
+  dailyTaskRewards: RewardSlotState[]
+  attendanceRewards: ChronicleAttendanceReward[]
+  attendanceVisible: boolean
+  storedAttendance: string
+  storedAttendanceRefreshCountdown: number
   remainResinDiscountNum: number
   resinDiscountNumLimit: number
   transformerObtained: boolean
@@ -43,6 +55,69 @@ export interface ChronicleNotes {
 }
 
 export type ChronicleStatus = 'ok' | 'cookie_expired' | 'rate_limited' | 'error' | 'unlinked'
+
+// ---- Event calendar (mirror of the Worker's ChronicleCalendar; see ../../cloudflare-worker/src/hoyolab.ts).
+// Timers are epoch seconds + "seconds remaining as of syncedAt" so "time remaining" is extrapolated
+// locally (see hoyoExtrapolate.ts), matching the real-time-notes strategy.
+export interface CalendarReward {
+  itemId: number
+  name: string
+  icon: string
+  num: number
+  rarity: number
+}
+
+export interface CalendarBannerItem {
+  id: number
+  icon: string
+  name: string
+  rarity: number
+  element?: string
+  wikiUrl?: string
+}
+
+export interface CalendarBanner {
+  poolId: number
+  versionName: string
+  poolName: string
+  poolType: number
+  characters: CalendarBannerItem[]
+  weapons: CalendarBannerItem[]
+  startTimestamp: number
+  endTimestamp: number
+  countdownSeconds: number
+  poolStatus: number
+}
+
+export interface CalendarEvent {
+  id: number
+  name: string
+  type: string
+  startTimestamp: number
+  endTimestamp: number
+  countdownSeconds: number
+  status: number
+  isFinished: boolean
+  headlineReward: CalendarReward | null
+  hardChallengeSeconds?: number
+  doubleRemaining?: number
+  doubleTotal?: number
+  towerUnlocked?: boolean
+  towerMaxStar?: number
+  towerTotalStar?: number
+  theaterUnlocked?: boolean
+  theaterMaxRound?: number
+  theaterTarotFinished?: number
+  theaterDifficulty?: number
+}
+
+export interface ChronicleCalendar {
+  characterBanners: CalendarBanner[]
+  weaponBanners: CalendarBanner[]
+  chronicledBanners: CalendarBanner[]
+  events: CalendarEvent[]
+  challenges: CalendarEvent[]
+}
 
 export interface SyncResult {
   status: ChronicleStatus
@@ -132,16 +207,31 @@ export async function unlinkHoyolab(): Promise<void> {
   if (!res.ok) await parseError(res)
 }
 
+export interface RawPayloadResult {
+  gameUid: string
+  server: string
+  raw: unknown
+}
+
 /** Developer-only: fetches the full untouched HoYoLAB dailyNote payload (email-gated server-side). */
-export async function fetchRawChronicle(): Promise<{ gameUid: string; server: string; raw: unknown }> {
+export async function fetchRawChronicle(): Promise<RawPayloadResult> {
+  return fetchRawPayload('/hoyolab/raw')
+}
+
+/** Developer-only: fetches the full untouched HoYoLAB act_calendar payload (banners + events). */
+export async function fetchRawCalendar(): Promise<RawPayloadResult> {
+  return fetchRawPayload('/hoyolab/raw-calendar')
+}
+
+async function fetchRawPayload(path: string): Promise<RawPayloadResult> {
   const base = requireWorker()
   const headers = await authHeader()
   let res: Response
   try {
-    res = await fetch(`${base}/hoyolab/raw`, { method: 'GET', headers })
+    res = await fetch(`${base}${path}`, { method: 'GET', headers })
   } catch (err) {
     throw new HoyoError(`Could not reach the Worker: ${err instanceof Error ? err.message : String(err)}`)
   }
   if (!res.ok) await parseError(res)
-  return (await res.json()) as { gameUid: string; server: string; raw: unknown }
+  return (await res.json()) as RawPayloadResult
 }
