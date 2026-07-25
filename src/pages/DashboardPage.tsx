@@ -7,9 +7,12 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { useGenshinProfile } from '../hooks/useGenshinProfile'
 import { useGameSchedule, type GameBanner, type GameEvent } from '../hooks/useGameSchedule'
+import { useEventCalendar } from '../hooks/useEventCalendar'
 import { useCountdown, useCountdownWithSeconds } from '../hooks/useCountdown'
 import { getNextAbyssReset, getNextTheaterReset } from '../lib/genshinResets'
 import BattleChroniclePanel from '../components/BattleChroniclePanel'
+import EventsOverview, { challengeProgressLabel } from '../components/EventsOverview'
+import type { CalendarBanner, CalendarReward } from '../lib/hoyolab'
 
 /** Parses an ISO string into a Date, or null if it's missing/unparsable — never "Invalid Date". */
 function safeDate(iso: string | undefined | null): Date | null {
@@ -24,6 +27,26 @@ function daysUntil(iso: string | undefined | null): number | null {
   return Math.max(0, Math.ceil((target.getTime() - Date.now()) / 86_400_000))
 }
 
+/** Adapts a HoYoLAB calendar banner into the GameBanner shape the existing banner cards render, so
+ *  calendar-sourced banners reuse the exact same wish-screen styling. Only 5★ feature units become
+ *  portraits (matching the public banners' "featured 5★" semantics); poolName is carried as both
+ *  name and type so bannerCategory labels it correctly. */
+function calendarBannerToGameBanner(b: CalendarBanner): GameBanner {
+  const chars5 = b.characters.filter((c) => c.rarity === 5)
+  const weps5 = b.weapons.filter((w) => w.rarity === 5)
+  return {
+    id: `cal-${b.poolId}`,
+    name: b.poolName,
+    type: b.poolName,
+    characters: chars5.map((c) => c.name),
+    characterIcons: chars5.map((c) => c.icon),
+    weapons: weps5.map((w) => w.name),
+    weaponIcons: weps5.map((w) => w.icon),
+    startDate: new Date(b.startTimestamp * 1000).toISOString(),
+    endDate: new Date(b.endTimestamp * 1000).toISOString(),
+  } as GameBanner
+}
+
 /** Section heading: Cinzel gold text with a leading diamond and an optional right-side link. */
 function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
   return (
@@ -34,9 +57,12 @@ function SectionHeading({ title, action }: { title: string; action?: React.React
   )
 }
 
-/** Ornate reset-countdown card — glyph + Cinzel timer, tinted by an elemental accent. */
-function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, footNote, serverIsGuessed }: {
+/** Ornate reset-countdown card — glyph + Cinzel timer, tinted by an elemental accent. Optionally
+ *  enriched with the account's live progress (Abyss stars / Theater act) and headline primogem
+ *  reward from the HoYoLAB event calendar, when a Battle Chronicle account is linked. */
+function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, footNote, serverIsGuessed, reward, badge }: {
   icon?: React.ElementType; imgSrc?: string; label: string; target: Date; accent: string; periodNote: string; footNote: string; serverIsGuessed: boolean
+  reward?: CalendarReward | null; badge?: { text: string; icon: 'star' | null; sub?: string } | null
 }) {
   const countdown = useCountdown(target)
   return (
@@ -63,6 +89,26 @@ function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, foot
       <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.7rem', fontWeight: 700, color: accent, letterSpacing: '0.02em', position: 'relative' }}>
         {countdown}
       </div>
+
+      {/* Live account progress + headline reward (only when the calendar is linked/available). */}
+      {(reward || badge) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.65rem', flexWrap: 'wrap', position: 'relative' }}>
+          {badge && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums' }}>
+              {badge.icon === 'star' && <Star size={13} fill="var(--color-gold-bright)" color="var(--color-gold-bright)" />}
+              {badge.text}
+              {badge.sub && <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>· {badge.sub}</span>}
+            </span>
+          )}
+          {reward && reward.num > 0 && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', padding: '0.15rem 0.5rem', borderRadius: 20, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold-line-soft)' }}>
+              <img src={reward.icon} alt={reward.name} style={{ width: 17, height: 17, objectFit: 'contain' }} />
+              <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums' }}>{reward.num.toLocaleString()}</span>
+            </span>
+          )}
+        </div>
+      )}
+
       <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>{footNote}</div>
       {serverIsGuessed && (
         <div style={{ fontSize: '0.68rem', color: 'var(--color-gold)', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
@@ -278,6 +324,7 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const { genshinUid, server } = useGenshinProfile()
   const { schedule, loading, notConfigured } = useGameSchedule()
+  const { calendar } = useEventCalendar()
   const navigate = useNavigate()
   const [greeting, setGreeting] = useState('Welcome back')
 
@@ -291,6 +338,20 @@ export default function DashboardPage() {
   const firstName = user?.displayName?.split(' ')[0] ?? 'Traveler'
   const abyssReset = getNextAbyssReset(server ?? 'os_usa')
   const theaterReset = getNextTheaterReset(server ?? 'os_usa')
+
+  // When a HoYoLAB account is linked, prefer the official event-calendar data. Abyss/Theater cards
+  // take their reset instant + live progress + primogem reward from it; banners and the Events
+  // Overview switch to the calendar source. Everything falls back to the public schedule otherwise.
+  const abyssChallenge = calendar?.challenges.find((c) => c.type === 'ActTypeTower') ?? null
+  const theaterChallenge = calendar?.challenges.find((c) => c.type === 'ActTypeRoleCombat') ?? null
+  const abyssTarget = abyssChallenge && abyssChallenge.endTimestamp > 0 ? new Date(abyssChallenge.endTimestamp * 1000) : abyssReset.nextReset
+  const theaterTarget = theaterChallenge && theaterChallenge.endTimestamp > 0 ? new Date(theaterChallenge.endTimestamp * 1000) : theaterReset.nextReset
+
+  const calendarBanners: GameBanner[] | null = calendar
+    ? [...calendar.characterBanners, ...calendar.weaponBanners, ...calendar.chronicledBanners].map(calendarBannerToGameBanner)
+    : null
+  // Use the calendar-driven Events Overview + banners once the calendar snapshot has any content.
+  const useCalendar = !!calendar && (calendar.events.length > 0 || (calendarBanners?.length ?? 0) > 0)
 
   return (
     <div className="fade-in">
@@ -332,7 +393,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {notConfigured && (
+      {notConfigured && !useCalendar && (
         <div className="ornate" style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem', padding: '1.25rem', marginBottom: '1.5rem' }}>
           <AlertTriangle size={18} color="var(--color-gold)" style={{ flexShrink: 0, marginTop: 1 }} />
           <div>
@@ -353,20 +414,47 @@ export default function DashboardPage() {
       <SectionHeading title="Reset Countdowns" />
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
         <ResetCard
-          imgSrc="/icons/spiral-abyss.webp" label="Spiral Abyss" target={abyssReset.nextReset} accent="var(--color-electro)"
+          imgSrc="/icons/spiral-abyss.webp" label="Spiral Abyss" target={abyssTarget} accent="var(--color-gold-bright)"
           periodNote="Resets on the 16th"
-          footNote={`Resets ${abyssReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
-          serverIsGuessed={!server}
+          footNote={`Resets ${abyssTarget.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
+          serverIsGuessed={!server && !abyssChallenge}
+          reward={abyssChallenge?.headlineReward}
+          badge={abyssChallenge ? challengeProgressLabel(abyssChallenge) : null}
         />
         <ResetCard
-          imgSrc="/icons/imaginarium-theater.webp" label="Imaginarium Theater" target={theaterReset.nextReset} accent="var(--color-pyro)"
+          imgSrc="/icons/imaginarium-theater.webp" label="Imaginarium Theater" target={theaterTarget} accent="var(--color-gold-bright)"
           periodNote="Resets on the 1st"
-          footNote={`Resets ${theaterReset.nextReset.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
-          serverIsGuessed={!server}
+          footNote={`Resets ${theaterTarget.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · 04:00 server time`}
+          serverIsGuessed={!server && !theaterChallenge}
+          reward={theaterChallenge?.headlineReward}
+          badge={theaterChallenge ? challengeProgressLabel(theaterChallenge) : null}
         />
       </div>
 
-      {/* Banners + Events row */}
+      {/* Banners + Events — the official HoYoLAB event calendar (per-account) when linked, else the
+          public schedule scrape as a fallback for users who haven't linked HoYoLAB. */}
+      {useCalendar ? (
+        <>
+          <SectionHeading
+            title="Current Banners"
+            action={
+              <a href="https://genshin.hoyoverse.com/en/news" target="_blank" rel="noreferrer" style={{ fontSize: '0.78rem', color: 'var(--color-hydro)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
+                Official news <ExternalLink size={12} />
+              </a>
+            }
+          />
+          {calendarBanners && calendarBanners.length > 0 ? (
+            <div style={{ marginBottom: '1.75rem' }}><BannerGroup banners={calendarBanners} /></div>
+          ) : (
+            <div className="card" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '1.75rem' }}>No active banners</div>
+          )}
+
+          <SectionHeading title="Events Overview" />
+          <div style={{ marginBottom: '1.75rem' }}>
+            <EventsOverview events={calendar!.events} />
+          </div>
+        </>
+      ) : (
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', gap: '1.5rem', marginBottom: '1.75rem' }} className="dash-two-col">
         {/* Banners */}
         <div>
@@ -418,6 +506,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Next version */}
       {schedule?.nextVersion && (

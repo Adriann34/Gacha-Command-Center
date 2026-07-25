@@ -92,6 +92,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Per-user event-calendar snapshot (banners + events + Abyss/Theater progress) from HoYoLAB's
+    // act_calendar endpoint. Written only by the Worker's Admin SDK; the owner reads it live via
+    // onSnapshot to render the Events Overview. Contains NO secrets — just public event display data.
+    match /hoyoCalendar/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
     // Deny-by-default for any collection not explicitly matched above, so a future collection is
     // never accidentally left open.
     match /{document=**} {
