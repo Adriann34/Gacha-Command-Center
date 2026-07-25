@@ -98,10 +98,10 @@ export default function NotificationBell() {
             aria-label={`${reminders.length} reminder${reminders.length !== 1 ? 's' : ''}`}
             style={{
               position: 'absolute', top: -5, right: -5, minWidth: 17, height: 17, padding: '0 4px',
-              borderRadius: 9, background: 'var(--color-pyro)', color: '#241d0c',
+              borderRadius: 9, background: 'var(--color-gold-bright)', color: '#241d0c',
               fontSize: '0.62rem', fontWeight: 800, lineHeight: '17px', textAlign: 'center',
               fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums',
-              border: '1.5px solid var(--color-surface-800)', boxShadow: '0 0 6px rgba(255,122,73,0.55)',
+              border: '1.5px solid var(--color-surface-800)', boxShadow: '0 0 6px rgba(240,220,172,0.55)',
             }}
           >
             {reminders.length > 9 ? '9+' : reminders.length}
