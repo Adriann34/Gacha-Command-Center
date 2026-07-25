@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
-import { syncChronicle, type ChronicleNotes, type ChronicleStatus } from '../lib/hoyolab'
+import { syncChronicle, HoyoError, type ChronicleNotes, type ChronicleStatus } from '../lib/hoyolab'
 
 // Reads the signed-in user's Battle Chronicle snapshot, written by the Cloudflare Worker to
 // hoyoNotes/{uid}. Mirrors the useGameSchedule pattern: live onSnapshot subscription + a normalize
@@ -114,6 +114,9 @@ export function useBattleChronicle(): ChronicleState {
         setMessage(result.message ?? null)
       }
     } catch (err) {
+      // A 429 means the server's per-user cooldown kicked in — the snapshot the client already has
+      // (via onSnapshot) is current enough, so treat it as a no-op rather than a visible error.
+      if (err instanceof HoyoError && err.status === 429) return
       setError(err instanceof Error ? err.message : String(err))
     } finally {
       setSyncing(false)
