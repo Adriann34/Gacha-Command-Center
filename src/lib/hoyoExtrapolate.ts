@@ -103,6 +103,13 @@ export function extrapolateTransformer(notes: ChronicleNotes, syncedAt: Date, no
   return { obtained: true, ready: remaining <= 0, secondsRemaining: remaining }
 }
 
+/** Projects a raw "seconds remaining as of syncedAt" countdown forward to `now` (never below 0).
+ *  Used for slow, non-derived timers like the stored-attendance reset that HoYoLAB only gives us as
+ *  a single remaining-seconds figure. */
+export function extrapolateCountdown(secondsRemainingAtSync: number, syncedAt: Date, now: Date): number {
+  return Math.max(0, secondsRemainingAtSync - elapsedSeconds(syncedAt, now))
+}
+
 /** Formats a duration in seconds as a compact "Xd Yh Zm" / "Yh Zm" / "Zm" / "<1m" string. */
 export function formatDuration(totalSeconds: number): string {
   const s = Math.max(0, Math.floor(totalSeconds))

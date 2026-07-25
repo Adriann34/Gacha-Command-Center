@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Compass, RefreshCw, Link2, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Compass, RefreshCw, Link2, AlertTriangle, CheckCircle2, Gift, Check } from 'lucide-react'
 import { useBattleChronicle } from '../hooks/useBattleChronicle'
 import {
   extrapolateResin, extrapolateRealmCurrency, extrapolateExpedition,
-  extrapolateTransformer, formatDuration,
+  extrapolateTransformer, extrapolateCountdown, formatDuration,
 } from '../lib/hoyoExtrapolate'
-import type { ChronicleNotes } from '../lib/hoyolab'
+import type { ChronicleNotes, RewardSlotState } from '../lib/hoyolab'
 
 /** A Date that updates every `intervalMs`, driving live local extrapolation between syncs. */
 function useNow(intervalMs: number): Date {
@@ -167,6 +167,129 @@ function ResinTile({ notes, syncedAt, reference }: { notes: ChronicleNotes; sync
   )
 }
 
+const DAILY_ACCENT = 'var(--color-dendro)'
+
+/** Formats the slow stored-attendance reset countdown compactly ("17d", "6h 12m", "Ready"). */
+function formatReset(seconds: number): string {
+  if (seconds <= 0) return 'Ready'
+  if (seconds >= 86400) return `${Math.floor(seconds / 86400)}d`
+  return formatDuration(seconds)
+}
+
+/** A single reward slot in the commission / encounter-point rows. Dim when unfinished, accented when
+ *  ready to claim, and marked with a check once claimed — mirroring the in-game Battle Chronicle. */
+function RewardSlot({ state, accent, children }: { state: RewardSlotState; accent: string; children: React.ReactNode }) {
+  const ready = state === 'finished'
+  const claimed = state === 'claimed'
+  return (
+    <div style={{
+      position: 'relative', width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+      display: 'grid', placeItems: 'center',
+      border: `1px solid ${ready ? accent : 'var(--gold-line-soft)'}`,
+      background: ready ? `${accent}22` : 'rgba(255,255,255,0.04)',
+      opacity: state === 'unfinished' ? 0.4 : 1,
+    }}>
+      {children}
+      {claimed && (
+        <div style={{
+          position: 'absolute', right: -3, bottom: -3, width: 13, height: 13, borderRadius: '50%',
+          background: accent, display: 'grid', placeItems: 'center', border: '1px solid #10141f',
+        }}>
+          <Check size={9} strokeWidth={3} color="#0b0f18" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** A labelled horizontal row of reward slots (e.g. "Daily Commissions", "Encounter Points"). */
+function SlotRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginTop: '0.7rem' }}>
+      <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem', letterSpacing: '0.02em' }}>{label}</div>
+      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>{children}</div>
+    </div>
+  )
+}
+
+/** Daily Commissions tile: per-commission reward slots, the Encounter-Point gift row, and the
+ *  Long-Term Encounter Points multiplier + its reset countdown — matching the in-game panel. */
+function DailiesCard({ notes, syncedAt, reference }: { notes: ChronicleNotes; syncedAt: Date; reference: Date }) {
+  const accent = DAILY_ACCENT
+  // Tolerate snapshots written before these fields existed (they arrive on the next sync): default
+  // the new arrays/values so an older hoyoNotes doc renders instead of crashing.
+  const taskRewards = notes.dailyTaskRewards ?? []
+  const attendanceRewards = notes.attendanceRewards ?? []
+  // Prefer HoYoLAB's per-slot statuses; if an account omits them, synthesize slots from the
+  // finished/total counts so the row still reflects progress.
+  const commissionSlots: RewardSlotState[] = taskRewards.length
+    ? taskRewards
+    : Array.from({ length: notes.totalTaskNum }, (_, i): RewardSlotState => (i < notes.finishedTaskNum ? 'claimed' : 'unfinished'))
+  const done = notes.totalTaskNum > 0 && notes.finishedTaskNum >= notes.totalTaskNum
+  const showEncounter = notes.attendanceVisible === true && attendanceRewards.length > 0
+  const resetSeconds = extrapolateCountdown(notes.storedAttendanceRefreshCountdown ?? 0, syncedAt, reference)
+
+  return (
+    <div className="ornate stat-card" style={{ padding: '1.05rem 1.2rem', flex: 1, minWidth: 210, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', right: -28, top: -28, width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${accent}24, transparent 70%)`, pointerEvents: 'none' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', position: 'relative' }}>
+        <IconBadge imgSrc="/icons/daily-commission.svg" accent={accent} />
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+          Daily Commissions{' '}
+          <span style={{ color: done ? accent : 'var(--color-text-muted)', fontWeight: 400 }}>{notes.finishedTaskNum}/{notes.totalTaskNum}</span>
+        </div>
+      </div>
+
+      <SlotRow label="Daily Commissions">
+        {commissionSlots.map((s, i) => (
+          <RewardSlot key={i} state={s} accent={accent}>
+            <img src="/icons/daily-commission.svg" alt="" style={{ width: 17, height: 17, objectFit: 'contain' }} />
+          </RewardSlot>
+        ))}
+      </SlotRow>
+
+      {showEncounter && (
+        <SlotRow label="Encounter Points">
+          {attendanceRewards.map((a, i) => (
+            <RewardSlot key={i} state={a.state} accent={accent}>
+              <Gift size={15} strokeWidth={1.7} color="var(--color-text-secondary)" />
+            </RewardSlot>
+          ))}
+        </SlotRow>
+      )}
+
+      {showEncounter && (
+        <div style={{
+          marginTop: '0.8rem', padding: '0.6rem 0.7rem', borderRadius: '0.55rem',
+          background: 'rgba(255,255,255,0.04)', border: '1px solid var(--gold-line-soft)',
+          position: 'relative', display: 'flex', flexDirection: 'column', gap: '0.35rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Long-Term Encounter Points</span>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.2rem', padding: '0.1rem 0.45rem',
+              borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
+              fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums',
+            }}>
+              ×{notes.storedAttendance ?? '0'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>Reset Countdown</span>
+            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums' }}>{formatReset(resetSeconds)}</span>
+          </div>
+        </div>
+      )}
+
+      <SubText>
+        {done
+          ? (notes.isExtraTaskRewardReceived ? 'All done · bonus claimed' : 'Done · claim your bonus reward')
+          : `${notes.totalTaskNum - notes.finishedTaskNum} commission${notes.totalTaskNum - notes.finishedTaskNum !== 1 ? 's' : ''} left today`}
+      </SubText>
+    </div>
+  )
+}
+
 export default function BattleChroniclePanel() {
   const chronicle = useBattleChronicle()
   const navigate = useNavigate()
@@ -294,36 +417,21 @@ export default function BattleChroniclePanel() {
             )
           })()}
 
-          {/* Daily commissions */}
-          {(() => {
-            const GREEN = 'var(--color-dendro)'
-            const done = notes.finishedTaskNum >= notes.totalTaskNum && notes.totalTaskNum > 0
-            const claimed = notes.isExtraTaskRewardReceived
-            return (
-              <TileShell imgSrc="/icons/daily-commission.svg" label="Daily Commissions" accent={GREEN}>
-                <BigValue accent={GREEN}>{notes.finishedTaskNum}<span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', fontWeight: 400 }}> / {notes.totalTaskNum}</span></BigValue>
-                <Bar ratio={notes.totalTaskNum ? notes.finishedTaskNum / notes.totalTaskNum : 0} accent={GREEN} />
-                <SubText>
-                  {done
-                    ? (claimed ? 'All done · bonus claimed' : 'Done · claim your bonus reward')
-                    : `${notes.totalTaskNum - notes.finishedTaskNum} left today`}
-                </SubText>
-              </TileShell>
-            )
-          })()}
+          {/* Daily commissions — reward slots, Encounter Points, Long-Term multiplier + reset. */}
+          <DailiesCard notes={notes} syncedAt={syncedAt} reference={reference} />
 
           {/* Expeditions — compact tile listing the character assigned to each. */}
           <ExpeditionsCard notes={notes} syncedAt={syncedAt} reference={reference} />
 
           {/* Weekly bosses */}
           {(() => {
-            const RED = 'var(--color-pyro)'
+            const GOLD = 'var(--color-gold-bright)'
             const remaining = notes.remainResinDiscountNum
             const limit = notes.resinDiscountNumLimit
             return (
-              <TileShell imgSrc="/icons/weekly-boss.webp" label="Weekly Bosses" accent={RED}>
-                <BigValue accent={RED}>{remaining}<span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', fontWeight: 400 }}> / {limit}</span></BigValue>
-                <Bar ratio={limit ? remaining / limit : 0} accent={RED} />
+              <TileShell imgSrc="/icons/weekly-boss.webp" label="Weekly Bosses" accent={GOLD}>
+                <BigValue accent={GOLD}>{remaining}<span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', fontWeight: 400 }}> / {limit}</span></BigValue>
+                <Bar ratio={limit ? remaining / limit : 0} accent={GOLD} />
                 <SubText>{remaining > 0 ? `${remaining} discounted claim${remaining !== 1 ? 's' : ''} left` : 'All discounts used this week'}</SubText>
               </TileShell>
             )
@@ -331,26 +439,26 @@ export default function BattleChroniclePanel() {
 
           {/* Parametric transformer */}
           {(() => {
-            const VIOLET = 'var(--color-electro)'
+            const GOLD = 'var(--color-gold-bright)'
             const t = extrapolateTransformer(notes, syncedAt, reference)
             return (
-              <TileShell imgSrc="/icons/parametric-transformer.webp" label="Parametric Transformer" accent={VIOLET}>
+              <TileShell imgSrc="/icons/parametric-transformer.webp" label="Parametric Transformer" accent={GOLD}>
                 {!t.obtained ? (
                   <>
-                    <BigValue accent={VIOLET}>—</BigValue>
+                    <BigValue accent={GOLD}>—</BigValue>
                     <SubText>Not obtained yet</SubText>
                   </>
                 ) : t.ready ? (
                   <>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <CheckCircle2 size={20} color={VIOLET} />
-                      <BigValue accent={VIOLET}>Ready</BigValue>
+                      <CheckCircle2 size={20} color={GOLD} />
+                      <BigValue accent={GOLD}>Ready</BigValue>
                     </div>
                     <SubText>Available to use now</SubText>
                   </>
                 ) : (
                   <>
-                    <BigValue accent={VIOLET}>{formatDuration(t.secondsRemaining)}</BigValue>
+                    <BigValue accent={GOLD}>{formatDuration(t.secondsRemaining)}</BigValue>
                     <SubText>Until ready</SubText>
                   </>
                 )}
