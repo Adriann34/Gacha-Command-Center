@@ -201,7 +201,6 @@ function BannerCard({ banner }: { banner: GameBanner }) {
   const fourStarChars = (banner.fourStarCharacters ?? []).map((name, i) => ({ name, icon: banner.fourStarCharacterIcons?.[i], kind: 'character' as const }))
   const fourStarWeps = (banner.fourStarWeapons ?? []).map((name, i) => ({ name, icon: banner.fourStarWeaponIcons?.[i], kind: 'weapon' as const }))
   const fourStarItems = [...fourStarChars, ...fourStarWeps]
-  const hasFourStar = fourStarItems.length > 0
 
   return (
     <div className="stat-card" style={{ borderRadius: 'var(--radius-card)', overflow: 'hidden', border: '1px solid var(--gold-line)', background: 'var(--color-card)', display: 'flex', flexDirection: 'column' }}>
