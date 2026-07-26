@@ -28,12 +28,15 @@ function daysUntil(iso: string | undefined | null): number | null {
 }
 
 /** Adapts a HoYoLAB calendar banner into the GameBanner shape the existing banner cards render, so
- *  calendar-sourced banners reuse the exact same wish-screen styling. Only 5★ feature units become
- *  portraits (matching the public banners' "featured 5★" semantics); poolName is carried as both
- *  name and type so bannerCategory labels it correctly. */
+ *  calendar-sourced banners reuse the exact same wish-screen styling. 5★ feature units become
+ *  portraits; 4★ rate-up items are carried in separate fields and rendered as a compact secondary
+ *  row below the main 5★ portraits. poolName is carried as both name and type so bannerCategory
+ *  labels it correctly. */
 function calendarBannerToGameBanner(b: CalendarBanner): GameBanner {
   const chars5 = b.characters.filter((c) => c.rarity === 5)
+  const chars4 = b.characters.filter((c) => c.rarity === 4)
   const weps5 = b.weapons.filter((w) => w.rarity === 5)
+  const weps4 = b.weapons.filter((w) => w.rarity === 4)
   return {
     id: `cal-${b.poolId}`,
     name: b.poolName,
@@ -42,6 +45,10 @@ function calendarBannerToGameBanner(b: CalendarBanner): GameBanner {
     characterIcons: chars5.map((c) => c.icon),
     weapons: weps5.map((w) => w.name),
     weaponIcons: weps5.map((w) => w.icon),
+    fourStarCharacters: chars4.map((c) => c.name),
+    fourStarCharacterIcons: chars4.map((c) => c.icon),
+    fourStarWeapons: weps4.map((w) => w.name),
+    fourStarWeaponIcons: weps4.map((w) => w.icon),
     startDate: new Date(b.startTimestamp * 1000).toISOString(),
     endDate: new Date(b.endTimestamp * 1000).toISOString(),
   } as GameBanner
@@ -152,6 +159,7 @@ function bannerCategory(banner: GameBanner): string {
 function isPoolBanner(banner: GameBanner): boolean {
   const cat = bannerCategory(banner)
   if (cat === 'Chronicled Wish' || cat === 'Lightrace Wish') return true
+  if (cat === 'Character Event Wish' || cat === 'Weapon Event Wish') return false
   return bannerFeatured(banner).length > 2
 }
 
@@ -176,20 +184,37 @@ function BannerCard({ banner }: { banner: GameBanner }) {
   const urgent = days !== null && days <= 3
   const items = bannerFeatured(banner)
   const category = bannerCategory(banner)
-  const portraitSize = items.length <= 1 ? 72 : 56
+  const portraitSize5 = items.length <= 1 ? 72 : 56
+  const portraitSize4 = 56
+
+  const fourStarChars = (banner.fourStarCharacters ?? []).map((name, i) => ({ name, icon: banner.fourStarCharacterIcons?.[i], kind: 'character' as const }))
+  const fourStarWeps = (banner.fourStarWeapons ?? []).map((name, i) => ({ name, icon: banner.fourStarWeaponIcons?.[i], kind: 'weapon' as const }))
+  const fourStarItems = [...fourStarChars, ...fourStarWeps]
+  const hasFourStar = fourStarItems.length > 0
 
   return (
     <div className="stat-card" style={{ borderRadius: 'var(--radius-card)', overflow: 'hidden', border: '1px solid var(--gold-line)', background: 'var(--color-card)', display: 'flex', flexDirection: 'column' }}>
-      {/* Rarity splash — one portrait per featured 5★ */}
+      {/* Rarity splash — 5★ portraits then 4★, all centered as a group */}
       <div style={{
-        height: 118, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
+        height: 118, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
         background: 'radial-gradient(circle at 50% 15%, var(--r5-a), var(--r5-b) 70%, #7c5c2e)',
       }}>
         {items.map((it, i) => (
-          <div key={i} style={{
-            width: portraitSize, height: portraitSize, borderRadius: '50%', overflow: 'hidden',
+          <div key={`5-${i}`} style={{
+            width: portraitSize5, height: portraitSize5, borderRadius: '50%', overflow: 'hidden',
             border: '2px solid rgba(255,255,255,0.6)',
             boxShadow: '0 0 0 3px rgba(0,0,0,0.18), 0 6px 14px rgba(0,0,0,0.35)',
+            display: 'grid', placeItems: 'center', background: 'rgba(0,0,0,0.18)',
+          }}>
+            <PortraitImg item={it} />
+          </div>
+        ))}
+        {hasFourStar && <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', margin: '0 0.1rem' }}>·</span>}
+        {fourStarItems.map((it, i) => (
+          <div key={`4-${i}`} style={{
+            width: it.kind === 'weapon' ? 48 : portraitSize4, height: it.kind === 'weapon' ? 48 : portraitSize4, borderRadius: '50%', overflow: 'hidden',
+            border: '2px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 0 0 2px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.25)',
             display: 'grid', placeItems: 'center', background: 'rgba(0,0,0,0.18)',
           }}>
             <PortraitImg item={it} />
@@ -227,6 +252,11 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
   const items = bannerFeatured(banner)
   const category = bannerCategory(banner)
 
+  const fourStarChars = (banner.fourStarCharacters ?? []).map((name, i) => ({ name, icon: banner.fourStarCharacterIcons?.[i], kind: 'character' as const }))
+  const fourStarWeps = (banner.fourStarWeapons ?? []).map((name, i) => ({ name, icon: banner.fourStarWeaponIcons?.[i], kind: 'weapon' as const }))
+  const fourStarItems = [...fourStarChars, ...fourStarWeps]
+  const hasFourStar = fourStarItems.length > 0
+
   return (
     <div className="stat-card" style={{ borderRadius: 'var(--radius-card)', overflow: 'hidden', border: '1px solid var(--gold-line)', background: 'var(--color-card)' }}>
       {/* Gold header */}
@@ -262,9 +292,29 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
               </span>
             </div>
           ))}
+          {hasFourStar && fourStarItems.map((it, i) => (
+            <div key={`4-${i}`} style={{ width: 56, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+              <div style={{
+                width: 42, height: 42, borderRadius: '50%', overflow: 'hidden', border: '1.5px solid rgba(0,0,0,0.1)',
+                display: 'grid', placeItems: 'center',
+                background: it.kind === 'weapon'
+                  ? 'radial-gradient(circle at 40% 30%, #d9c48f, #9c7c3e)'
+                  : 'radial-gradient(circle at 40% 30%, var(--r5-a), var(--r5-b))',
+              }}>
+                <PortraitImg item={it} />
+              </div>
+              <span style={{
+                fontSize: '0.55rem', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--color-parch-ink)',
+                textAlign: 'center', lineHeight: 1.15, maxWidth: 56,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {it.name}
+              </span>
+            </div>
+          ))}
         </div>
         <div style={{ marginTop: '0.75rem', fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)' }}>
-          {endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'} · {items.length} featured 5★
+          {endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'} · {items.length} featured 5{hasFourStar ? ` + ${fourStarItems.length} 4★` : '★'}
         </div>
       </div>
     </div>

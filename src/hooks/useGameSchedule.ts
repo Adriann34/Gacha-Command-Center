@@ -19,6 +19,10 @@ export interface GameBanner {
   characterIcons?: string[] // matching icon URLs, same order as characters
   weapons: string[]         // featured 5-star weapon name(s)
   weaponIcons?: string[]    // matching icon URLs, same order as weapons
+  fourStarCharacters?: string[]
+  fourStarCharacterIcons?: string[]
+  fourStarWeapons?: string[]
+  fourStarWeaponIcons?: string[]
   startDate: string         // ISO
   endDate: string           // ISO
   imageUrl?: string
