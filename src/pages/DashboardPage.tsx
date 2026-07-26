@@ -184,8 +184,19 @@ function BannerCard({ banner }: { banner: GameBanner }) {
   const urgent = days !== null && days <= 3
   const items = bannerFeatured(banner)
   const category = bannerCategory(banner)
-  const portraitSize5 = items.length <= 1 ? 72 : 56
-  const portraitSize4 = 56
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const isWeapon = category === 'Weapon Event Wish'
+  const scale = isWeapon && isMobile ? 0.8 : 1
+  const gap = isWeapon && isMobile ? '0.3rem' : '0.5rem'
+  const portraitSize5 = (items.length <= 1 ? 72 : 56) * scale
+  const portraitSize4 = 56 * scale
 
   const fourStarChars = (banner.fourStarCharacters ?? []).map((name, i) => ({ name, icon: banner.fourStarCharacterIcons?.[i], kind: 'character' as const }))
   const fourStarWeps = (banner.fourStarWeapons ?? []).map((name, i) => ({ name, icon: banner.fourStarWeaponIcons?.[i], kind: 'weapon' as const }))
@@ -196,7 +207,7 @@ function BannerCard({ banner }: { banner: GameBanner }) {
     <div className="stat-card" style={{ borderRadius: 'var(--radius-card)', overflow: 'hidden', border: '1px solid var(--gold-line)', background: 'var(--color-card)', display: 'flex', flexDirection: 'column' }}>
       {/* Rarity splash — 5★ portraits then 4★, all centered as a group */}
       <div style={{
-        height: 118, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+        height: 118, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap,
         background: 'radial-gradient(circle at 50% 15%, var(--r5-a), var(--r5-b) 70%, #7c5c2e)',
       }}>
         {items.map((it, i) => (
@@ -209,10 +220,9 @@ function BannerCard({ banner }: { banner: GameBanner }) {
             <PortraitImg item={it} />
           </div>
         ))}
-        {hasFourStar && <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', margin: '0 0.1rem' }}>·</span>}
         {fourStarItems.map((it, i) => (
           <div key={`4-${i}`} style={{
-            width: it.kind === 'weapon' ? 48 : portraitSize4, height: it.kind === 'weapon' ? 48 : portraitSize4, borderRadius: '50%', overflow: 'hidden',
+            width: it.kind === 'weapon' ? 48 * scale : portraitSize4, height: it.kind === 'weapon' ? 48 * scale : portraitSize4, borderRadius: '50%', overflow: 'hidden',
             border: '2px solid rgba(255,255,255,0.35)',
             boxShadow: '0 0 0 2px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.25)',
             display: 'grid', placeItems: 'center', background: 'rgba(0,0,0,0.18)',
