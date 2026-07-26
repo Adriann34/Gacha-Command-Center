@@ -64,6 +64,37 @@ function RewardChip({ event }: { event: CalendarEvent }) {
   )
 }
 
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+function toRoman(n: number): string {
+  return ROMAN[n] ?? String(n)
+}
+
+// Stygian Onslaught ships one medal per difficulty tier (numeral baked into the art). We host them
+// under /public and map the payload's `difficulty` (1..6) to the matching medal. Tiers outside this
+// range render nothing (the medal is omitted; the clear time still shows).
+const STYGIAN_MEDALS: Record<number, string> = {
+  1: '/icons/stygian/stygian-1.webp',
+  2: '/icons/stygian/stygian-2.webp',
+  3: '/icons/stygian/stygian-3.webp',
+  4: '/icons/stygian/stygian-4.webp',
+  5: '/icons/stygian/stygian-5.webp',
+  6: '/icons/stygian/stygian-6.webp',
+}
+
+/** The Stygian Onslaught difficulty tier, drawn as the in-game medal icon for that tier. */
+function DifficultyMedal({ tier }: { tier: number }) {
+  const src = STYGIAN_MEDALS[tier]
+  if (!src) return null
+  return (
+    <img
+      src={src}
+      alt={`Cleared Difficulty ${toRoman(tier)}`}
+      title={`Cleared Difficulty ${toRoman(tier)}`}
+      style={{ width: 20, height: 20, objectFit: 'contain', flexShrink: 0 }}
+    />
+  )
+}
+
 /** The right-hand status cell: done / not-yet-available / best-time / doubles-left / in-progress. */
 function StatusCell({ event }: { event: CalendarEvent }) {
   const base: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap' }
@@ -75,7 +106,15 @@ function StatusCell({ event }: { event: CalendarEvent }) {
     return <span style={{ ...base, color: MUTED, fontWeight: 600 }}>Not Yet Available <ChevronRight size={14} /></span>
   }
   if (event.type === 'ActTypeHardChallenge' && (event.hardChallengeSeconds ?? 0) > 0) {
-    return <span style={{ ...base, color: GOLD }}><Timer size={14} /> {event.hardChallengeSeconds}s <ChevronRight size={14} color={MUTED} /></span>
+    // The app shows the cleared difficulty tier (a roman-numeral medal) beside the best clear time.
+    // The payload's `icon` is empty, so we render the medal from `difficulty` ourselves.
+    const tier = event.hardChallengeDifficulty ?? 0
+    return (
+      <span style={{ ...base, color: GOLD }}>
+        {tier > 0 ? <DifficultyMedal tier={tier} /> : <Timer size={14} />}
+        {event.hardChallengeSeconds}s <ChevronRight size={14} color={MUTED} />
+      </span>
+    )
   }
   if (event.type === 'ActTypeDouble' && event.doubleTotal) {
     return (

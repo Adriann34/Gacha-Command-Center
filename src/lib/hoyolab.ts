@@ -100,6 +100,7 @@ export interface CalendarEvent {
   isFinished: boolean
   headlineReward: CalendarReward | null
   hardChallengeSeconds?: number
+  hardChallengeDifficulty?: number
   doubleRemaining?: number
   doubleTotal?: number
   towerUnlocked?: boolean
