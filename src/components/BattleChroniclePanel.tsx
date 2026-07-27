@@ -276,7 +276,11 @@ function DailiesCard({ notes, syncedAt, reference }: { notes: ChronicleNotes; sy
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>Reset Countdown</span>
-            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums' }}>{formatReset(resetSeconds)}</span>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', padding: '0.1rem 0.45rem',
+              borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
+              fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums',
+            }}>{formatReset(resetSeconds)}</span>
           </div>
         </div>
       )}
