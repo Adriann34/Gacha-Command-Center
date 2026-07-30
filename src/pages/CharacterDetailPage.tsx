@@ -44,7 +44,6 @@ function CollapsibleSection({ heading, alwaysVisible, collapsible }: { heading: 
 }
 
 function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; propMap: Record<string, HoyoPropInfo> }) {
-  const isGoldStat = (pt: number) => pt === 20 || pt === 22
   const isPercentStat = (pt: number) => pt !== 2000 && pt !== 2001 && pt !== 2002
   const mainIsGold = isPercentStat(artifact.main_property.property_type)
   const label = propMap[String(artifact.main_property.property_type)]?.name ?? `Stat #${artifact.main_property.property_type}`

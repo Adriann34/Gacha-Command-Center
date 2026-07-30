@@ -6,10 +6,6 @@ import { ELEMENT_COLORS } from '../lib/genshinCharacters'
 import { syncChronicle } from '../lib/hoyolab'
 import type { CharacterEntry } from '../lib/hoyolab'
 
-const WEAPON_TYPE_LABELS: Record<number, string> = {
-  1: 'Sword', 10: 'Catalyst', 11: 'Claymore', 12: 'Bow', 13: 'Polearm',
-}
-
 function PageHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <>
