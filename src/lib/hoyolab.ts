@@ -236,3 +236,184 @@ async function fetchRawPayload(path: string): Promise<RawPayloadResult> {
   if (!res.ok) await parseError(res)
   return (await res.json()) as RawPayloadResult
 }
+
+// --- Character List (stored in Firestore characters/{uid}) ---
+
+export interface CharacterWeaponBrief {
+  id: number
+  icon: string
+  type: number
+  rarity: number
+  level: number
+  affix_level: number
+  name: string
+}
+
+export interface CharacterEntry {
+  id: number
+  icon: string
+  sideIcon: string
+  image: string
+  name: string
+  element: string
+  rarity: number
+  level: number
+  friendship: number
+  constellation: number
+  isChosen: boolean
+  weaponType: number
+  weapon: CharacterWeaponBrief
+}
+
+// --- Character Detail (from POST /hoyolab/character-detail, raw HOYO shape) ---
+
+export interface HoyoPropInfo {
+  property_type: number
+  name: string
+  icon: string
+  filter_name: string
+}
+
+export interface HoyoPropertyValue {
+  property_type: number
+  base: string
+  add: string
+  final: string
+}
+
+export interface HoyoDetailWeapon {
+  id: number
+  name: string
+  icon: string
+  type: number
+  type_name: string
+  rarity: number
+  level: number
+  promote_level: number
+  affix_level: number
+  desc: string
+  main_property: HoyoPropertyValue
+  sub_property?: HoyoPropertyValue
+}
+
+export interface HoyoArtifactSetEffect {
+  activation_number: number
+  effect: string
+}
+
+export interface HoyoArtifactSet {
+  id: number
+  name: string
+  affixes: HoyoArtifactSetEffect[]
+}
+
+export interface HoyoArtifactProp {
+  property_type: number
+  value: string
+  times: number
+}
+
+export interface HoyoDetailArtifact {
+  id: number
+  name: string
+  icon: string
+  pos: number
+  rarity: number
+  level: number
+  set: HoyoArtifactSet
+  pos_name: string
+  main_property: HoyoArtifactProp
+  sub_property_list: HoyoArtifactProp[]
+}
+
+export interface HoyoConstellation {
+  id: number
+  name: string
+  icon: string
+  effect: string
+  is_actived: boolean
+  pos: number
+  is_enhanced: boolean
+  enhanced_effect: string
+  can_enhanced: boolean
+}
+
+export interface HoyoSkillAffix {
+  name: string
+  value: string
+}
+
+export interface HoyoCharacterSkill {
+  skill_id: number
+  skill_type: number
+  level: number
+  desc: string
+  skill_affix_list: HoyoSkillAffix[]
+  icon: string
+  is_unlock: boolean
+  name: string
+  is_enhanced: boolean
+}
+
+export interface HoyoDetailCharacterBase {
+  id: number
+  icon: string
+  name: string
+  element: string
+  fetter: number
+  level: number
+  rarity: number
+  actived_constellation_num: number
+  image: string
+  is_chosen: boolean
+  side_icon: string
+  weapon_type: number
+  weapon: {
+    id: number
+    icon: string
+    type: number
+    rarity: number
+    level: number
+    affix_level: number
+    name: string
+  }
+}
+
+export interface HoyoDetailCharacter {
+  base: HoyoDetailCharacterBase
+  weapon: HoyoDetailWeapon
+  relics: HoyoDetailArtifact[]
+  constellations: HoyoConstellation[]
+  skills: HoyoCharacterSkill[]
+  costumes: Array<{ id?: number; icon?: string; name?: string }>
+  selected_properties: HoyoPropertyValue[]
+  base_properties: HoyoPropertyValue[]
+  extra_properties: HoyoPropertyValue[]
+  element_properties: HoyoPropertyValue[]
+  recommend_relic_property?: Record<string, unknown>
+  weapon_skin?: Record<string, unknown>
+}
+
+export interface HoyoCharacterDetailResponse {
+  list: HoyoDetailCharacter[]
+  property_map: Record<string, HoyoPropInfo>
+  relic_property_options?: Record<string, number[]>
+  relic_wiki?: Record<string, string>
+  weapon_wiki?: Record<string, string>
+  avatar_wiki?: Record<string, string>
+}
+
+export async function fetchCharacterDetails(characterIds: number[]): Promise<HoyoCharacterDetailResponse> {
+  const base = requireWorker()
+  const headers = { 'Content-Type': 'application/json', ...(await authHeader()) }
+  let res: Response
+  try {
+    res = await fetch(`${base}/hoyolab/character-detail`, {
+      method: 'POST', headers, body: JSON.stringify({ character_ids: characterIds }),
+    })
+  } catch (err) {
+    throw new HoyoError(`Could not reach the Worker: ${err instanceof Error ? err.message : String(err)}`)
+  }
+  if (!res.ok) await parseError(res)
+  return (await res.json()) as HoyoCharacterDetailResponse
+}

@@ -8,6 +8,8 @@ import TrackerPage from './pages/TrackerPage'
 import AccountPage from './pages/AccountPage'
 import SettingsPage from './pages/SettingsPage'
 import DevChroniclePage from './pages/DevChroniclePage'
+import CharactersPage from './pages/CharactersPage'
+import CharacterDetailPage from './pages/CharacterDetailPage'
 import DashboardLayout from './components/layout/DashboardLayout'
 import { isDevUser } from './lib/devAccess'
 
@@ -63,6 +65,8 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="tracker" element={<TrackerPage />} />
             <Route path="account" element={<AccountPage />} />
+            <Route path="characters" element={<CharactersPage />} />
+            <Route path="characters/:id" element={<CharacterDetailPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="dev/chronicle" element={<DevRoute><DevChroniclePage /></DevRoute>} />
           </Route>

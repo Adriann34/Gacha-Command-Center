@@ -100,6 +100,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Per-user character list snapshot from HoYoLAB's character/list endpoint. Written only by the
+    // Worker's Admin SDK; the owner reads it live via onSnapshot to render My Characters.
+    match /characters/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
     // Deny-by-default for any collection not explicitly matched above, so a future collection is
     // never accidentally left open.
     match /{document=**} {
