@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, AlertCircle, RefreshCw, Sparkles } from 'lucide-react'
+import { ArrowLeft, AlertCircle, RefreshCw, Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { useCharacterList } from '../hooks/useCharacterList'
 import { ELEMENT_COLORS } from '../lib/genshinCharacters'
 import {
@@ -9,7 +9,6 @@ import {
   type HoyoDetailCharacter,
   type HoyoPropInfo,
   type HoyoDetailArtifact,
-  type HoyoCharacterSkill,
 } from '../lib/hoyolab'
 
 const WEAPON_TYPE_LABELS: Record<number, string> = {
@@ -20,96 +19,97 @@ function elementAccent(element: string): string {
   return ELEMENT_COLORS[element as keyof typeof ELEMENT_COLORS] ?? ELEMENT_COLORS.Unknown
 }
 
-function statsBg(propertyType: number): string {
-  if (propertyType === 20 || propertyType === 22 || propertyType === 23) return 'rgba(211,188,142,0.08)'
-  return 'rgba(255,255,255,0.03)'
+function stripColorTags(text: string): string {
+  return text.replace(/<color=#[0-9A-Fa-f]+>/g, '').replace(/<\/color>/g, '').replace(/\\n/g, '\n')
 }
 
-function statsColor(propertyType: number): string {
-  if (propertyType === 20 || propertyType === 22 || propertyType === 23) return 'var(--color-gold-bright)'
-  return 'var(--color-text-primary)'
-}
-
-function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; propMap: Record<string, HoyoPropInfo> }) {
-  const label = propMap[String(artifact.main_property.property_type)]?.name ?? `Stat #${artifact.main_property.property_type}`
+function CollapsibleSection({ heading, alwaysVisible, collapsible }: { heading: string; alwaysVisible: React.ReactNode; collapsible: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
   return (
-    <div className="card" style={{ padding: '0.75rem', display: 'flex', gap: '0.625rem' }}>
-      <img
-        src={artifact.icon}
-        alt={artifact.set.name}
-        style={{ width: 48, height: 48, borderRadius: '0.4rem', flexShrink: 0, objectFit: 'cover', background: 'rgba(0,0,0,0.2)' }}
-        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-      />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.375rem' }}>
-          <div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {artifact.set.name}
-            </div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>
-              {artifact.pos_name}
-            </div>
-          </div>
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: elementAccent(artifact.main_property.property_type === 20 || artifact.main_property.property_type === 22 || artifact.main_property.property_type === 23 ? 'Pyro' : 'Unknown') }}>
-              {label}
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-primary)', fontWeight: 600 }}>
-              {artifact.main_property.value}+{artifact.level}
-            </div>
-          </div>
+    <section style={{ marginBottom: '1.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        <h2 className="section-heading" style={{ fontSize: '1rem', margin: 0 }}>{heading}</h2>
+        <div onClick={() => setOpen(!open)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', userSelect: 'none', padding: '0.15rem' }}>
+          {open ? <ChevronUp size={15} color="var(--color-gold-bright)" /> : <ChevronDown size={15} color="var(--color-gold-bright)" />}
         </div>
-        {artifact.sub_property_list.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem 0.5rem', marginTop: '0.375rem' }}>
-            {artifact.sub_property_list.map((sp, i) => {
-              const spLabel = propMap[String(sp.property_type)]?.name ?? `Stat #${sp.property_type}`
-              const isGold = sp.property_type === 20 || sp.property_type === 22
-              const dotCount = Math.min(sp.times, 6)
-              return (
-                <div key={i} style={{ fontSize: '0.65rem', color: isGold ? 'var(--color-gold-bright)' : 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                  <span>{spLabel} <strong>{sp.value}</strong></span>
-                  {dotCount > 0 && (
-                    <span style={{ display: 'inline-flex', gap: '0.1rem' }}>
-                      {Array.from({ length: dotCount }, (_, d) => (
-                        <span key={d} style={{
-                          width: 4, height: 4, borderRadius: '50%',
-                          background: isGold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)',
-                          display: 'inline-block',
-                        }} />
-                      ))}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
       </div>
-    </div>
+      {alwaysVisible}
+      {open && (
+        <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+          {collapsible}
+        </div>
+      )}
+    </section>
   )
 }
 
-function TalentCard({ skill }: { skill: HoyoCharacterSkill }) {
+function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; propMap: Record<string, HoyoPropInfo> }) {
+  const isGoldStat = (pt: number) => pt === 20 || pt === 22
+  const isPercentStat = (pt: number) => pt !== 2000 && pt !== 2001 && pt !== 2002
+  const mainIsGold = isPercentStat(artifact.main_property.property_type)
+  const label = propMap[String(artifact.main_property.property_type)]?.name ?? `Stat #${artifact.main_property.property_type}`
   return (
-    <div className="card" style={{ padding: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.625rem', flex: '1 1 0' }}>
-      {skill.icon ? (
+    <div className="card" style={{ padding: '0.75rem', width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+        <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0, paddingRight: '0.375rem' }}>
+          {artifact.set.name}
+        </div>
         <img
-          src={skill.icon}
-          alt={skill.name}
-          style={{ width: 40, height: 40, borderRadius: '0.35rem', flexShrink: 0, objectFit: 'cover', background: 'rgba(0,0,0,0.2)' }}
+          src={artifact.icon}
+          alt={artifact.set.name}
+          style={{ width: 32, height: 32, borderRadius: '0.35rem', flexShrink: 0, objectFit: 'cover', background: 'rgba(0,0,0,0.2)' }}
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
         />
-      ) : (
-        <div style={{ width: 40, height: 40, borderRadius: '0.35rem', flexShrink: 0, background: 'rgba(0,0,0,0.2)' }} />
-      )}
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {skill.name}
-        </div>
-        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-gold)' }}>
-          Lv. {skill.level}
-        </div>
       </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.125rem' }}>
+        <span style={{
+          fontSize: '0.6rem', fontWeight: 700, color: 'var(--color-text-muted)',
+          padding: '0.1rem 0.35rem', borderRadius: '0.25rem',
+          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          Lv. {artifact.level}
+        </span>
+        <span style={{ color: '#c9962e', fontSize: '0.55rem', letterSpacing: '0.5px' }}>
+          {'★'.repeat(artifact.rarity)}
+        </span>
+      </div>
+      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: mainIsGold ? 'var(--color-gold-bright)' : 'var(--color-text-primary)', marginTop: '0.5rem', marginBottom: '0.1rem', lineHeight: 1.2 }}>
+        {label}
+      </div>
+      <div style={{ fontSize: '1rem', fontWeight: 800, color: mainIsGold ? 'var(--color-gold-bright)' : 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+        {artifact.main_property.value}
+      </div>
+      {artifact.sub_property_list.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', borderTop: '1px solid var(--gold-line-soft)', paddingTop: '0.4rem' }}>
+          {artifact.sub_property_list.map((sp, i) => {
+            const spLabel = propMap[String(sp.property_type)]?.name ?? `Stat #${sp.property_type}`
+            const gold = sp.property_type === 20 || sp.property_type === 22
+            const dotCount = Math.min(sp.times, 6)
+            return (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', minWidth: 0 }}>
+                  <span style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: gold ? 700 : 600 }}>
+                    {spLabel}
+                  </span>
+                  {dotCount > 0 && (
+                    <span style={{
+                      fontSize: '0.55rem', fontWeight: 700, color: 'var(--color-text-muted)', lineHeight: 1,
+                      padding: '0.08rem 0.25rem', borderRadius: '0.2rem',
+                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.06)',
+                      flexShrink: 0,
+                    }}>
+                      {dotCount}
+                    </span>
+                  )}
+                </div>
+                <span style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', fontWeight: gold ? 700 : 600, flexShrink: 0, marginLeft: '0.25rem' }}>
+                  {sp.value}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -150,6 +150,21 @@ export default function CharacterDetailPage() {
 
   const totalFriendship = listEntry?.friendship ?? 0
   const accent = listEntry ? elementAccent(listEntry.element) : 'var(--color-gold)'
+
+  const majorAffixTypes = useMemo(() => {
+    if (!detail) return new Set<number>()
+    const s = new Set<number>()
+    for (const r of detail.relics) {
+      if (r.pos === 3 || r.pos === 4 || r.pos === 5) {
+        s.add(r.main_property.property_type)
+      }
+    }
+    return s
+  }, [detail])
+
+  const isMajorAffix = useCallback((propertyType: number): boolean => {
+    return majorAffixTypes.has(propertyType)
+  }, [majorAffixTypes])
 
   function resolvePropLabel(propType: number): string {
     return propMap[String(propType)]?.name ?? `Stat #${propType}`
@@ -336,13 +351,14 @@ export default function CharacterDetailPage() {
             }}>
               {detail.selected_properties.map((prop) => {
                 const addVal = prop.add ? Number(prop.add) : 0
+                const major = isMajorAffix(prop.property_type)
                 return (
                   <div
                     key={prop.property_type}
                     className="card"
                     style={{
                       padding: '0.625rem 0.75rem', display: 'flex', justifyContent: 'space-between',
-                      alignItems: 'center', background: statsBg(prop.property_type),
+                      alignItems: 'center', background: major ? 'rgba(211,188,142,0.08)' : 'rgba(255,255,255,0.03)',
                     }}
                   >
                     <div>
@@ -355,7 +371,7 @@ export default function CharacterDetailPage() {
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: statsColor(prop.property_type) }}>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: major ? 'var(--color-gold-bright)' : 'var(--color-text-primary)' }}>
                       {prop.final}
                     </div>
                   </div>
@@ -461,7 +477,7 @@ export default function CharacterDetailPage() {
                           ))}
                         </div>
                       )}
-                      <div style={{ display: 'grid', gap: '0.5rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
                         {detail.relics
                           .sort((a, b) => a.pos - b.pos)
                           .map((r) => (
@@ -475,94 +491,164 @@ export default function CharacterDetailPage() {
             )}
           </section>
 
-          <section style={{ marginBottom: '1.75rem' }}>
-            <h2 className="section-heading" style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Talents</h2>
-            {detail.skills.length === 0 ? (
-              <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                No talent data available
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap' }}>
-                {detail.skills
-                  .filter((s) => s.skill_type === 1)
-                  .slice(0, 3)
-                  .map((s) => (
-                    <TalentCard key={s.skill_id} skill={s} />
-                  ))}
-              </div>
-            )}
-          </section>
-
-          <section style={{ marginBottom: '1.75rem' }}>
-            <h2 className="section-heading" style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Constellations</h2>
-            {detail.constellations.length === 0 ? (
-              <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                No constellations unlocked
-              </div>
-            ) : (
-              <div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: 0, marginBottom: '0.5rem',
-                }}>
-                  {detail.constellations
-                    .sort((a, b) => a.pos - b.pos)
-                    .map((c, i) => {
-                      const isActive = c.is_actived
-                      const isLast = i === detail.constellations.length - 1
-                      return (
-                        <div key={c.id} style={{ display: 'flex', alignItems: 'center' }}>
-                          <div style={{
-                            width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-                            display: 'grid', placeItems: 'center',
-                            border: isActive ? '2px solid var(--color-gold-bright)' : '1px solid var(--color-text-muted)',
-                            background: isActive
-                              ? `radial-gradient(circle at 35% 30%, rgba(240,220,172,0.3), rgba(240,220,172,0.05))`
-                              : 'rgba(0,0,0,0.3)',
-                            boxShadow: isActive ? '0 0 12px rgba(240,220,172,0.4)' : 'none',
-                            transition: 'border-color 0.2s, box-shadow 0.2s',
-                          }}>
-                            <img
-                              src={c.icon}
-                              alt={c.name}
-                              style={{
-                                width: 26, height: 26, objectFit: 'contain',
-                                opacity: isActive ? 1 : 0.35,
-                                filter: isActive ? 'none' : 'grayscale(0.8)',
-                              }}
-                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                            />
-                          </div>
-                          {!isLast && (
-                            <div style={{
-                              width: 24, height: 2,
-                              background: isActive && detail.constellations[i + 1]?.is_actived
-                                ? 'linear-gradient(90deg, var(--color-gold-bright), var(--color-gold-deep))'
-                                : 'var(--color-text-muted)',
-                              opacity: isActive && detail.constellations[i + 1]?.is_actived ? 1 : 0.3,
-                            }} />
-                          )}
-                        </div>
-                      )
-                    })}
+          <CollapsibleSection
+            heading="Talents"
+            alwaysVisible={
+              detail.skills.length === 0 ? (
+                <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                  No talent data available
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  {detail.constellations.sort((a, b) => a.pos - b.pos).map((c) => (
-                    <div key={c.id} style={{
-                      fontSize: '0.65rem', fontFamily: '"JetBrains Mono", monospace',
-                      color: c.is_actived ? 'var(--color-gold-bright)' : 'var(--color-text-muted)',
-                      fontWeight: 700, textAlign: 'center', width: 44,
-                    }}>
-                      C{c.pos}
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.625rem' }}>
+                  {detail.skills.map((s) => (
+                    <div key={s.skill_id} className="card" style={{ padding: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.625rem', width: '100%' }}>
+                      {s.icon ? (
+                        <img
+                          src={s.icon}
+                          alt={s.name}
+                          style={{ width: 40, height: 40, borderRadius: '0.35rem', flexShrink: 0, objectFit: 'cover', background: 'rgba(0,0,0,0.2)' }}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                        />
+                      ) : (
+                        <div style={{ width: 40, height: 40, borderRadius: '0.35rem', flexShrink: 0, background: 'rgba(0,0,0,0.2)' }} />
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {s.name}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-gold)' }}>
+                          Lv. {s.level}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <div style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--color-gold)', fontWeight: 700 }}>
-                  C{detail.base?.actived_constellation_num ?? 0} Unlocked
+              )
+            }
+            collapsible={
+              detail.skills.length === 0 ? null : (
+                <>
+                  {detail.skills.map((s) => (
+                    <div key={s.skill_id} style={{ marginBottom: '0.75rem' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.25rem', fontSize: '0.82rem' }}>
+                        {s.skill_type !== 1 ? '(Passive) ' : ''}{s.name}
+                      </div>
+                      <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.78rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{stripColorTags(s.desc)}</div>
+                      {s.skill_affix_list.length > 0 && (
+                        <div style={{ marginTop: '0.375rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                          {s.skill_affix_list.map((a, i) => (
+                            <div key={i} style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+                              <span style={{ color: 'var(--color-gold)', fontWeight: 600 }}>{a.name}</span>: {a.value}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </>
+              )
+            }
+          />
+
+          <CollapsibleSection
+            heading="Constellations"
+            alwaysVisible={
+              detail.constellations.length === 0 ? (
+                <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                  No constellations unlocked
                 </div>
-              </div>
-            )}
-          </section>
+              ) : (
+                <>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: 0, marginBottom: '0.5rem',
+                  }}>
+                    {detail.constellations
+                      .sort((a, b) => a.pos - b.pos)
+                      .map((c, i) => {
+                        const isActive = c.is_actived
+                        const isLast = i === detail.constellations.length - 1
+                        return (
+                          <div key={c.id} style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{
+                              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+                              display: 'grid', placeItems: 'center',
+                              border: isActive ? '2px solid var(--color-gold-bright)' : '1px solid var(--color-text-muted)',
+                              background: isActive
+                                ? `radial-gradient(circle at 35% 30%, rgba(240,220,172,0.3), rgba(240,220,172,0.05))`
+                                : 'rgba(0,0,0,0.3)',
+                              boxShadow: isActive ? '0 0 12px rgba(240,220,172,0.4)' : 'none',
+                              transition: 'border-color 0.2s, box-shadow 0.2s',
+                            }}>
+                              <img
+                                src={c.icon}
+                                alt={c.name}
+                                style={{
+                                  width: 26, height: 26, objectFit: 'contain',
+                                  opacity: isActive ? 1 : 0.35,
+                                  filter: isActive ? 'none' : 'grayscale(0.8)',
+                                }}
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                              />
+                            </div>
+                            {!isLast && (
+                              <div style={{
+                                width: 24, height: 2,
+                                background: isActive && detail.constellations[i + 1]?.is_actived
+                                  ? 'linear-gradient(90deg, var(--color-gold-bright), var(--color-gold-deep))'
+                                  : 'var(--color-text-muted)',
+                                opacity: isActive && detail.constellations[i + 1]?.is_actived ? 1 : 0.3,
+                              }} />
+                            )}
+                          </div>
+                        )
+                      })}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    {detail.constellations.sort((a, b) => a.pos - b.pos).map((c) => (
+                      <div key={c.id} style={{
+                        fontSize: '0.65rem', fontFamily: '"JetBrains Mono", monospace',
+                        color: c.is_actived ? 'var(--color-gold-bright)' : 'var(--color-text-muted)',
+                        fontWeight: 700, textAlign: 'center', width: 44,
+                      }}>
+                        C{c.pos}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--color-gold)', fontWeight: 700 }}>
+                    C{detail.base?.actived_constellation_num ?? 0} Unlocked
+                  </div>
+                </>
+              )
+            }
+            collapsible={
+              detail.constellations.length === 0 ? null : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem' }}>
+                  {detail.constellations.sort((a, b) => a.pos - b.pos).map((c) => (
+                    <div key={c.id} className="card" style={{ padding: '0.625rem 0.75rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                      <img
+                        src={c.icon}
+                        alt={c.name}
+                        style={{
+                          width: 28, height: 28, borderRadius: '50%', flexShrink: 0, objectFit: 'contain',
+                          opacity: c.is_actived ? 1 : 0.4, filter: c.is_actived ? 'none' : 'grayscale(0.8)',
+                        }}
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: c.is_actived ? 'var(--color-gold-bright)' : 'var(--color-text-muted)' }}>
+                          C{c.pos}: {c.name}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, marginTop: '0.15rem' }}>
+                          {c.effect}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+          />
         </>
       )}
 

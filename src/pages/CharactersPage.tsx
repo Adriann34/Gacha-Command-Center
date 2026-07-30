@@ -34,12 +34,13 @@ function CharacterCard({ character, onClick }: { character: CharacterEntry; onCl
     <div
       onClick={onClick}
       style={{
-        background: 'var(--color-card)',
+        background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 10%, var(--color-surface-900)), var(--color-surface-800))`,
         border: '1px solid var(--gold-line)',
         borderRadius: 'var(--radius-card)',
         overflow: 'hidden',
         cursor: 'pointer',
         transition: 'transform 0.2s, border-color 0.2s, box-shadow 0.2s',
+        position: 'relative',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)'
@@ -53,6 +54,11 @@ function CharacterCard({ character, onClick }: { character: CharacterEntry; onCl
       }}
     >
       <div style={{ position: 'relative', paddingTop: '75%', background: 'rgba(0,0,0,0.15)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, overflow: 'hidden',
+          background: `radial-gradient(circle at 50% 30%, color-mix(in srgb, ${accent} 20%, transparent), transparent 70%)`,
+          pointerEvents: 'none',
+        }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'grid', placeItems: 'center' }}>
           {!iconFailed ? (
             <img
