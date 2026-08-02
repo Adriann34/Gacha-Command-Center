@@ -66,6 +66,22 @@ function skillKindLabel(skillType: number): string {
   return 'Passive Talent'
 }
 
+function CharacterBanner({ sources, alt }: { sources: string[]; alt: string }) {
+  const [sourceIndex, setSourceIndex] = useState(0)
+  const source = sources[sourceIndex]
+
+  if (!source) return null
+
+  return (
+    <img
+      src={source}
+      alt={alt}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      onError={() => setSourceIndex((current) => current + 1)}
+    />
+  )
+}
+
 function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; propMap: Record<string, HoyoPropInfo> }) {
   const label = propMap[String(artifact.main_property.property_type)]?.name ?? `Stat #${artifact.main_property.property_type}`
   const SlotIcon = ARTIFACT_SLOT_ICONS[artifact.pos] ?? Gem
@@ -408,6 +424,15 @@ export default function CharacterDetailPage() {
 
   const totalFriendship = listEntry?.friendship ?? 0
   const accent = listEntry ? elementAccent(listEntry.element) : 'var(--color-gold)'
+  const bannerSources = useMemo(() => {
+    if (!listEntry) return []
+    return [...new Set([
+      listEntry.image,
+      detail?.base?.image ?? '',
+      listEntry.sideIcon,
+      detail?.base?.side_icon ?? '',
+    ])].filter(Boolean)
+  }, [listEntry, detail?.base?.image, detail?.base?.side_icon])
 
   function resolvePropLabel(propType: number): string {
     return propMap[String(propType)]?.name ?? `Stat #${propType}`
@@ -603,24 +628,8 @@ export default function CharacterDetailPage() {
           <span className="detail-pill detail-pill-lv detail-hero-lv">
             Lv. {detail?.base?.level ?? listEntry.level}
           </span>
-          {detail?.base?.image ? (
-            <img
-              src={detail.base.image}
-              alt={listEntry.name}
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement
-                if (detail?.base?.side_icon) img.src = detail.base.side_icon
-                else img.style.display = 'none'
-              }}
-            />
-          ) : listEntry.sideIcon ? (
-            <img
-              src={listEntry.sideIcon}
-              alt={listEntry.name}
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-            />
+          {bannerSources.length > 0 ? (
+            <CharacterBanner key={characterId} sources={bannerSources} alt={listEntry.name} />
           ) : (
             <div style={{ display: 'grid', placeItems: 'center' }}>
               <Sparkles size={32} color="var(--color-gold)" style={{ opacity: 0.5 }} />
