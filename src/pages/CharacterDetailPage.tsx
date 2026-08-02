@@ -50,7 +50,7 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
   return (
     <div className="card" style={{ padding: '0.75rem', width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-        <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0, paddingRight: '0.375rem' }}>
+        <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', lineHeight: 1.3, flex: 1, minWidth: 0, paddingRight: '0.375rem' }}>
           {artifact.set.name}
         </div>
         <img
@@ -87,7 +87,7 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
             return (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', minWidth: 0 }}>
-                  <span style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: gold ? 700 : 600 }}>
+                  <span style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', lineHeight: 1.3, fontWeight: gold ? 700 : 600 }}>
                     {spLabel}
                   </span>
                   {dotCount > 0 && (
@@ -358,6 +358,7 @@ export default function CharacterDetailPage() {
                     style={{
                       padding: '0.625rem 0.75rem', display: 'flex', justifyContent: 'space-between',
                       alignItems: 'center', background: major ? 'rgba(211,188,142,0.08)' : 'rgba(255,255,255,0.03)',
+                      width: '100%', maxWidth: '100%', boxSizing: 'border-box',
                     }}
                   >
                     <div>
@@ -476,7 +477,7 @@ export default function CharacterDetailPage() {
                           ))}
                         </div>
                       )}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
+                      <div className="grid-r6">
                         {detail.relics
                           .sort((a, b) => a.pos - b.pos)
                           .map((r) => (
@@ -498,7 +499,7 @@ export default function CharacterDetailPage() {
                   No talent data available
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.625rem' }}>
+                <div className="grid-r6-tight">
                   {detail.skills.map((s) => (
                     <div key={s.skill_id} className="card" style={{ padding: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.625rem', width: '100%' }}>
                       {s.icon ? (
@@ -512,7 +513,7 @@ export default function CharacterDetailPage() {
                         <div style={{ width: 40, height: 40, borderRadius: '0.35rem', flexShrink: 0, background: 'rgba(0,0,0,0.2)' }} />
                       )}
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
                           {s.name}
                         </div>
                         <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-gold)' }}>
@@ -560,7 +561,7 @@ export default function CharacterDetailPage() {
                 <>
                   <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: 0, marginBottom: '0.5rem',
+                    flexWrap: 'wrap', gap: 0, marginBottom: '0.5rem',
                   }}>
                     {detail.constellations
                       .sort((a, b) => a.pos - b.pos)
@@ -569,8 +570,8 @@ export default function CharacterDetailPage() {
                         const isLast = i === detail.constellations.length - 1
                         return (
                           <div key={c.id} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{
-                              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+                            <div className="cons-node" style={{
+                              borderRadius: '50%', flexShrink: 0,
                               display: 'grid', placeItems: 'center',
                               border: isActive ? '2px solid var(--color-gold-bright)' : '1px solid var(--color-text-muted)',
                               background: isActive
@@ -582,8 +583,9 @@ export default function CharacterDetailPage() {
                               <img
                                 src={c.icon}
                                 alt={c.name}
+                                className="cons-icon"
                                 style={{
-                                  width: 26, height: 26, objectFit: 'contain',
+                                  objectFit: 'contain',
                                   opacity: isActive ? 1 : 0.35,
                                   filter: isActive ? 'none' : 'grayscale(0.8)',
                                 }}
@@ -591,8 +593,7 @@ export default function CharacterDetailPage() {
                               />
                             </div>
                             {!isLast && (
-                              <div style={{
-                                width: 24, height: 2,
+                              <div className="cons-link" style={{
                                 background: isActive && detail.constellations[i + 1]?.is_actived
                                   ? 'linear-gradient(90deg, var(--color-gold-bright), var(--color-gold-deep))'
                                   : 'var(--color-text-muted)',
@@ -603,12 +604,12 @@ export default function CharacterDetailPage() {
                         )
                       })}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
                     {detail.constellations.sort((a, b) => a.pos - b.pos).map((c) => (
-                      <div key={c.id} style={{
+                      <div key={c.id} className="cons-label" style={{
                         fontSize: '0.65rem', fontFamily: '"JetBrains Mono", monospace',
                         color: c.is_actived ? 'var(--color-gold-bright)' : 'var(--color-text-muted)',
-                        fontWeight: 700, textAlign: 'center', width: 44,
+                        fontWeight: 700, textAlign: 'center',
                       }}>
                         C{c.pos}
                       </div>

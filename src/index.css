@@ -430,3 +430,91 @@ body::before {
     font-size: 1.6rem !important;
   }
 }
+
+/* ---- Responsive grid: 6 columns on desktop, wraps down by breakpoint ----
+   Items stretch to fill their cell (w-full) and never let long content push
+   the track wider than the container (min-width: 0). */
+.grid-r6,
+.grid-r6-tight {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+}
+.grid-r6-tight {
+  gap: 0.625rem;
+}
+.grid-r6 > *,
+.grid-r6-tight > * {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .grid-r6,
+  .grid-r6-tight {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .grid-r6,
+  .grid-r6-tight {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 360px) {
+  .grid-r6,
+  .grid-r6-tight {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+/* ---- Constellation rail: scales proportionally so the full row always fits
+       the viewport. At the smallest screens the six 30px nodes + five 14px
+       links total 250px, well under a 288px content column. ---- */
+.cons-node {
+  width: 44px;
+  height: 44px;
+}
+.cons-link {
+  width: 24px;
+  height: 2px;
+}
+.cons-icon {
+  width: 26px;
+  height: 26px;
+}
+.cons-label {
+  width: 44px;
+}
+
+@media (max-width: 640px) {
+  .cons-node {
+    width: 36px;
+    height: 36px;
+  }
+  .cons-link {
+    width: 20px;
+  }
+  .cons-icon {
+    width: 22px;
+    height: 22px;
+  }
+  .cons-label {
+    width: 36px;
+  }
+}
+@media (max-width: 360px) {
+  .cons-node {
+    width: 30px;
+    height: 30px;
+  }
+  .cons-link {
+    width: 14px;
+  }
+  .cons-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .cons-label {
+    width: 30px;
+  }
+}
