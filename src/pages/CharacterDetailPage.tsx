@@ -40,8 +40,15 @@ function elementAccent(element: string): string {
   return ELEMENT_COLORS[element as keyof typeof ELEMENT_COLORS] ?? ELEMENT_COLORS.Unknown
 }
 
-function stripColorTags(text: string): string {
-  return text.replace(/<color=#[0-9A-Fa-f]+>/g, '').replace(/<\/color>/g, '').replace(/\\n/g, '\n')
+function cleanDetailText(text: string): string {
+  // HoYoLAB descriptions use lightweight markup such as <color>, <i>, and
+  // link tokens like {LINK#123}Item{/LINK}. This page renders descriptions as
+  // text, so remove the wrappers while preserving the readable link text.
+  return text
+    .replace(/\\n/g, '\n')
+    .replace(/\{LINK#[^}]+\}|\{\/LINK\}/gi, '')
+    .replace(/\[LINK#[^\]]+\]|\[\/LINK\]/gi, '')
+    .replace(/<[^>]*>/g, '')
 }
 
 function ElementIcon({ element, size = 14 }: { element: string; size?: number }) {
@@ -116,23 +123,25 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
           const dotCount = Math.min(sp.times, 6)
           return (
             <div key={i} className="detail-substat">
-              <span
-                className="detail-substat-name"
-                style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', fontWeight: gold ? 700 : 600 }}
-              >
-                {spLabel}
-              </span>
-              {dotCount > 0 && (
+              <span className="detail-substat-label">
                 <span
-                  style={{
-                    fontSize: '0.55rem', fontWeight: 700, color: 'var(--color-text-muted)', lineHeight: 1,
-                    padding: '0.08rem 0.25rem', borderRadius: '0.2rem', flexShrink: 0,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.06)',
-                  }}
+                  className="detail-substat-name"
+                  style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-muted)', fontWeight: gold ? 700 : 600 }}
                 >
-                  {dotCount}
+                  {spLabel}
                 </span>
-              )}
+                {dotCount > 0 && (
+                  <span
+                    style={{
+                      fontSize: '0.55rem', fontWeight: 700, color: 'var(--color-text-muted)', lineHeight: 1,
+                      padding: '0.08rem 0.25rem', borderRadius: '0.2rem', flexShrink: 0,
+                      background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.06)',
+                    }}
+                  >
+                    {dotCount}
+                  </span>
+                )}
+              </span>
               <span
                 className="detail-substat-value"
                 style={{ color: gold ? 'var(--color-gold-bright)' : 'var(--color-text-primary)', fontWeight: gold ? 700 : 600 }}
@@ -148,7 +157,7 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
 }
 
 const LAYOUT_CSS = `
-.detail-page { max-width:1360px; margin:0 auto; width:100%; }
+.detail-page { width:100%; max-width:1120px; margin:0 auto; }
 
 .detail-back {
   display:inline-flex; align-items:center; gap:8px; color:var(--color-gold);
@@ -160,7 +169,10 @@ const LAYOUT_CSS = `
 
 /* avatar rail */
 .detail-rail-wrap { position:relative; margin-bottom:30px; }
-.detail-rail { display:flex; gap:10px; overflow-x:auto; padding:4px 4px 14px; }
+.detail-rail { display:flex; gap:10px; overflow-x:auto; padding:4px 4px 14px; scrollbar-width:thin; scrollbar-color:var(--gold-line) transparent; }
+.detail-rail::-webkit-scrollbar { height:4px; }
+.detail-rail::-webkit-scrollbar-track { background:transparent; }
+.detail-rail::-webkit-scrollbar-thumb { background:var(--gold-line); border-radius:999px; }
 .detail-rail-item {
   flex:0 0 auto; width:56px; display:flex; flex-direction:column; align-items:center; gap:7px;
   cursor:pointer; position:relative; background:none; border:none; padding:0; font-family:inherit;
@@ -227,9 +239,9 @@ const LAYOUT_CSS = `
 .detail-cv-label { font-size:11.5px; color:var(--color-text-muted); margin-top:3px; letter-spacing:.3px; }
 
 .detail-friendship { margin-top:auto; padding-top:16px; border-top:1px solid var(--gold-line-soft); }
-.detail-friendship-head { display:flex; align-items:center; gap:8px; margin-bottom:9px; }
+.detail-friendship-head { display:inline-flex; align-items:center; gap:8px; width:fit-content; margin-bottom:9px; }
 .detail-friendship-label { font-size:12.5px; color:var(--color-text-muted); }
-.detail-friendship-lv { margin-left:auto; font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--color-gold-bright); font-weight:600; }
+.detail-friendship-lv { font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--color-gold-bright); font-weight:600; }
 
 /* section headers */
 .detail-section { margin-bottom:26px; }
@@ -241,7 +253,7 @@ const LAYOUT_CSS = `
 }
 
 /* stats grid */
-.detail-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; grid-auto-rows:1fr; }
+.detail-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; grid-auto-rows:1fr; }
 .detail-stats > * { min-width:0; }
 .detail-stat {
   background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.5rem;
@@ -259,7 +271,8 @@ const LAYOUT_CSS = `
 .detail-loadout { display:grid; grid-template-columns:1.1fr 1.4fr; gap:16px; }
 .detail-loadout.single { grid-template-columns:1fr; }
 .detail-panel { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:18px; min-width:0; }
-.detail-weapon { display:flex; gap:16px; align-items:center; height:100%; }
+.detail-weapon { display:flex; gap:16px; align-items:flex-start; height:100%; }
+.detail-weapon > div:last-child { flex:1; min-width:0; }
 .detail-weapon-icon {
   width:64px; height:64px; border-radius:0.6rem; flex:0 0 auto; overflow:hidden;
   background:linear-gradient(160deg, rgba(63,189,241,0.14), var(--color-surface-800));
@@ -269,9 +282,14 @@ const LAYOUT_CSS = `
 .detail-weapon-name { font-family:var(--font-display); font-weight:600; font-size:1.15rem; color:var(--color-text-primary); }
 .detail-refine { font-size:10.5px; font-weight:800; color:#0e1a12; background:var(--color-gold-bright); padding:2px 7px; border-radius:0.3rem; }
 .detail-weapon-meta { font-size:11.5px; color:var(--color-text-muted); margin-bottom:10px; }
+.detail-weapon-stars { color:var(--color-gold-bright); letter-spacing:1px; }
 .detail-weapon-stats { display:flex; gap:22px; flex-wrap:wrap; }
 .detail-weapon-stat .l { font-size:10.5px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; }
 .detail-weapon-stat .v { font-family:"JetBrains Mono", monospace; font-weight:600; font-size:15.5px; color:var(--color-text-primary); margin-top:2px; }
+.detail-weapon-passive {
+  font-size:0.75rem; color:var(--color-text-muted); line-height:1.6;
+  border-top:1px solid var(--gold-line-soft); padding-top:12px; margin-top:12px;
+}
 .detail-set-title { font-size:11px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:12px; }
 .detail-set-block { display:flex; gap:12px; padding:12px; border-radius:0.5rem; border:1px solid var(--gold-line-soft); margin-bottom:10px; }
 .detail-set-block:last-child { margin-bottom:0; }
@@ -286,7 +304,7 @@ const LAYOUT_CSS = `
 .detail-set-need { font-size:11px; color:var(--color-text-muted); font-style:italic; margin-top:2px; }
 
 /* artifacts */
-.detail-artifacts { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; grid-auto-rows:1fr; }
+.detail-artifacts { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:10px; }
 .detail-artifacts > * { min-width:0; }
 .detail-art { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.5rem; padding:14px; display:flex; flex-direction:column; }
 .detail-art-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:8px; }
@@ -303,13 +321,14 @@ const LAYOUT_CSS = `
 .detail-art-divider { height:1px; background:var(--gold-line-soft); margin-bottom:10px; }
 .detail-substat { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px; }
 .detail-substat:last-child { margin-bottom:0; }
+.detail-substat-label { display:flex; align-items:center; gap:6px; min-width:0; }
 .detail-substat-name { font-size:11.5px; color:var(--color-text-muted); min-width:0; }
 .detail-substat-value { font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--color-text-primary); font-weight:600; flex-shrink:0; }
 
 /* talents */
-.detail-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.detail-tabs { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin-bottom:16px; }
 .detail-tab {
-  display:flex; align-items:center; gap:9px; padding:9px 14px; border-radius:0.5rem;
+  display:flex; align-items:center; gap:9px; width:100%; min-height:46px; padding:9px 14px; border-radius:0.5rem;
   background:var(--color-card); border:1px solid var(--gold-line-soft); cursor:pointer;
   transition:border-color .15s ease, background .15s ease; font-family:inherit; color:inherit; text-align:left;
 }
@@ -320,8 +339,8 @@ const LAYOUT_CSS = `
   display:flex; align-items:center; justify-content:center; color:var(--color-text-muted); flex:0 0 auto;
 }
 .detail-tab.active .detail-tab-icon { color:var(--color-gold-bright); }
-.detail-tab-text { min-width:0; }
-.detail-tab-name { font-size:12px; font-weight:700; color:var(--color-text-muted); line-height:1.2; white-space:nowrap; }
+.detail-tab-text { display:flex; align-items:baseline; gap:6px; min-width:0; }
+.detail-tab-name { overflow:hidden; text-overflow:ellipsis; font-size:12px; font-weight:700; color:var(--color-text-muted); line-height:1.2; white-space:nowrap; }
 .detail-tab.active .detail-tab-name { color:var(--color-text-primary); }
 .detail-tab-lv { font-size:10px; color:var(--color-text-muted); font-family:"JetBrains Mono", monospace; }
 .detail-talent-panel { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:24px; }
@@ -330,8 +349,8 @@ const LAYOUT_CSS = `
 .detail-talent-title { font-family:var(--font-display); font-weight:600; font-size:1.3rem; color:var(--color-text-primary); line-height:1.2; }
 .detail-talent-sub { font-size:11.5px; color:var(--color-text-muted); margin-top:2px; }
 .detail-talent-body { font-size:13.5px; color:var(--color-text-secondary); line-height:1.7; margin-bottom:18px; white-space:pre-wrap; }
-.detail-combo { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--gold-line-soft); border:1px solid var(--gold-line-soft); border-radius:0.5rem; overflow:hidden; }
-.detail-combo-cell { background:var(--color-surface-800); padding:12px 14px; min-width:0; }
+.detail-combo { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; }
+.detail-combo-cell { background:var(--color-surface-800); border:1px solid var(--gold-line-soft); border-radius:0.5rem; padding:12px 14px; min-width:0; }
 .detail-combo-label { font-size:10.5px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:5px; }
 .detail-combo-value { font-family:"JetBrains Mono", monospace; font-weight:600; font-size:14.5px; color:var(--color-gold-bright); }
 
@@ -372,7 +391,6 @@ const LAYOUT_CSS = `
   .detail-stats { grid-template-columns:repeat(3,1fr); }
   .detail-artifacts { grid-template-columns:repeat(3,1fr); }
   .detail-loadout, .detail-loadout.single { grid-template-columns:1fr; }
-  .detail-combo { grid-template-columns:repeat(2,1fr); }
 }
 @media (max-width: 760px) {
   .detail-hero { grid-template-columns:1fr; }
@@ -482,7 +500,7 @@ export default function CharacterDetailPage() {
     ? 0
     : ((unlockedConstCount - 1) / (sortedConsts.length - 1)) * 100
 
-  const lastUnlockedConst = useMemo(() => [...sortedConsts].reverse().find((c) => c.is_actived), [sortedConsts])
+  const lastActiveConst = useMemo(() => [...sortedConsts].reverse().find((c) => c.is_actived), [sortedConsts])
 
   const defaultConstIdx = useMemo(() => {
     let last = -1
@@ -714,37 +732,43 @@ export default function CharacterDetailPage() {
               <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Loadout</span></div>
               <div className={`detail-loadout ${loadoutPanels === 1 ? 'single' : ''}`}>
                 {hasWeapon && (
-                  <div className="detail-panel detail-weapon">
-                    <div className="detail-weapon-icon">
-                      {detail!.weapon.icon ? (
-                        <img
-                          src={detail!.weapon.icon}
-                          alt={detail!.weapon.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                        />
-                      ) : (
-                        <WeaponTypeIcon type={detail!.weapon.type} size={28} />
-                      )}
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div className="detail-weapon-name-row">
-                        <span className="detail-weapon-name">{detail!.weapon.name}</span>
-                        <span className="detail-refine">R{detail!.weapon.affix_level}</span>
+                  <div className="detail-panel">
+                    <div className="detail-set-title">Weapon</div>
+                    <div className="detail-weapon">
+                      <div className="detail-weapon-icon">
+                        {detail!.weapon.icon ? (
+                          <img
+                            src={detail!.weapon.icon}
+                            alt={detail!.weapon.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                          />
+                        ) : (
+                          <WeaponTypeIcon type={detail!.weapon.type} size={28} />
+                        )}
                       </div>
-                      <div className="detail-weapon-meta">
-                        {detail!.weapon.type_name} · ★×{detail!.weapon.rarity} · Lv. {detail!.weapon.level}/{detail!.weapon.promote_level * 10}
-                      </div>
-                      <div className="detail-weapon-stats">
-                        <div className="detail-weapon-stat">
-                          <div className="l">{resolvePropLabel(detail!.weapon.main_property.property_type)}</div>
-                          <div className="v">{detail!.weapon.main_property.final}</div>
+                      <div style={{ minWidth: 0 }}>
+                        <div className="detail-weapon-name-row">
+                          <span className="detail-weapon-name">{detail!.weapon.name}</span>
+                          <span className="detail-refine">R{detail!.weapon.affix_level}</span>
                         </div>
-                        {detail!.weapon.sub_property?.final && (
+                        <div className="detail-weapon-meta">
+                          {detail!.weapon.type_name} · <span className="detail-weapon-stars">{'★'.repeat(detail!.weapon.rarity)}</span> · Lv. {detail!.weapon.level}
+                        </div>
+                        <div className="detail-weapon-stats">
                           <div className="detail-weapon-stat">
-                            <div className="l">{resolvePropLabel(detail!.weapon.sub_property.property_type)}</div>
-                            <div className="v">{detail!.weapon.sub_property.final}</div>
+                            <div className="l">{resolvePropLabel(detail!.weapon.main_property.property_type)}</div>
+                            <div className="v">{detail!.weapon.main_property.final}</div>
                           </div>
+                          {detail!.weapon.sub_property?.final && (
+                            <div className="detail-weapon-stat">
+                              <div className="l">{resolvePropLabel(detail!.weapon.sub_property.property_type)}</div>
+                              <div className="v">{detail!.weapon.sub_property.final}</div>
+                            </div>
+                          )}
+                        </div>
+                        {detail!.weapon.desc && (
+                          <p className="detail-weapon-passive">{cleanDetailText(detail!.weapon.desc)}</p>
                         )}
                       </div>
                     </div>
@@ -769,7 +793,7 @@ export default function CharacterDetailPage() {
                               .filter((a) => a.activation_number <= count)
                               .map((a) => (
                                 <div key={a.activation_number} className="detail-set-desc">
-                                  <b>{a.activation_number}-Pc</b>: {a.effect}
+                                  <b>{a.activation_number}-Pc</b>: {cleanDetailText(a.effect)}
                                 </div>
                               ))}
                             {needsTwo && (
@@ -859,13 +883,13 @@ export default function CharacterDetailPage() {
                         <div className="detail-talent-sub">{skillKindLabel(activeSkill.skill_type)} · Level {activeSkill.level}</div>
                       </div>
                     </div>
-                    <div className="detail-talent-body">{stripColorTags(activeSkill.desc)}</div>
+                    <div className="detail-talent-body">{cleanDetailText(activeSkill.desc)}</div>
                     {activeSkill.skill_affix_list.length > 0 && (
                       <div className="detail-combo">
-                        {activeSkill.skill_affix_list.map((a, i) => (
+                        {activeSkill.skill_affix_list.filter((a) => a.name && a.value).map((a, i) => (
                           <div key={i} className="detail-combo-cell">
-                            <div className="detail-combo-label">{a.name}</div>
-                            <div className="detail-combo-value">{a.value}</div>
+                            <div className="detail-combo-label">{cleanDetailText(a.name)}</div>
+                            <div className="detail-combo-value">{cleanDetailText(a.value)}</div>
                           </div>
                         ))}
                       </div>
@@ -891,7 +915,7 @@ export default function CharacterDetailPage() {
                     {sortedConsts.map((c, i) => (
                       <button
                         key={c.id}
-                        className={`detail-const-node ${c.is_actived ? 'unlocked' : 'locked'} ${i === (selectedConst ?? defaultConstIdx) ? 'active' : ''}`}
+                        className={`detail-const-node ${c.is_actived ? 'unlocked' : 'locked'}`}
                         onClick={() => setSelectedConst(i)}
                       >
                         <span className="detail-const-circle">
@@ -914,10 +938,10 @@ export default function CharacterDetailPage() {
                     ))}
                   </div>
                   <div className="detail-const-status">
-                    {lastUnlockedConst ? (
-                      <>Unlocked through <b>C{lastUnlockedConst.pos} — {lastUnlockedConst.name}</b></>
+                    {lastActiveConst ? (
+                      <b>C{lastActiveConst.pos} Activated</b>
                     ) : (
-                      <>No constellations unlocked</>
+                      <>Locked</>
                     )}
                   </div>
                 </div>
@@ -944,10 +968,10 @@ export default function CharacterDetailPage() {
                         <div className="detail-const-title">C{activeConst.pos} — {activeConst.name}</div>
                       </div>
                       <span className={`detail-const-badge ${activeConst.is_actived ? 'on' : 'off'}`}>
-                        {activeConst.is_actived ? 'Unlocked' : 'Locked'}
+                        {activeConst.is_actived ? 'Activated' : 'Locked'}
                       </span>
                     </div>
-                    <div className="detail-const-desc">{stripColorTags(activeConst.effect)}</div>
+                    <div className="detail-const-desc">{cleanDetailText(activeConst.effect)}</div>
                   </div>
                 )}
               </>
