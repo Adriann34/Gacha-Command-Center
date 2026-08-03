@@ -1,101 +1,94 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Settings as SettingsIcon, Sparkles, RefreshCw } from 'lucide-react'
+import {
+  ArrowDownUp, Axe, Crosshair, Droplet, Flame, Heart, Inbox, Leaf, Mountain,
+  Orbit, RefreshCw, Search, Settings as SettingsIcon, SlidersHorizontal,
+  Snowflake, Sparkles, Star, Sword, Wind, Zap,
+} from 'lucide-react'
 import { useCharacterList } from '../hooks/useCharacterList'
-import { ELEMENT_COLORS } from '../lib/genshinCharacters'
 import { syncChronicle } from '../lib/hoyolab'
 import type { CharacterEntry } from '../lib/hoyolab'
 
-function PageHead({ eyebrow, title }: { eyebrow: string; title: string }) {
+const ELEMENTS = ['Hydro', 'Pyro', 'Electro', 'Cryo', 'Anemo', 'Geo', 'Dendro']
+const WEAPON_TYPES = [
+  { label: 'Sword', value: 1, icon: Sword },
+  { label: 'Claymore', value: 11, icon: Axe },
+  { label: 'Polearm', value: 13, icon: Crosshair },
+  { label: 'Bow', value: 12, icon: Crosshair },
+  { label: 'Catalyst', value: 10, icon: Orbit },
+]
+
+const ELEMENT_ICONS: Record<string, typeof Droplet> = {
+  Hydro: Droplet, Pyro: Flame, Electro: Zap, Cryo: Snowflake,
+  Anemo: Wind, Geo: Mountain, Dendro: Leaf,
+}
+const ELEMENT_CLASS: Record<string, string> = {
+  Hydro: 'hydro', Pyro: 'pyro', Electro: 'electro', Cryo: 'cryo',
+  Anemo: 'anemo', Geo: 'geo', Dendro: 'dendro',
+}
+
+const WEAPON_LABELS: Record<number, string> = { 1: 'Sword', 10: 'Catalyst', 11: 'Claymore', 12: 'Bow', 13: 'Polearm' }
+
+function PageHead({ total, fiveStars, averageLevel }: { total: number; fiveStars: number; averageLevel: number }) {
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>{eyebrow}</div>
-          <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>{title}</h1>
+      <div className="characters-eyebrow">Your Characters</div>
+      <div className="characters-title-row">
+        <h1 className="page-title characters-title">My Characters</h1>
+        <div className="roster-meta">
+          <div className="meta-item"><div className="meta-num">{total}</div><div className="meta-label">Total</div></div>
+          <div className="meta-item"><div className="meta-num">{fiveStars}</div><div className="meta-label">5★ Owned</div></div>
+          <div className="meta-item"><div className="meta-num">{averageLevel || '—'}</div><div className="meta-label">Avg. Level</div></div>
         </div>
       </div>
-      <div className="title-rule" style={{ margin: '0.9rem 0 1.75rem' }}>
-        <span className="dia" /><span className="dia fill" /><span className="ln" />
-      </div>
+      <div className="characters-divider" />
     </>
   )
 }
 
-function CharacterCard({ character, onClick }: { character: CharacterEntry; onClick: () => void }) {
-  const [iconFailed, setIconFailed] = useState(false)
-  const accent = ELEMENT_COLORS[character.element as keyof typeof ELEMENT_COLORS] ?? ELEMENT_COLORS.Unknown
+function CharacterCard({ character, favorite, onFavorite, onClick }: {
+  character: CharacterEntry
+  favorite: boolean
+  onFavorite: () => void
+  onClick: () => void
+}) {
+  const [imageSource, setImageSource] = useState(character.image || character.icon || character.sideIcon)
+  const elementClass = ELEMENT_CLASS[character.element] ?? 'unknown'
+  const ElementIcon = ELEMENT_ICONS[character.element] ?? Sparkles
 
   return (
-    <div
-      onClick={onClick}
-      style={{
-        background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 10%, var(--color-surface-900)), var(--color-surface-800))`,
-        border: '1px solid var(--gold-line)',
-        borderRadius: 'var(--radius-card)',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        transition: 'transform 0.2s, border-color 0.2s, box-shadow 0.2s',
-        position: 'relative',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.borderColor = 'var(--gold-line)'
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.28)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = ''
-        e.currentTarget.style.borderColor = ''
-        e.currentTarget.style.boxShadow = ''
-      }}
-    >
-      <div style={{ position: 'relative', paddingTop: '75%', background: 'rgba(0,0,0,0.15)' }}>
-        <div style={{
-          position: 'absolute', inset: 0, overflow: 'hidden',
-          background: `radial-gradient(circle at 50% 30%, color-mix(in srgb, ${accent} 20%, transparent), transparent 70%)`,
-          pointerEvents: 'none',
-        }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'grid', placeItems: 'center' }}>
-          {!iconFailed ? (
-            <img
-              src={character.icon}
-              alt={character.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={() => setIconFailed(true)}
-            />
-          ) : (
-            <img
-              src={character.sideIcon}
-              alt={character.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-            />
-          )}
-        </div>
-        <div style={{
-          position: 'absolute', top: 6, left: 6, width: 10, height: 10, borderRadius: '50%',
-          background: `radial-gradient(circle at 35% 30%, #ffffffcc, ${accent} 65%)`,
-          boxShadow: `0 0 6px ${accent}`, border: '1px solid rgba(255,255,255,0.35)',
-        }} />
+    <article className={`character-card rarity-${character.rarity} ${character.isChosen ? 'pinned' : ''}`} onClick={onClick}>
+      {character.isChosen && <div className="pin-flag">Viewing</div>}
+      <div className={`character-art art-${elementClass}`}>
+        {imageSource ? (
+          <img src={imageSource} alt={character.name} onError={() => setImageSource('')} />
+        ) : (
+          <span className="character-initial">{character.name.charAt(0)}</span>
+        )}
+        <div className="art-wash" />
       </div>
-      <div style={{ padding: '0.5rem 0.625rem 0.6rem' }}>
-        <div style={{
-          fontFamily: 'var(--font-display)', fontSize: '0.8rem', fontWeight: 700,
-          color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden',
-          textOverflow: 'ellipsis', marginBottom: '0.2rem',
-        }}>
-          {character.name}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-            Lv.{character.level}
-          </span>
-          <span style={{ color: '#c9962e', fontSize: '0.65rem', letterSpacing: '1px' }}>
-            {'★'.repeat(character.rarity)}
-          </span>
+      <div className="card-corner-top">
+        <div className={`element-chip el-${elementClass}`}><ElementIcon size={14} /></div>
+        <div className="card-action-stack">
+          <button
+            className={`favorite-button ${favorite ? 'on' : ''}`}
+            aria-label={`${favorite ? 'Remove' : 'Add'} ${character.name} ${favorite ? 'from' : 'to'} favorites`}
+            onClick={(event) => { event.stopPropagation(); onFavorite() }}
+          ><Star size={13} fill={favorite ? 'currentColor' : 'none'} /></button>
+          <div className="weapon-chip" title={WEAPON_LABELS[character.weaponType] ?? 'Unknown weapon'}>
+            {character.weaponType === 1 ? <Sword size={14} /> : character.weaponType === 11 ? <Axe size={14} /> : character.weaponType === 10 ? <Orbit size={14} /> : <Crosshair size={14} />}
+          </div>
         </div>
       </div>
-    </div>
+      <div className="character-scrim">
+        <div className="character-name">{character.name}</div>
+        <div className="rarity-stars">{Array.from({ length: character.rarity }, (_, index) => <Star key={index} size={9} fill="currentColor" />)}</div>
+        <div className="character-sub">
+          <span>Lv.{character.level}</span><i /> <strong>C{character.constellation}</strong>
+          <span className="friendship"><Heart size={10} fill="currentColor" />{character.friendship}</span>
+        </div>
+      </div>
+    </article>
   )
 }
 
@@ -103,6 +96,13 @@ export default function CharactersPage() {
   const navigate = useNavigate()
   const { characters, loaded } = useCharacterList()
   const [syncing, setSyncing] = useState(false)
+  const [search, setSearch] = useState('')
+  const [elements, setElements] = useState<string[]>([])
+  const [weapons, setWeapons] = useState<number[]>([])
+  const [rarity, setRarity] = useState<'all' | 4 | 5>('all')
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [favorites, setFavorites] = useState<Set<number>>(new Set())
+  const [sort, setSort] = useState('level-desc')
   const autoSynced = useRef(false)
 
   useEffect(() => {
@@ -112,65 +112,70 @@ export default function CharactersPage() {
     syncChronicle(false).catch(() => {}).finally(() => setSyncing(false))
   }, [loaded, characters.length])
 
-  if (!loaded) {
-    return (
-      <div className="fade-in">
-        <PageHead eyebrow="Your characters" title="My Characters" />
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: 'var(--color-text-muted)' }}>
-          Loading your characters...
-        </div>
-      </div>
-    )
-  }
+  const filteredCharacters = useMemo(() => {
+    const result = characters.filter((character) => {
+      if (search && !character.name.toLowerCase().includes(search.toLowerCase())) return false
+      if (elements.length > 0 && !elements.includes(character.element)) return false
+      if (weapons.length > 0 && !weapons.includes(character.weaponType)) return false
+      if (rarity !== 'all' && character.rarity !== rarity) return false
+      if (favoritesOnly && !favorites.has(character.id)) return false
+      return true
+    })
+    return result.sort((a, b) => {
+      if (sort === 'name-asc') return a.name.localeCompare(b.name)
+      if (sort === 'rarity-desc') return b.rarity - a.rarity || b.level - a.level
+      if (sort === 'cons-desc') return b.constellation - a.constellation
+      if (sort === 'friend-desc') return b.friendship - a.friendship
+      return b.level - a.level
+    })
+  }, [characters, elements, favorites, favoritesOnly, rarity, search, sort, weapons])
+
+  const fiveStars = characters.filter((character) => character.rarity === 5).length
+  const averageLevel = characters.length ? Math.round(characters.reduce((sum, character) => sum + character.level, 0) / characters.length) : 0
+
+  const toggleElement = (element: string) => setElements((current) => current.includes(element) ? current.filter((item) => item !== element) : [...current, element])
+  const toggleWeapon = (weapon: number) => setWeapons((current) => current.includes(weapon) ? current.filter((item) => item !== weapon) : [...current, weapon])
+  const toggleFavorite = (id: number) => setFavorites((current) => {
+    const next = new Set(current)
+    if (next.has(id)) next.delete(id); else next.add(id)
+    return next
+  })
+
+  if (!loaded) return <div className="fade-in"><PageHead total={0} fiveStars={0} averageLevel={0} /><div className="characters-loading">Loading your characters...</div></div>
 
   if (characters.length === 0) {
     return (
-      <div className="fade-in">
-        <PageHead eyebrow="Your characters" title="My Characters" />
-        <div className="ornate" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
-          {syncing ? (
-            <>
-              <RefreshCw size={36} className="spin" style={{ margin: '0 auto 1rem', opacity: 0.6, color: 'var(--color-gold)' }} />
-              <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', fontWeight: 700, fontFamily: 'var(--font-display)' }}>
-                Syncing your characters...
-              </p>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', maxWidth: 420, marginInline: 'auto' }}>
-                Fetching your Genshin Impact roster from HoYoLAB.
-              </p>
-            </>
-          ) : (
-            <>
-              <Sparkles size={40} style={{ margin: '0 auto 1rem', opacity: 0.6, color: 'var(--color-gold)' }} />
-              <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontWeight: 700, fontFamily: 'var(--font-display)' }}>
-                No characters synced yet
-              </p>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.5rem', maxWidth: 420, marginInline: 'auto' }}>
-                Link your HoYoLAB account in Settings to pull your characters, weapons, and builds.
-              </p>
-              <button onClick={() => navigate('/settings')} className="btn-primary" style={{
-                padding: '0.65rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.875rem',
-                fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
-              }}>
-                <SettingsIcon size={16} /> Go to Settings
-              </button>
-            </>
-          )}
+      <div className="fade-in"><PageHead total={0} fiveStars={0} averageLevel={0} />
+        <div className="ornate characters-empty">
+          {syncing ? <><RefreshCw size={36} className="spin" /><p>Syncing your characters...</p><span>Fetching your Genshin Impact roster from HoYoLAB.</span></> : <><Sparkles size={40} /><p>No characters synced yet</p><span>Link your HoYoLAB account in Settings to pull your characters, weapons, and builds.</span><button onClick={() => navigate('/settings')} className="btn-primary"><SettingsIcon size={16} /> Go to Settings</button></>}
         </div>
       </div>
     )
   }
 
   return (
-    <div className="fade-in">
-      <PageHead eyebrow="Your characters" title="My Characters" />
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
-        gap: '0.75rem',
-      }}>
-        {characters.map((c) => (
-          <CharacterCard key={c.id} character={c} onClick={() => navigate('/characters/' + c.id)} />
-        ))}
+    <div className="fade-in characters-page">
+      <PageHead total={characters.length} fiveStars={fiveStars} averageLevel={averageLevel} />
+      <div className="characters-toolbar">
+        <label className="character-search"><Search size={15} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Find a character…" /></label>
+        <span className="toolbar-divider" />
+        <div className="filter-pills">
+          <button className={`filter-pill ${elements.length === 0 ? 'active' : ''}`} onClick={() => setElements([])}><SlidersHorizontal size={14} /> All</button>
+          {ELEMENTS.map((element) => { const Icon = ELEMENT_ICONS[element]; return <button key={element} className={`filter-pill element-${ELEMENT_CLASS[element]} ${elements.includes(element) ? 'active' : ''}`} onClick={() => toggleElement(element)}><Icon size={14} /> {element}</button> })}
+        </div>
+        <span className="toolbar-divider" />
+        <div className="filter-pills weapon-pills">
+          {WEAPON_TYPES.map(({ label, value, icon: Icon }) => <button key={label} className={`filter-pill ${weapons.includes(value) ? 'active' : ''}`} onClick={() => toggleWeapon(value)}><Icon size={14} /> {label}</button>)}
+        </div>
+        <span className="toolbar-divider" />
+        <div className="rarity-segmented">
+          {(['all', 5, 4] as const).map((value) => <button key={value} className={rarity === value ? 'active' : ''} onClick={() => setRarity(value)}>{value === 'all' ? 'All' : `${value}★`}</button>)}
+        </div>
+        <button className={`favorite-toggle ${favoritesOnly ? 'active' : ''}`} onClick={() => setFavoritesOnly((current) => !current)}><Star size={14} fill={favoritesOnly ? 'currentColor' : 'none'} /> Favorites</button>
+        <div className="toolbar-right"><span className="result-count"><b>{filteredCharacters.length}</b> characters</span><label className="sort-select"><ArrowDownUp size={14} /><select value={sort} onChange={(event) => setSort(event.target.value)}><option value="level-desc">Level: High to Low</option><option value="name-asc">Name: A–Z</option><option value="rarity-desc">Rarity</option><option value="cons-desc">Constellation</option><option value="friend-desc">Friendship</option></select></label></div>
+      </div>
+      <div className="characters-grid">
+        {filteredCharacters.length > 0 ? filteredCharacters.map((character) => <CharacterCard key={character.id} character={character} favorite={favorites.has(character.id)} onFavorite={() => toggleFavorite(character.id)} onClick={() => navigate('/characters/' + character.id)} />) : <div className="characters-no-results"><Inbox size={34} /><h2>No characters match</h2><p>Try clearing a filter or searching a different name.</p></div>}
       </div>
     </div>
   )
