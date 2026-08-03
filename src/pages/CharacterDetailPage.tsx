@@ -5,6 +5,7 @@ import {
   Zap,
   Sword, Axe, Crosshair, Anchor, Orbit, Gem, Swords,
   Flower, Feather, Hourglass, Wine, Crown, Shield, Lock, Layers,
+  Diamond,
 } from 'lucide-react'
 import { ElementIcon } from '../components/ElementIcon'
 import { useCharacterList } from '../hooks/useCharacterList'
@@ -65,6 +66,14 @@ function skillKindLabel(skillType: number): string {
   return 'Passive Talent'
 }
 
+const HERO_STAT_DEFINITIONS: Array<{ label: string; keywords: string[]; icon: ElementType }> = [
+  { label: 'HP', keywords: ['hp', 'health'], icon: Heart },
+  { label: 'ATK', keywords: ['attack', 'atk'], icon: Swords },
+  { label: 'DEF', keywords: ['defense', 'def'], icon: Shield },
+  { label: 'Elemental Mastery', keywords: ['elemental mastery', 'mastery'], icon: Sparkles },
+  { label: 'Energy Recharge', keywords: ['energy recharge', 'recharge'], icon: Zap },
+]
+
 function CharacterBanner({ sources, alt }: { sources: string[]; alt: string }) {
   const [sourceIndex, setSourceIndex] = useState(0)
   const source = sources[sourceIndex]
@@ -75,7 +84,7 @@ function CharacterBanner({ sources, alt }: { sources: string[]; alt: string }) {
     <img
       src={source}
       alt={alt}
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      className="detail-character-art"
       onError={() => setSourceIndex((current) => current + 1)}
     />
   )
@@ -183,28 +192,36 @@ const LAYOUT_CSS = `
 
 /* hero */
 .detail-hero {
-  display:grid; grid-template-columns:300px 1fr; gap:24px;
-  background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem;
-  padding:22px; margin-bottom:26px; overflow:hidden; position:relative;
+  position:relative; margin:2px 0 30px; padding:22px 22px 18px; overflow:hidden;
+  background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:.55rem;
 }
-.detail-hero::before {
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(500px 320px at -10% 10%, rgba(63,189,241,0.08), transparent 60%);
+.detail-hero-main {
+  position:relative; z-index:1; display:grid;
+  grid-template-columns:minmax(250px, .78fr) minmax(470px, 1.55fr) minmax(250px, .82fr);
+  align-items:center; gap:22px; min-height:430px;
 }
+.detail-hero-panel {
+  position:relative; min-width:0; min-height:360px; padding:28px 26px;
+  border:0; border-radius:0; background:transparent; box-shadow:none;
+}
+.detail-hero-left { display:flex; flex-direction:column; justify-content:center; transform:translateY(8px); }
+.detail-hero-right { padding:27px 27px 24px; transform:translateY(55px); }
 .detail-portrait {
-  position:relative; border-radius:0.5rem; overflow:hidden;
-  border:1px solid var(--gold-line-soft); min-height:420px;
+  position:relative; min-height:440px; height:100%; overflow:visible;
   display:flex; align-items:center; justify-content:center;
 }
-.detail-identity-top { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+.detail-character-art {
+  position:absolute; left:50%; top:42%; width:128%; height:128%; object-fit:contain;
+  object-position:center bottom; z-index:1; filter:drop-shadow(0 18px 18px rgba(0,0,0,.42));
+  transform:translate(-50%, -50%);
+}
 .detail-element-mark { width:34px; height:34px; border-radius:0.55rem; display:flex; align-items:center; justify-content:center; border:1px solid var(--gold-line); }
-.detail-level-mark { color:var(--color-text-secondary); border:1px solid var(--gold-line); border-radius:0.45rem; padding:7px 10px; font-family:"JetBrains Mono", monospace; font-size:12px; white-space:nowrap; }
 .detail-hero-info { display:flex; flex-direction:column; justify-content:center; min-width:0; position:relative; z-index:1; }
 .detail-char-name {
-  font-family:var(--font-display); font-weight:700; font-size:2.5rem; letter-spacing:.5px;
+  font-family:var(--font-display); font-weight:700; font-size:2.55rem; letter-spacing:.5px;
   color:var(--color-text-primary); line-height:1.05; margin:0;
 }
-.detail-stars { display:flex; gap:3px; margin:14px 0 12px; color:#c9962e; font-size:1rem; letter-spacing:2px; }
+.detail-stars { display:flex; gap:3px; margin:17px 0 20px; color:#c9962e; font-size:1rem; letter-spacing:2px; }
 .detail-tag-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
 .detail-tag {
   display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:0.5rem;
@@ -212,22 +229,29 @@ const LAYOUT_CSS = `
   font-size:12px; font-weight:700; letter-spacing:.3px;
 }
 .detail-tag-weapon { background:rgba(211,188,142,0.12); border-color:var(--gold-line); color:var(--color-gold-bright); }
+.detail-left-cv { margin-top:7px; }
+.detail-left-cv-num { color:var(--color-text-primary); font:600 1.05rem/1.1 "JetBrains Mono",monospace; }
+.detail-left-cv-label { color:var(--color-text-muted); font-size:10px; margin-top:5px; line-height:1.2; white-space:nowrap; }
 
-.detail-cv {
-  margin-top:2px; display:flex; align-items:center; width:fit-content;
-  background:none; border:none; padding:0;
-}
-.detail-cv-num { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:14px; color:var(--color-gold-bright); line-height:1; }
-.detail-cv-label { font-size:10.5px; color:var(--color-text-muted); margin-top:3px; letter-spacing:.3px; }
+.detail-right-level { display:flex; align-items:center; gap:10px; color:var(--color-text-primary); font-family:var(--font-display); font-size:1.15rem; }
+.detail-right-level .detail-element-mark { width:29px; height:29px; border-radius:.45rem; }
+.detail-hero-stat-list { display:flex; flex-direction:column; gap:0; margin-top:18px; }
+.detail-hero-stat { display:flex; align-items:center; gap:9px; min-height:31px; color:var(--color-text-muted); font-size:11.5px; }
+.detail-hero-stat svg { color:var(--color-gold); opacity:.82; flex:0 0 auto; }
+.detail-hero-stat span:nth-child(2) { flex:1; }
+.detail-hero-stat strong { color:var(--color-text-primary); font:600 11.5px "JetBrains Mono",monospace; }
+.detail-hero-friendship { display:flex; align-items:center; gap:9px; margin-top:14px; font-size:10.5px; color:var(--color-text-muted); }
+.detail-hero-friendship .progress-bar { height:5px; flex:1; min-width:45px; }
+.detail-hero-friendship b { color:var(--color-gold-bright); font:600 10.5px "JetBrains Mono",monospace; white-space:nowrap; }
 
-.detail-friendship { margin-top:20px; }
-.detail-friendship-row { display:flex; align-items:center; gap:12px; width:fit-content; max-width:100%; }
-.detail-friendship-label { flex:0 0 auto; font-size:12.5px; color:var(--color-text-muted); white-space:nowrap; }
-.detail-friendship-lv { flex:0 0 auto; font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--color-gold-bright); font-weight:600; white-space:nowrap; }
-.detail-friendship .progress-bar { height:6px; width:180px; max-width:180px; flex:0 0 180px; min-width:0; }
+.detail-section-nav { position:relative; z-index:2; display:flex; justify-content:center; align-items:flex-start; gap:39px; padding-top:6px; transform:translateX(-24px); }
+.detail-section-nav-item { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:70px; padding:0; color:var(--color-text-secondary); background:none; border:0; cursor:pointer; font:inherit; }
+.detail-section-nav-icon { width:52px; height:52px; display:grid; place-items:center; border:1px solid var(--gold-line); border-radius:50%; color:var(--color-gold); background:rgba(13,17,28,.7); transition:background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.detail-section-nav-item:hover .detail-section-nav-icon, .detail-section-nav-item.active .detail-section-nav-icon { color:#191207; background:var(--color-gold); box-shadow:0 0 0 4px rgba(211,188,142,.08), 0 0 20px rgba(211,188,142,.18); transform:translateY(-2px); }
+.detail-section-nav-label { font-size:11px; font-weight:600; white-space:nowrap; }
 
 /* section headers */
-.detail-section { margin-bottom:26px; }
+.detail-section { margin-bottom:26px; scroll-margin-top:84px; }
 .detail-section-head { display:flex; align-items:baseline; gap:10px; margin-bottom:14px; }
 .detail-section-head .dia { color:var(--color-gold); font-size:11px; }
 .detail-section-title {
@@ -373,22 +397,33 @@ const LAYOUT_CSS = `
 .detail-const-desc { font-size:13.5px; color:var(--color-text-secondary); line-height:1.75; white-space:pre-wrap; }
 
 @media (max-width: 1180px) {
+  .detail-hero-main { grid-template-columns:minmax(220px,.8fr) minmax(390px,1.35fr) minmax(220px,.85fr); gap:14px; }
+  .detail-hero-panel { padding-left:20px; padding-right:20px; }
+  .detail-section-nav { gap:24px; }
   .detail-stats { column-gap:28px; }
   .detail-artifacts { grid-template-columns:repeat(3,1fr); }
   .detail-loadout, .detail-loadout.single { grid-template-columns:1fr; }
 }
 @media (max-width: 760px) {
-  .detail-hero { grid-template-columns:1fr; }
-  .detail-portrait { height:min(520px, 92vw); min-height:360px; }
+  .detail-hero { margin-left:0; margin-right:0; padding:16px 14px 14px; }
+  .detail-hero-main { grid-template-columns:1fr; gap:12px; min-height:0; }
+  .detail-hero-panel { min-height:0; }
+  .detail-portrait { height:min(520px, 92vw); min-height:360px; order:-1; }
+  .detail-character-art { width:120%; height:120%; transform:translate(-50%, -50%); }
+  .detail-hero-left { padding-top:22px; padding-bottom:22px; transform:none; }
+  .detail-hero-right { padding-top:22px; padding-bottom:18px; transform:none; }
+  .detail-section-nav { gap:10px; justify-content:space-between; padding-top:14px; transform:none; }
+  .detail-section-nav-item { min-width:0; }
+  .detail-section-nav-icon { width:44px; height:44px; }
+  .detail-section-nav-label { font-size:9.5px; }
   .detail-stats { grid-template-columns:1fr; padding:14px 16px; }
   .detail-stat:nth-last-child(-n+2) { border-bottom:1px solid rgba(211,188,142,0.09); }
   .detail-stat:last-child { border-bottom:none; }
   .detail-artifacts { grid-template-columns:repeat(2,1fr); }
   .detail-char-name { font-size:2rem; }
-  .detail-friendship-row { width:100%; gap:10px; }
-  .detail-friendship .progress-bar { width:180px; max-width:180px; flex:0 1 180px; }
 }
 @media (max-width: 360px) {
+  .detail-section-nav-icon { width:38px; height:38px; }
   .detail-artifacts { grid-template-columns:1fr; }
   .detail-const-circle { width:32px; height:32px; }
   .detail-const-line-bg, .detail-const-line-fill { top:16px; }
@@ -483,6 +518,14 @@ export default function CharacterDetailPage() {
     return (propMap[String(propertyType)]?.name ?? '').toLowerCase().includes('crit')
   }
 
+  const heroStats = useMemo(() => HERO_STAT_DEFINITIONS.map(({ label, keywords, icon }) => {
+    const property = visibleDetail?.selected_properties.find((candidate) => {
+      const propertyName = (propMap[String(candidate.property_type)]?.name ?? '').toLowerCase()
+      return keywords.some((keyword) => propertyName.includes(keyword))
+    })
+    return { label, icon, value: property?.final ?? '—' }
+  }), [visibleDetail, propMap])
+
   const setEntries = useMemo(() => {
     if (!visibleDetail) return []
     const setCounts: Record<string, { count: number; set: HoyoDetailArtifact['set'] }> = {}
@@ -513,7 +556,12 @@ export default function CharacterDetailPage() {
 
   const [activeTalent, setActiveTalent] = useState(0)
   const [selectedConst, setSelectedConst] = useState<number | null>(null)
-  useEffect(() => { setActiveTalent(0); setSelectedConst(null) }, [visibleDetail])
+  const [activeHeroSection, setActiveHeroSection] = useState('')
+  useEffect(() => {
+    setActiveTalent(0)
+    setSelectedConst(null)
+    setActiveHeroSection('')
+  }, [visibleDetail])
 
   if (!loaded) {
     return (
@@ -551,6 +599,9 @@ export default function CharacterDetailPage() {
 
   const hasWeapon = Boolean(visibleDetail?.weapon?.name)
   const loadoutPanels = (hasWeapon ? 1 : 0) + (setEntries.length > 0 ? 1 : 0)
+  const flowerArtifact = visibleDetail?.relics.find((artifact) => artifact.pos === 1)
+  const firstTalent = visibleDetail?.skills[0]
+  const firstConstellation = sortedConsts[0]
 
   return (
     <div className="fade-in detail-page">
@@ -627,72 +678,101 @@ export default function CharacterDetailPage() {
       )}
 
       <section className="detail-hero">
-        <div
-          className="detail-portrait"
-          style={{
-            background: `radial-gradient(circle at 50% 38%, color-mix(in srgb, ${accent} 22%, transparent), transparent 60%), linear-gradient(180deg, var(--color-surface-800), var(--color-surface-900) 70%)`,
-          }}
-        >
-          {bannerSources.length > 0 ? (
-            <CharacterBanner key={characterId} sources={bannerSources} alt={listEntry.name} />
-          ) : (
-            <div style={{ display: 'grid', placeItems: 'center' }}>
-              <Sparkles size={32} color="var(--color-gold)" style={{ opacity: 0.5 }} />
+        <div className="detail-hero-main">
+          <div className="detail-hero-panel detail-hero-left detail-hero-info">
+            <h1 className="detail-char-name">{listEntry.name}</h1>
+            <div className="detail-stars">{'★'.repeat(listEntry.rarity)}</div>
+            <div className="detail-tag-row">
+              <span className="detail-tag" style={{
+                color: accent,
+                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
+                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
+              }}>{listEntry.element}</span>
+              <span className="detail-tag detail-tag-weapon">
+                {WEAPON_TYPE_LABELS[visibleDetail?.base?.weapon_type ?? listEntry.weaponType] ?? 'Unknown'}
+              </span>
             </div>
-          )}
-        </div>
-
-        <div className="detail-hero-info">
-          <div className="detail-identity-top">
-            <span
-              className="detail-element-mark"
-              style={{
-                color: accent,
-                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
-                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
-              }}
-            >
-              <ElementIcon element={listEntry.element} size={17} />
-            </span>
-            <span className="detail-level-mark">Lv. {visibleDetail?.base?.level ?? listEntry.level} / 90</span>
-          </div>
-          <h1 className="detail-char-name">{listEntry.name}</h1>
-
-          <div className="detail-stars">{'★'.repeat(listEntry.rarity)}</div>
-
-          <div className="detail-tag-row">
-            <span
-              className="detail-tag"
-              style={{
-                color: accent,
-                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
-                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
-              }}
-            >{listEntry.element}</span>
-            <span className="detail-tag detail-tag-weapon">
-              {WEAPON_TYPE_LABELS[visibleDetail?.base?.weapon_type ?? listEntry.weaponType] ?? 'Unknown'}
-            </span>
-          </div>
-
-          {critInfo && (
-            <div className="detail-cv">
-              <div>
-                <div className="detail-cv-num">{critInfo.cv}</div>
-                <div className="detail-cv-label">Crit Value · {critInfo.cr}% CR / {critInfo.cd}% CD</div>
+            <div className="detail-left-cv">
+              <div className="detail-left-cv-num">{critInfo?.cv ?? '—'} CV</div>
+              <div className="detail-left-cv-label">
+                Crit Ratio: {critInfo ? `${critInfo.cr}% CR / ${critInfo.cd}% CD` : 'No crit data'}
               </div>
             </div>
-          )}
+          </div>
 
-          <div className="detail-friendship">
-            <div className="detail-friendship-row">
-              <span className="detail-friendship-label">Friendship</span>
+          <div
+            className="detail-portrait"
+            style={{ background: `radial-gradient(ellipse at 50% 56%, color-mix(in srgb, ${accent} 15%, transparent), transparent 60%)` }}
+          >
+            {bannerSources.length > 0 ? (
+              <CharacterBanner key={characterId} sources={bannerSources} alt={listEntry.name} />
+            ) : (
+              <div style={{ display: 'grid', placeItems: 'center' }}>
+                <Sparkles size={32} color="var(--color-gold)" style={{ opacity: 0.5 }} />
+              </div>
+            )}
+          </div>
+
+          <div className="detail-hero-panel detail-hero-right">
+            <div className="detail-right-level">
+              <span
+                className="detail-element-mark"
+                style={{
+                  color: accent,
+                  borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
+                  background: `color-mix(in srgb, ${accent} 16%, transparent)`,
+                }}
+              >
+                <ElementIcon element={listEntry.element} size={15} />
+              </span>
+              <span>Lv. {visibleDetail?.base?.level ?? listEntry.level} / 90</span>
+            </div>
+            <div className="detail-hero-stat-list">
+              {heroStats.map(({ label, icon: Icon, value }) => (
+                <div key={label} className="detail-hero-stat">
+                  <Icon size={13} strokeWidth={1.6} />
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+            <div className="detail-hero-friendship">
+              <span>Friendship</span>
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${Math.min((totalFriendship / 10) * 100, 100)}%` }} />
               </div>
-              <span className="detail-friendship-lv">Lv. {totalFriendship}</span>
+              <b>Lv. {totalFriendship}</b>
             </div>
           </div>
         </div>
+
+        <nav className="detail-section-nav" aria-label="Character sections">
+          {[
+            { id: 'detail-weapons', label: 'Weapons', fallback: Swords, image: visibleDetail?.weapon?.icon },
+            { id: 'detail-artifacts', label: 'Artifacts', fallback: Gem, image: flowerArtifact?.icon },
+            { id: 'detail-talents', label: 'Talents', fallback: Sparkles, image: firstTalent?.icon },
+            { id: 'detail-constellations', label: 'Constellation', fallback: Diamond, image: firstConstellation?.icon },
+          ].map(({ id: targetId, label, fallback: Icon, image }) => (
+            <button
+              key={targetId}
+              type="button"
+              className={`detail-section-nav-item ${activeHeroSection === targetId ? 'active' : ''}`}
+              onClick={() => {
+                setActiveHeroSection(targetId)
+                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+            >
+              <span className="detail-section-nav-icon">
+                {image ? (
+                  <img src={image} alt="" style={{ width: '72%', height: '72%', objectFit: 'contain' }} />
+                ) : (
+                  <Icon size={22} strokeWidth={1.45} />
+                )}
+              </span>
+              <span className="detail-section-nav-label">{label}</span>
+            </button>
+          ))}
+        </nav>
       </section>
 
       {loading && !visibleDetail && (
@@ -703,7 +783,7 @@ export default function CharacterDetailPage() {
 
       {visibleDetail && !loading && (
         <>
-          <section className="detail-section">
+          <section id="detail-profile" className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Stats</span></div>
             <div className="detail-stats">
               {visibleDetail.selected_properties.map((prop) => {
@@ -728,7 +808,7 @@ export default function CharacterDetailPage() {
           </section>
 
           {loadoutPanels > 0 && (
-            <section className="detail-section">
+            <section id="detail-weapons" className="detail-section">
               <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Loadout</span></div>
               <div className={`detail-loadout ${loadoutPanels === 1 ? 'single' : ''}`}>
                 {hasWeapon && (
@@ -781,9 +861,19 @@ export default function CharacterDetailPage() {
                     {setEntries.map(([name, { count, set }]) => {
                       const active = count >= 2
                       const needsTwo = count >= 1 && count < 2
+                      const setRelics = visibleDetail.relics.filter((artifact) => artifact.set.name === name)
+                      const setIcon = count === 1
+                        ? setRelics[0]?.icon
+                        : setRelics.find((artifact) => artifact.pos === 1)?.icon
                       return (
                         <div key={name} className={`detail-set-block ${active ? 'active' : 'inactive'}`}>
-                          <div className="detail-set-icon"><Layers size={18} strokeWidth={1.7} /></div>
+                          <div className="detail-set-icon">
+                            {setIcon ? (
+                              <img src={setIcon} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                            ) : (
+                              <Layers size={18} strokeWidth={1.7} />
+                            )}
+                          </div>
                           <div style={{ minWidth: 0 }}>
                             <div className="detail-set-name-row">
                               <span className="detail-set-name">{name}</span>
@@ -811,7 +901,7 @@ export default function CharacterDetailPage() {
             </section>
           )}
 
-          <section className="detail-section">
+          <section id="detail-artifacts" className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Artifacts</span></div>
             {visibleDetail.relics.length === 0 ? (
               <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
@@ -828,7 +918,7 @@ export default function CharacterDetailPage() {
             )}
           </section>
 
-          <section className="detail-section">
+          <section id="detail-talents" className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Talents</span></div>
             {visibleDetail.skills.length === 0 ? (
               <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
@@ -900,7 +990,7 @@ export default function CharacterDetailPage() {
             )}
           </section>
 
-          <section className="detail-section">
+          <section id="detail-constellations" className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Constellations</span></div>
             {sortedConsts.length === 0 ? (
               <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
