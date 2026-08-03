@@ -282,3 +282,19 @@ npm run build
 ```
 
 Output goes to `dist/`. Deploy to Vercel, Netlify, or Firebase Hosting.
+
+---
+
+## Temporarily disabled features
+
+### My Account
+
+The My Account character showcase is temporarily disabled. The page implementation remains in `src/pages/AccountPage.tsx` so it can be restored later.
+
+The disabled entry points are commented out in:
+
+- `src/App.tsx` — the `AccountPage` import and `/account` route
+- `src/components/layout/DashboardLayout.tsx` — the My Account sidebar item
+- `src/components/GlobalSearch.tsx` — the My Account search item
+
+To restore the feature, uncomment those three entries and restore the `UserCircle2` imports where needed. The dashboard setup prompt in `src/pages/DashboardPage.tsx` was changed to point to My Characters while this feature is disabled. Run `npm run type-check` and `npm run build` after restoring it.

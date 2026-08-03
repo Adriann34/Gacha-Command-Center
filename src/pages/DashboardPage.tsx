@@ -441,7 +441,7 @@ export default function DashboardPage() {
         <div className="ornate" style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
           <Sparkles size={18} color="var(--color-gold)" style={{ flexShrink: 0 }} />
           <div style={{ flex: 1, fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-            Connect your Genshin UID to see your character showcase on the <strong style={{ color: 'var(--color-text-primary)' }}>My Account</strong> page.
+            Connect your Genshin UID to see your character showcase on the <strong style={{ color: 'var(--color-text-primary)' }}>My Characters</strong> page.
           </div>
           <button onClick={() => navigate('/settings')} style={{
             padding: '0.45rem 0.875rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)',

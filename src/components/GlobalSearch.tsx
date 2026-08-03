@@ -4,7 +4,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import {
-  Search, LayoutDashboard, ListChecks, UserCircle2,
+  Search, LayoutDashboard, ListChecks,
   Settings as SettingsIcon, X, CornerDownLeft,
 } from 'lucide-react'
 
@@ -18,7 +18,7 @@ interface PageEntry {
 const PAGES: PageEntry[] = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', keywords: 'home overview teyvat banners events version abyss theater reset' },
   { to: '/tracker', icon: ListChecks, label: 'Tracker', keywords: 'goals todo tasks farming wish planning exploration event' },
-  { to: '/account', icon: UserCircle2, label: 'My Account', keywords: 'profile characters roster showcase uid' },
+  // { to: '/account', icon: UserCircle2, label: 'My Account', keywords: 'profile characters roster showcase uid' }, // Temporarily disabled.
   { to: '/settings', icon: SettingsIcon, label: 'Settings', keywords: 'server region notifications preferences genshin uid' },
 ]
 

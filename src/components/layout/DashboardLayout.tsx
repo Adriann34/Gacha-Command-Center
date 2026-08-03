@@ -5,7 +5,7 @@ import Avatar from '../Avatar'
 import NotificationBell from '../NotificationBell'
 import GlobalSearch from '../GlobalSearch'
 import {
-  LayoutDashboard, ListChecks, UserCircle2, Settings,
+  LayoutDashboard, ListChecks, Settings,
   Menu, X, LogOut, ChevronDown, Terminal, Users,
 } from 'lucide-react'
 import { isDevUser } from '../../lib/devAccess'
@@ -20,7 +20,7 @@ const navItems: NavItem[] = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/characters', icon: Users, label: 'My Characters' },
   { to: '/tracker', icon: ListChecks, label: 'Tracker' },
-  { to: '/account', icon: UserCircle2, label: 'My Account' },
+  // { to: '/account', icon: UserCircle2, label: 'My Account' }, // Temporarily disabled.
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 

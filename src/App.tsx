@@ -5,7 +5,7 @@ import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
 import TrackerPage from './pages/TrackerPage'
-import AccountPage from './pages/AccountPage'
+// import AccountPage from './pages/AccountPage' // Temporarily disabled.
 import SettingsPage from './pages/SettingsPage'
 import DevChroniclePage from './pages/DevChroniclePage'
 import CharactersPage from './pages/CharactersPage'
@@ -64,7 +64,7 @@ export default function App() {
           <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="tracker" element={<TrackerPage />} />
-            <Route path="account" element={<AccountPage />} />
+            {/* <Route path="account" element={<AccountPage />} /> */}
             <Route path="characters" element={<CharactersPage />} />
             <Route path="characters/:id" element={<CharacterDetailPage />} />
             <Route path="settings" element={<SettingsPage />} />
