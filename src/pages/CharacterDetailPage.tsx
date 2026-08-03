@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, type ElementType } from 'react'
+import { useEffect, useState, useMemo, useRef, type ElementType } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, AlertCircle, RefreshCw, Sparkles, Heart, Star,
@@ -415,18 +415,32 @@ export default function CharacterDetailPage() {
   )
 
   const [detail, setDetail] = useState<HoyoDetailCharacter | null>(null)
+  const [detailCharacterId, setDetailCharacterId] = useState<number | null>(null)
   const [propMap, setPropMap] = useState<Record<string, HoyoPropInfo>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const requestIdRef = useRef(0)
+
+  // Keep a detail response tied to the character it was requested for. Route
+  // changes can happen faster than the API responds, so an older response
+  // must never become visible for the newly selected character.
+  const visibleDetail = detailCharacterId === characterId ? detail : null
 
   const loadDetail = (id: number) => {
+    const requestId = ++requestIdRef.current
     setLoading(true)
     setError(null)
+    setDetail(null)
+    setDetailCharacterId(null)
+    setPropMap({})
     fetchCharacterDetails([id]).then((res) => {
+      if (requestId !== requestIdRef.current) return
       setDetail(res.list?.[0] ?? null)
+      setDetailCharacterId(id)
       setPropMap(res.property_map ?? {})
       setLoading(false)
     }).catch((err) => {
+      if (requestId !== requestIdRef.current) return
       setError(err instanceof Error ? err.message : String(err))
       setLoading(false)
     })
@@ -443,25 +457,25 @@ export default function CharacterDetailPage() {
     if (!listEntry) return []
     return [...new Set([
       listEntry.image,
-      detail?.base?.image ?? '',
+      visibleDetail?.base?.image ?? '',
       listEntry.sideIcon,
-      detail?.base?.side_icon ?? '',
+      visibleDetail?.base?.side_icon ?? '',
     ])].filter(Boolean)
-  }, [listEntry, detail?.base?.image, detail?.base?.side_icon])
+  }, [listEntry, visibleDetail?.base?.image, visibleDetail?.base?.side_icon])
 
   function resolvePropLabel(propType: number): string {
     return propMap[String(propType)]?.name ?? `Stat #${propType}`
   }
 
   const critInfo = useMemo(() => {
-    if (!detail) return null
+    if (!visibleDetail) return null
     const parseNum = (s?: string): number | null => {
       if (!s) return null
       const n = parseFloat(s)
       return Number.isNaN(n) ? null : n
     }
     const findProp = (pt: number, keyword: string) =>
-      detail.selected_properties.find(
+      visibleDetail.selected_properties.find(
         (p) => p.property_type === pt || (propMap[String(p.property_type)]?.name ?? '').toLowerCase().includes(keyword),
       )
     const crProp = findProp(20, 'crit rate')
@@ -470,7 +484,7 @@ export default function CharacterDetailPage() {
     const cd = cdProp ? parseNum(cdProp.final) : null
     if (cr === null || cd === null) return null
     return { cr, cd, cv: Math.round((cr * 2 + cd) * 10) / 10 }
-  }, [detail, propMap])
+  }, [visibleDetail, propMap])
 
   const isCritStat = (propertyType: number): boolean => {
     if (propertyType === 20 || propertyType === 22) return true
@@ -478,18 +492,18 @@ export default function CharacterDetailPage() {
   }
 
   const setEntries = useMemo(() => {
-    if (!detail) return []
+    if (!visibleDetail) return []
     const setCounts: Record<string, { count: number; set: HoyoDetailArtifact['set'] }> = {}
-    for (const r of detail.relics) {
+    for (const r of visibleDetail.relics) {
       if (!setCounts[r.set.name]) setCounts[r.set.name] = { count: 0, set: r.set }
       setCounts[r.set.name].count++
     }
     return Object.entries(setCounts)
-  }, [detail])
+  }, [visibleDetail])
 
   const sortedConsts = useMemo(
-    () => (detail ? [...detail.constellations].sort((a, b) => a.pos - b.pos) : []),
-    [detail],
+    () => (visibleDetail ? [...visibleDetail.constellations].sort((a, b) => a.pos - b.pos) : []),
+    [visibleDetail],
   )
 
   const unlockedConstCount = sortedConsts.filter((c) => c.is_actived).length
@@ -507,7 +521,7 @@ export default function CharacterDetailPage() {
 
   const [activeTalent, setActiveTalent] = useState(0)
   const [selectedConst, setSelectedConst] = useState<number | null>(null)
-  useEffect(() => { setActiveTalent(0); setSelectedConst(null) }, [detail])
+  useEffect(() => { setActiveTalent(0); setSelectedConst(null) }, [visibleDetail])
 
   if (!loaded) {
     return (
@@ -537,13 +551,13 @@ export default function CharacterDetailPage() {
     )
   }
 
-  const talentIdx = detail && detail.skills.length > 0 ? Math.min(activeTalent, detail.skills.length - 1) : -1
-  const activeSkill = talentIdx >= 0 ? detail!.skills[talentIdx] : null
+  const talentIdx = visibleDetail && visibleDetail.skills.length > 0 ? Math.min(activeTalent, visibleDetail.skills.length - 1) : -1
+  const activeSkill = talentIdx >= 0 ? visibleDetail!.skills[talentIdx] : null
   const activeConst = sortedConsts.length > 0
     ? sortedConsts[Math.min(selectedConst ?? defaultConstIdx, sortedConsts.length - 1)]
     : null
 
-  const hasWeapon = Boolean(detail?.weapon?.name)
+  const hasWeapon = Boolean(visibleDetail?.weapon?.name)
   const loadoutPanels = (hasWeapon ? 1 : 0) + (setEntries.length > 0 ? 1 : 0)
 
   return (
@@ -648,7 +662,7 @@ export default function CharacterDetailPage() {
             >
               <ElementIcon element={listEntry.element} size={17} />
             </span>
-            <span className="detail-level-mark">Lv. {detail?.base?.level ?? listEntry.level} / 90</span>
+            <span className="detail-level-mark">Lv. {visibleDetail?.base?.level ?? listEntry.level} / 90</span>
           </div>
           <h1 className="detail-char-name">{listEntry.name}</h1>
 
@@ -664,7 +678,7 @@ export default function CharacterDetailPage() {
               }}
             >{listEntry.element}</span>
             <span className="detail-tag detail-tag-weapon">
-              {WEAPON_TYPE_LABELS[detail?.base?.weapon_type ?? listEntry.weaponType] ?? 'Unknown'}
+              {WEAPON_TYPE_LABELS[visibleDetail?.base?.weapon_type ?? listEntry.weaponType] ?? 'Unknown'}
             </span>
           </div>
 
@@ -689,18 +703,18 @@ export default function CharacterDetailPage() {
         </div>
       </section>
 
-      {loading && !detail && (
+      {loading && !visibleDetail && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
           Loading character details...
         </div>
       )}
 
-      {detail && !loading && (
+      {visibleDetail && !loading && (
         <>
           <section className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Stats</span></div>
             <div className="detail-stats">
-              {detail.selected_properties.map((prop) => {
+              {visibleDetail.selected_properties.map((prop) => {
                 const addVal = prop.add ? Number(prop.add) : 0
                 const accentCard = isCritStat(prop.property_type)
                 return (
@@ -730,39 +744,39 @@ export default function CharacterDetailPage() {
                     <div className="detail-set-title">Weapon</div>
                     <div className="detail-weapon">
                       <div className="detail-weapon-icon">
-                        {detail!.weapon.icon ? (
+                        {visibleDetail.weapon.icon ? (
                           <img
-                            src={detail!.weapon.icon}
-                            alt={detail!.weapon.name}
+                            src={visibleDetail.weapon.icon}
+                            alt={visibleDetail.weapon.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                           />
                         ) : (
-                          <WeaponTypeIcon type={detail!.weapon.type} size={28} />
+                          <WeaponTypeIcon type={visibleDetail.weapon.type} size={28} />
                         )}
                       </div>
                       <div style={{ minWidth: 0 }}>
                         <div className="detail-weapon-name-row">
-                          <span className="detail-weapon-name">{detail!.weapon.name}</span>
-                          <span className="detail-refine">R{detail!.weapon.affix_level}</span>
+                          <span className="detail-weapon-name">{visibleDetail.weapon.name}</span>
+                          <span className="detail-refine">R{visibleDetail.weapon.affix_level}</span>
                         </div>
                         <div className="detail-weapon-meta">
-                          {detail!.weapon.type_name} · <span className="detail-weapon-stars">{'★'.repeat(detail!.weapon.rarity)}</span> · Lv. {detail!.weapon.level}
+                          {visibleDetail.weapon.type_name} · <span className="detail-weapon-stars">{'★'.repeat(visibleDetail.weapon.rarity)}</span> · Lv. {visibleDetail.weapon.level}
                         </div>
                         <div className="detail-weapon-stats">
                           <div className="detail-weapon-stat">
-                            <div className="l">{resolvePropLabel(detail!.weapon.main_property.property_type)}</div>
-                            <div className="v">{detail!.weapon.main_property.final}</div>
+                            <div className="l">{resolvePropLabel(visibleDetail.weapon.main_property.property_type)}</div>
+                            <div className="v">{visibleDetail.weapon.main_property.final}</div>
                           </div>
-                          {detail!.weapon.sub_property?.final && (
+                          {visibleDetail.weapon.sub_property?.final && (
                             <div className="detail-weapon-stat">
-                              <div className="l">{resolvePropLabel(detail!.weapon.sub_property.property_type)}</div>
-                              <div className="v">{detail!.weapon.sub_property.final}</div>
+                              <div className="l">{resolvePropLabel(visibleDetail.weapon.sub_property.property_type)}</div>
+                              <div className="v">{visibleDetail.weapon.sub_property.final}</div>
                             </div>
                           )}
                         </div>
-                        {detail!.weapon.desc && (
-                          <p className="detail-weapon-passive">{cleanDetailText(detail!.weapon.desc)}</p>
+                        {visibleDetail.weapon.desc && (
+                          <p className="detail-weapon-passive">{cleanDetailText(visibleDetail.weapon.desc)}</p>
                         )}
                       </div>
                     </div>
@@ -807,13 +821,13 @@ export default function CharacterDetailPage() {
 
           <section className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Artifacts</span></div>
-            {detail.relics.length === 0 ? (
+            {visibleDetail.relics.length === 0 ? (
               <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
                 No artifacts equipped
               </div>
             ) : (
               <div className="detail-artifacts">
-                {[...detail.relics]
+                {[...visibleDetail.relics]
                   .sort((a, b) => a.pos - b.pos)
                   .map((r) => (
                     <ArtifactCard key={r.id} artifact={r} propMap={propMap} />
@@ -824,14 +838,14 @@ export default function CharacterDetailPage() {
 
           <section className="detail-section">
             <div className="detail-section-head"><span className="dia">◆</span><span className="detail-section-title">Talents</span></div>
-            {detail.skills.length === 0 ? (
+            {visibleDetail.skills.length === 0 ? (
               <div className="card" style={{ padding: '1.25rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
                 No talent data available
               </div>
             ) : (
               <>
                 <div className="detail-tabs">
-                  {detail.skills.map((s, i) => (
+                  {visibleDetail.skills.map((s, i) => (
                     <button
                       key={s.skill_id}
                       className={`detail-tab ${i === talentIdx ? 'active' : ''}`}
