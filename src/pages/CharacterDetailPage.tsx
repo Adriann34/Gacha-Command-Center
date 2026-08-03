@@ -2,10 +2,11 @@ import { useEffect, useState, useMemo, useRef, type ElementType } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, AlertCircle, RefreshCw, Sparkles, Heart, Star,
-  Droplet, Flame, Snowflake, Wind, Zap, Leaf, Mountain,
+  Zap,
   Sword, Axe, Crosshair, Anchor, Orbit, Gem, Swords,
   Flower, Feather, Hourglass, Wine, Crown, Shield, Lock, Layers,
 } from 'lucide-react'
+import { ElementIcon } from '../components/ElementIcon'
 import { useCharacterList } from '../hooks/useCharacterList'
 import { ELEMENT_COLORS } from '../lib/genshinCharacters'
 import {
@@ -22,10 +23,6 @@ const WEAPON_TYPE_LABELS: Record<number, string> = {
 
 const WEAPON_ICONS: Record<number, ElementType> = {
   1: Sword, 10: Orbit, 11: Axe, 12: Crosshair, 13: Anchor,
-}
-
-const ELEMENT_ICONS: Record<string, ElementType> = {
-  Pyro: Flame, Hydro: Droplet, Anemo: Wind, Electro: Zap, Dendro: Leaf, Cryo: Snowflake, Geo: Mountain,
 }
 
 const SKILL_TYPE_ICONS: Record<number, ElementType> = {
@@ -49,11 +46,6 @@ function cleanDetailText(text: string): string {
     .replace(/\{LINK#[^}]+\}|\{\/LINK\}/gi, '')
     .replace(/\[LINK#[^\]]+\]|\[\/LINK\]/gi, '')
     .replace(/<[^>]*>/g, '')
-}
-
-function ElementIcon({ element, size = 14 }: { element: string; size?: number }) {
-  const Icon = ELEMENT_ICONS[element] ?? Sparkles
-  return <Icon size={size} strokeWidth={1.7} />
 }
 
 function WeaponTypeIcon({ type, size = 16 }: { type: number; size?: number }) {

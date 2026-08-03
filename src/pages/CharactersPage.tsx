@@ -1,10 +1,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowDownUp, Axe, Crosshair, Droplet, Flame, Heart, Inbox, Leaf, Mountain,
+  ArrowDownUp, Axe, Crosshair, Heart, Inbox,
   Orbit, RefreshCw, Search, Settings as SettingsIcon, SlidersHorizontal,
-  Snowflake, Sparkles, Star, Sword, Wind, Zap,
+  Sparkles, Star, Sword,
 } from 'lucide-react'
+import { ElementIcon } from '../components/ElementIcon'
 import { useCharacterList } from '../hooks/useCharacterList'
 import { syncChronicle } from '../lib/hoyolab'
 import type { CharacterEntry } from '../lib/hoyolab'
@@ -18,10 +19,6 @@ const WEAPON_TYPES = [
   { label: 'Catalyst', value: 10, icon: Orbit },
 ]
 
-const ELEMENT_ICONS: Record<string, typeof Droplet> = {
-  Hydro: Droplet, Pyro: Flame, Electro: Zap, Cryo: Snowflake,
-  Anemo: Wind, Geo: Mountain, Dendro: Leaf,
-}
 const ELEMENT_CLASS: Record<string, string> = {
   Hydro: 'hydro', Pyro: 'pyro', Electro: 'electro', Cryo: 'cryo',
   Anemo: 'anemo', Geo: 'geo', Dendro: 'dendro',
@@ -56,8 +53,6 @@ const CharacterCard = memo(function CharacterCard({ character, favorite, onFavor
   const [imageIndex, setImageIndex] = useState(0)
   const imageSource = imageSources[imageIndex]
   const elementClass = ELEMENT_CLASS[character.element] ?? 'unknown'
-  const ElementIcon = ELEMENT_ICONS[character.element] ?? Sparkles
-
   return (
     <article className={`character-card rarity-${character.rarity} ${character.isChosen ? 'pinned' : ''}`} onClick={() => onClick(character.id)}>
       {character.isChosen && <div className="pin-flag">Viewing</div>}
@@ -70,7 +65,7 @@ const CharacterCard = memo(function CharacterCard({ character, favorite, onFavor
         <div className="art-wash" />
       </div>
       <div className="card-corner-top">
-        <div className={`element-chip el-${elementClass}`}><ElementIcon size={14} /></div>
+        <div className={`element-chip el-${elementClass}`}><ElementIcon element={character.element} size={14} /></div>
         <div className="card-action-stack">
           <button
             className={`favorite-button ${favorite ? 'on' : ''}`}
@@ -164,7 +159,7 @@ export default function CharactersPage() {
         <span className="toolbar-divider" />
         <div className="filter-pills">
           <button className={`filter-pill ${elements.length === 0 ? 'active' : ''}`} onClick={() => setElements([])}><SlidersHorizontal size={14} /> All</button>
-          {ELEMENTS.map((element) => { const Icon = ELEMENT_ICONS[element]; return <button key={element} className={`filter-pill element-${ELEMENT_CLASS[element]} ${elements.includes(element) ? 'active' : ''}`} onClick={() => toggleElement(element)}><Icon size={14} /> {element}</button> })}
+          {ELEMENTS.map((element) => <button key={element} className={`filter-pill element-${ELEMENT_CLASS[element]} ${elements.includes(element) ? 'active' : ''}`} onClick={() => toggleElement(element)}><ElementIcon element={element} size={14} /> {element}</button>)}
         </div>
         <span className="toolbar-divider" />
         <div className="filter-pills weapon-pills">
