@@ -472,6 +472,10 @@ body::before {
   --roster-panel: #121927;
   --roster-panel-2: #161f30;
   --roster-faint: #525d72;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1120px;
+  width: 100%;
 }
 .characters-eyebrow {
   color: var(--roster-faint);
@@ -520,14 +524,14 @@ body::before {
 .sort-select { align-items: center; background: var(--roster-panel-2); border: 1px solid var(--gold-line-soft); border-radius: .45rem; color: var(--color-text-muted); display: flex; gap: .35rem; padding: .4rem .5rem; }
 .sort-select select { background: none; border: 0; color: var(--color-text-primary); font: .7rem var(--font-body); outline: 0; }
 .sort-select option { background: var(--color-surface-800); }
-.characters-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
-.character-card { aspect-ratio: 3 / 4.1; background: var(--roster-panel); border: 1px solid var(--gold-line-soft); border-radius: .7rem; cursor: pointer; overflow: hidden; position: relative; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+.characters-grid { contain: layout paint; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+.character-card { aspect-ratio: 3 / 4.1; background: var(--roster-panel); border: 1px solid var(--gold-line-soft); border-radius: .7rem; contain: layout paint style; content-visibility: auto; contain-intrinsic-size: 0 245px; cursor: pointer; overflow: hidden; position: relative; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
 .character-card:hover { box-shadow: 0 14px 30px rgba(0,0,0,.45); transform: translateY(-4px); }
 .character-card.rarity-5 { border-color: rgba(224,179,85,.35); }
 .character-card.rarity-4 { border-color: rgba(192,144,232,.28); }
 .character-card.pinned { border-color: var(--color-hydro); box-shadow: 0 0 0 1px rgba(63,189,241,.3), 0 0 20px rgba(63,189,241,.14); }
 .character-art { align-items: center; display: flex; inset: 0; justify-content: center; overflow: hidden; position: absolute; }
-.character-art img { height: 100%; object-fit: cover; position: relative; width: 100%; }
+.character-art img { display: block; height: 100%; object-fit: cover; position: relative; width: 100%; }
 .art-wash { background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.04), transparent 60%); inset: 0; pointer-events: none; position: absolute; }
 .art-hydro { background: radial-gradient(circle at 50% 30%, #2f7791, #0c2431 75%); }
 .art-pyro { background: radial-gradient(circle at 50% 30%, #8a4a2f, #2e1610 75%); }
@@ -539,7 +543,7 @@ body::before {
 .art-unknown { background: radial-gradient(circle at 50% 30%, #515c76, #171d2b 75%); }
 .character-initial { color: rgba(255,255,255,.9); font-family: var(--font-display); font-size: 3rem; font-weight: 700; }
 .card-corner-top { align-items: flex-start; display: flex; justify-content: space-between; left: .55rem; position: absolute; right: .55rem; top: .55rem; z-index: 2; }
-.element-chip, .favorite-button, .weapon-chip { align-items: center; backdrop-filter: blur(3px); background: rgba(10,14,22,.68); border: 1px solid rgba(255,255,255,.14); display: flex; justify-content: center; }
+.element-chip, .favorite-button, .weapon-chip { align-items: center; background: rgba(10,14,22,.82); border: 1px solid rgba(255,255,255,.14); display: flex; justify-content: center; }
 .element-chip { border-radius: 50%; height: 25px; width: 25px; }
 .el-hydro { color: var(--color-hydro); }.el-pyro { color: var(--color-pyro); }.el-electro { color: var(--color-electro); }.el-cryo { color: var(--color-cryo); }.el-anemo { color: var(--color-anemo); }.el-geo { color: var(--color-geo); }.el-dendro { color: var(--color-dendro); }
 .card-action-stack { align-items: flex-end; display: flex; flex-direction: column; gap: .35rem; }

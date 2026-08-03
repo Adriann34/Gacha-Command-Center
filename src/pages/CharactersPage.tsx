@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowDownUp, Axe, Crosshair, Droplet, Flame, Heart, Inbox, Leaf, Mountain,
@@ -46,22 +46,24 @@ function PageHead({ total, fiveStars, averageLevel }: { total: number; fiveStars
   )
 }
 
-function CharacterCard({ character, favorite, onFavorite, onClick }: {
+const CharacterCard = memo(function CharacterCard({ character, favorite, onFavorite, onClick }: {
   character: CharacterEntry
   favorite: boolean
-  onFavorite: () => void
-  onClick: () => void
+  onFavorite: (id: number) => void
+  onClick: (id: number) => void
 }) {
-  const [imageSource, setImageSource] = useState(character.image || character.icon || character.sideIcon)
+  const imageSources = [character.image, character.icon, character.sideIcon].filter((source, index, sources) => source && sources.indexOf(source) === index)
+  const [imageIndex, setImageIndex] = useState(0)
+  const imageSource = imageSources[imageIndex]
   const elementClass = ELEMENT_CLASS[character.element] ?? 'unknown'
   const ElementIcon = ELEMENT_ICONS[character.element] ?? Sparkles
 
   return (
-    <article className={`character-card rarity-${character.rarity} ${character.isChosen ? 'pinned' : ''}`} onClick={onClick}>
+    <article className={`character-card rarity-${character.rarity} ${character.isChosen ? 'pinned' : ''}`} onClick={() => onClick(character.id)}>
       {character.isChosen && <div className="pin-flag">Viewing</div>}
       <div className={`character-art art-${elementClass}`}>
         {imageSource ? (
-          <img src={imageSource} alt={character.name} onError={() => setImageSource('')} />
+          <img src={imageSource} alt={character.name} loading="lazy" decoding="async" fetchPriority="low" onError={() => setImageIndex((current) => current + 1)} />
         ) : (
           <span className="character-initial">{character.name.charAt(0)}</span>
         )}
@@ -73,7 +75,7 @@ function CharacterCard({ character, favorite, onFavorite, onClick }: {
           <button
             className={`favorite-button ${favorite ? 'on' : ''}`}
             aria-label={`${favorite ? 'Remove' : 'Add'} ${character.name} ${favorite ? 'from' : 'to'} favorites`}
-            onClick={(event) => { event.stopPropagation(); onFavorite() }}
+            onClick={(event) => { event.stopPropagation(); onFavorite(character.id) }}
           ><Star size={13} fill={favorite ? 'currentColor' : 'none'} /></button>
           <div className="weapon-chip" title={WEAPON_LABELS[character.weaponType] ?? 'Unknown weapon'}>
             {character.weaponType === 1 ? <Sword size={14} /> : character.weaponType === 11 ? <Axe size={14} /> : character.weaponType === 10 ? <Orbit size={14} /> : <Crosshair size={14} />}
@@ -90,7 +92,7 @@ function CharacterCard({ character, favorite, onFavorite, onClick }: {
       </div>
     </article>
   )
-}
+})
 
 export default function CharactersPage() {
   const navigate = useNavigate()
@@ -135,17 +137,18 @@ export default function CharactersPage() {
 
   const toggleElement = (element: string) => setElements((current) => current.includes(element) ? current.filter((item) => item !== element) : [...current, element])
   const toggleWeapon = (weapon: number) => setWeapons((current) => current.includes(weapon) ? current.filter((item) => item !== weapon) : [...current, weapon])
-  const toggleFavorite = (id: number) => setFavorites((current) => {
+  const handleFavorite = useCallback((id: number) => setFavorites((current) => {
     const next = new Set(current)
     if (next.has(id)) next.delete(id); else next.add(id)
     return next
-  })
+  }), [])
+  const handleCharacterClick = useCallback((id: number) => navigate('/characters/' + id), [navigate])
 
-  if (!loaded) return <div className="fade-in"><PageHead total={0} fiveStars={0} averageLevel={0} /><div className="characters-loading">Loading your characters...</div></div>
+  if (!loaded) return <div className="fade-in characters-page"><PageHead total={0} fiveStars={0} averageLevel={0} /><div className="characters-loading">Loading your characters...</div></div>
 
   if (characters.length === 0) {
     return (
-      <div className="fade-in"><PageHead total={0} fiveStars={0} averageLevel={0} />
+      <div className="fade-in characters-page"><PageHead total={0} fiveStars={0} averageLevel={0} />
         <div className="ornate characters-empty">
           {syncing ? <><RefreshCw size={36} className="spin" /><p>Syncing your characters...</p><span>Fetching your Genshin Impact roster from HoYoLAB.</span></> : <><Sparkles size={40} /><p>No characters synced yet</p><span>Link your HoYoLAB account in Settings to pull your characters, weapons, and builds.</span><button onClick={() => navigate('/settings')} className="btn-primary"><SettingsIcon size={16} /> Go to Settings</button></>}
         </div>
@@ -175,7 +178,7 @@ export default function CharactersPage() {
         <div className="toolbar-right"><span className="result-count"><b>{filteredCharacters.length}</b> characters</span><label className="sort-select"><ArrowDownUp size={14} /><select value={sort} onChange={(event) => setSort(event.target.value)}><option value="level-desc">Level: High to Low</option><option value="name-asc">Name: A–Z</option><option value="rarity-desc">Rarity</option><option value="cons-desc">Constellation</option><option value="friend-desc">Friendship</option></select></label></div>
       </div>
       <div className="characters-grid">
-        {filteredCharacters.length > 0 ? filteredCharacters.map((character) => <CharacterCard key={character.id} character={character} favorite={favorites.has(character.id)} onFavorite={() => toggleFavorite(character.id)} onClick={() => navigate('/characters/' + character.id)} />) : <div className="characters-no-results"><Inbox size={34} /><h2>No characters match</h2><p>Try clearing a filter or searching a different name.</p></div>}
+        {filteredCharacters.length > 0 ? filteredCharacters.map((character) => <CharacterCard key={character.id} character={character} favorite={favorites.has(character.id)} onFavorite={handleFavorite} onClick={handleCharacterClick} />) : <div className="characters-no-results"><Inbox size={34} /><h2>No characters match</h2><p>Try clearing a filter or searching a different name.</p></div>}
       </div>
     </div>
   )
