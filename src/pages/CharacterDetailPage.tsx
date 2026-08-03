@@ -201,19 +201,13 @@ const LAYOUT_CSS = `
 }
 .detail-portrait {
   position:relative; border-radius:0.5rem; overflow:hidden;
-  border:1px solid var(--gold-line-soft); min-height:340px;
+  border:1px solid var(--gold-line-soft); min-height:420px;
   display:flex; align-items:center; justify-content:center;
 }
-.detail-hero-badges { position:absolute; top:14px; left:14px; display:flex; gap:8px; z-index:2; }
-.detail-hero-lv { position:absolute; top:14px; right:14px; z-index:2; }
-.detail-pill {
-  display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:9999px;
-  font-size:11.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
-  border:1px solid var(--gold-line); background:rgba(10,14,22,0.6); backdrop-filter:blur(4px);
-}
-.detail-pill-lv { color:var(--color-gold-bright); }
-.detail-hero-info { display:flex; flex-direction:column; min-width:0; position:relative; z-index:1; }
-.detail-eyebrow { color:var(--color-text-muted); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+.detail-identity-top { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+.detail-element-mark { width:34px; height:34px; border-radius:0.55rem; display:flex; align-items:center; justify-content:center; border:1px solid var(--gold-line); }
+.detail-level-mark { color:var(--color-text-secondary); border:1px solid var(--gold-line); border-radius:0.45rem; padding:7px 10px; font-family:"JetBrains Mono", monospace; font-size:12px; white-space:nowrap; }
+.detail-hero-info { display:flex; flex-direction:column; justify-content:center; min-width:0; position:relative; z-index:1; }
 .detail-char-name {
   font-family:var(--font-display); font-weight:700; font-size:2.5rem; letter-spacing:.5px;
   color:var(--color-text-primary); line-height:1.05; margin:0;
@@ -222,26 +216,23 @@ const LAYOUT_CSS = `
 .detail-tag-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
 .detail-tag {
   display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:0.5rem;
+  border:1px solid var(--gold-line); background:transparent; color:var(--color-text-secondary);
   font-size:12px; font-weight:700; letter-spacing:.3px;
 }
-.detail-tag-weapon { background:rgba(211,188,142,0.12); color:var(--color-gold-bright); }
+.detail-tag-weapon { background:rgba(211,188,142,0.12); border-color:var(--gold-line); color:var(--color-gold-bright); }
 
 .detail-cv {
-  margin-top:16px; display:flex; align-items:center; gap:14px;
-  background:linear-gradient(135deg, rgba(211,188,142,0.10), rgba(63,189,241,0.06));
-  border:1px solid var(--gold-line); border-radius:0.55rem; padding:14px 16px;
+  margin-top:2px; display:flex; align-items:center; width:fit-content;
+  background:none; border:none; padding:0;
 }
-.detail-cv-icon {
-  width:38px; height:38px; border-radius:0.5rem; flex:0 0 auto;
-  background:var(--color-surface-800); display:flex; align-items:center; justify-content:center; color:var(--color-gold-bright);
-}
-.detail-cv-num { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:21px; color:var(--color-gold-bright); line-height:1; }
-.detail-cv-label { font-size:11.5px; color:var(--color-text-muted); margin-top:3px; letter-spacing:.3px; }
+.detail-cv-num { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:14px; color:var(--color-gold-bright); line-height:1; }
+.detail-cv-label { font-size:10.5px; color:var(--color-text-muted); margin-top:3px; letter-spacing:.3px; }
 
-.detail-friendship { margin-top:auto; padding-top:16px; border-top:1px solid var(--gold-line-soft); }
-.detail-friendship-head { display:inline-flex; align-items:center; gap:8px; width:fit-content; margin-bottom:9px; }
-.detail-friendship-label { font-size:12.5px; color:var(--color-text-muted); }
-.detail-friendship-lv { font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--color-gold-bright); font-weight:600; }
+.detail-friendship { margin-top:20px; }
+.detail-friendship-row { display:flex; align-items:center; gap:12px; width:fit-content; max-width:100%; }
+.detail-friendship-label { flex:0 0 auto; font-size:12.5px; color:var(--color-text-muted); white-space:nowrap; }
+.detail-friendship-lv { flex:0 0 auto; font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--color-gold-bright); font-weight:600; white-space:nowrap; }
+.detail-friendship .progress-bar { height:6px; width:180px; max-width:180px; flex:0 0 180px; min-width:0; }
 
 /* section headers */
 .detail-section { margin-bottom:26px; }
@@ -253,19 +244,21 @@ const LAYOUT_CSS = `
 }
 
 /* stats grid */
-.detail-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; grid-auto-rows:1fr; }
+.detail-stats { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); column-gap:48px; background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:18px 24px; }
 .detail-stats > * { min-width:0; }
 .detail-stat {
-  background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.5rem;
-  padding:14px 16px; position:relative; overflow:hidden;
+  display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; column-gap:16px;
+  background:none; border:none; border-bottom:1px solid rgba(211,188,142,0.09); border-radius:0;
+  min-height:72px; padding:12px 0; position:relative; overflow:hidden;
 }
-.detail-stat.accent { border-color:var(--gold-line); background:linear-gradient(160deg, rgba(211,188,142,0.08), var(--color-card) 60%); }
-.detail-stat.accent::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--color-gold); }
-.detail-stat-label { font-size:11px; color:var(--color-text-muted); letter-spacing:.4px; text-transform:uppercase; display:flex; align-items:center; gap:6px; }
+.detail-stat:nth-last-child(-n+2) { border-bottom:none; }
+.detail-stat.accent { background:none; }
+.detail-stat.accent::before { content:none; }
+.detail-stat-label { grid-column:1; grid-row:1; font-size:11px; color:var(--color-text-muted); letter-spacing:.4px; display:flex; align-items:center; gap:6px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .detail-stat-label svg { opacity:.7; }
-.detail-stat-value { font-family:"JetBrains Mono", monospace; font-weight:600; font-size:21px; color:var(--color-text-primary); margin-top:7px; }
+.detail-stat-value { grid-column:3; grid-row:1; justify-self:end; font-family:"JetBrains Mono", monospace; font-weight:600; font-size:17px; color:var(--color-text-primary); margin:0; text-align:right; white-space:nowrap; }
 .detail-stat.accent .detail-stat-value { color:var(--color-gold-bright); }
-.detail-stat-breakdown { font-size:10.5px; color:var(--color-text-muted); margin-top:5px; font-family:"JetBrains Mono", monospace; min-height:1.3em; }
+.detail-stat-breakdown { grid-column:2; grid-row:1; justify-self:end; font-size:10.5px; color:var(--color-text-muted); margin:0; font-family:"JetBrains Mono", monospace; min-height:1.3em; text-align:right; white-space:nowrap; }
 
 /* loadout */
 .detail-loadout { display:grid; grid-template-columns:1.1fr 1.4fr; gap:16px; }
@@ -339,10 +332,10 @@ const LAYOUT_CSS = `
   display:flex; align-items:center; justify-content:center; color:var(--color-text-muted); flex:0 0 auto;
 }
 .detail-tab.active .detail-tab-icon { color:var(--color-gold-bright); }
-.detail-tab-text { display:flex; align-items:baseline; gap:6px; min-width:0; }
-.detail-tab-name { overflow:hidden; text-overflow:ellipsis; font-size:12px; font-weight:700; color:var(--color-text-muted); line-height:1.2; white-space:nowrap; }
+.detail-tab-text { display:flex; align-items:baseline; flex:1 1 auto; gap:6px; min-width:0; overflow:hidden; }
+.detail-tab-name { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; font-size:12px; font-weight:700; color:var(--color-text-muted); line-height:1.2; white-space:nowrap; }
 .detail-tab.active .detail-tab-name { color:var(--color-text-primary); }
-.detail-tab-lv { font-size:10px; color:var(--color-text-muted); font-family:"JetBrains Mono", monospace; }
+.detail-tab-lv { flex:0 0 auto; font-size:10px; color:var(--color-text-muted); font-family:"JetBrains Mono", monospace; white-space:nowrap; }
 .detail-talent-panel { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:24px; }
 .detail-talent-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
 .detail-tab-icon-lg { width:40px; height:40px; border-radius:0.6rem; color:var(--color-gold-bright); }
@@ -388,16 +381,20 @@ const LAYOUT_CSS = `
 .detail-const-desc { font-size:13.5px; color:var(--color-text-secondary); line-height:1.75; white-space:pre-wrap; }
 
 @media (max-width: 1180px) {
-  .detail-stats { grid-template-columns:repeat(3,1fr); }
+  .detail-stats { column-gap:28px; }
   .detail-artifacts { grid-template-columns:repeat(3,1fr); }
   .detail-loadout, .detail-loadout.single { grid-template-columns:1fr; }
 }
 @media (max-width: 760px) {
   .detail-hero { grid-template-columns:1fr; }
-  .detail-portrait { min-height:240px; }
-  .detail-stats { grid-template-columns:repeat(2,1fr); }
+  .detail-portrait { height:min(520px, 92vw); min-height:360px; }
+  .detail-stats { grid-template-columns:1fr; padding:14px 16px; }
+  .detail-stat:nth-last-child(-n+2) { border-bottom:1px solid rgba(211,188,142,0.09); }
+  .detail-stat:last-child { border-bottom:none; }
   .detail-artifacts { grid-template-columns:repeat(2,1fr); }
   .detail-char-name { font-size:2rem; }
+  .detail-friendship-row { width:100%; gap:10px; }
+  .detail-friendship .progress-bar { width:180px; max-width:180px; flex:0 1 180px; }
 }
 @media (max-width: 360px) {
   .detail-artifacts { grid-template-columns:1fr; }
@@ -630,22 +627,6 @@ export default function CharacterDetailPage() {
             background: `radial-gradient(circle at 50% 38%, color-mix(in srgb, ${accent} 22%, transparent), transparent 60%), linear-gradient(180deg, var(--color-surface-800), var(--color-surface-900) 70%)`,
           }}
         >
-          <div className="detail-hero-badges">
-            <span
-              className="detail-pill"
-              style={{
-                color: accent,
-                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
-                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
-              }}
-            >
-              <ElementIcon element={listEntry.element} size={12} />
-              {listEntry.element}
-            </span>
-          </div>
-          <span className="detail-pill detail-pill-lv detail-hero-lv">
-            Lv. {detail?.base?.level ?? listEntry.level}
-          </span>
           {bannerSources.length > 0 ? (
             <CharacterBanner key={characterId} sources={bannerSources} alt={listEntry.name} />
           ) : (
@@ -656,40 +637,53 @@ export default function CharacterDetailPage() {
         </div>
 
         <div className="detail-hero-info">
-          <div className="detail-eyebrow">Character Details</div>
+          <div className="detail-identity-top">
+            <span
+              className="detail-element-mark"
+              style={{
+                color: accent,
+                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
+                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
+              }}
+            >
+              <ElementIcon element={listEntry.element} size={17} />
+            </span>
+            <span className="detail-level-mark">Lv. {detail?.base?.level ?? listEntry.level} / 90</span>
+          </div>
           <h1 className="detail-char-name">{listEntry.name}</h1>
 
           <div className="detail-stars">{'★'.repeat(listEntry.rarity)}</div>
 
           <div className="detail-tag-row">
-            <span className="detail-tag" style={{ background: `color-mix(in srgb, ${accent} 18%, transparent)`, color: accent }}>
-              <ElementIcon element={listEntry.element} />
-              {listEntry.element}
-            </span>
+            <span
+              className="detail-tag"
+              style={{
+                color: accent,
+                borderColor: `color-mix(in srgb, ${accent} 45%, transparent)`,
+                background: `color-mix(in srgb, ${accent} 16%, transparent)`,
+              }}
+            >{listEntry.element}</span>
             <span className="detail-tag detail-tag-weapon">
-              <WeaponTypeIcon type={detail?.base?.weapon_type ?? listEntry.weaponType} />
               {WEAPON_TYPE_LABELS[detail?.base?.weapon_type ?? listEntry.weaponType] ?? 'Unknown'}
             </span>
           </div>
 
           {critInfo && (
             <div className="detail-cv">
-              <div className="detail-cv-icon"><Sparkles size={18} /></div>
               <div>
                 <div className="detail-cv-num">{critInfo.cv}</div>
-                <div className="detail-cv-label">Crit Ratio · {critInfo.cr}% CR / {critInfo.cd}% CD</div>
+                <div className="detail-cv-label">Crit Value · {critInfo.cr}% CR / {critInfo.cd}% CD</div>
               </div>
             </div>
           )}
 
           <div className="detail-friendship">
-            <div className="detail-friendship-head">
-              <Heart size={15} color="var(--color-pink-400)" />
+            <div className="detail-friendship-row">
               <span className="detail-friendship-label">Friendship</span>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${Math.min((totalFriendship / 10) * 100, 100)}%` }} />
+              </div>
               <span className="detail-friendship-lv">Lv. {totalFriendship}</span>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${Math.min((totalFriendship / 10) * 100, 100)}%` }} />
             </div>
           </div>
         </div>
