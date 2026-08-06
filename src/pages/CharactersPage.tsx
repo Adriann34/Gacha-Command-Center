@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowDownUp, Axe, Crosshair, Heart, Inbox,
+  ArrowDownUp, Axe, Crosshair, Inbox,
   Orbit, RefreshCw, Search, Settings as SettingsIcon, SlidersHorizontal,
   Sparkles, Star, Sword,
 } from 'lucide-react'
@@ -82,7 +82,7 @@ const CharacterCard = memo(function CharacterCard({ character, favorite, onFavor
         <div className="rarity-stars">{Array.from({ length: character.rarity }, (_, index) => <Star key={index} size={9} fill="currentColor" />)}</div>
         <div className="character-sub">
           <span>Lv.{character.level}</span><i /> <strong>C{character.constellation}</strong>
-          <span className="friendship"><Heart size={10} fill="currentColor" />{character.friendship}</span>
+          <span className="friendship"><img src="/icons/friendship.png" alt="" />{character.friendship}</span>
         </div>
       </div>
     </article>
