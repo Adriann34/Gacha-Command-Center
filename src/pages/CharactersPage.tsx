@@ -24,8 +24,6 @@ const ELEMENT_CLASS: Record<string, string> = {
   Anemo: 'anemo', Geo: 'geo', Dendro: 'dendro',
 }
 
-const WEAPON_LABELS: Record<number, string> = { 1: 'Sword', 10: 'Catalyst', 11: 'Claymore', 12: 'Bow', 13: 'Polearm' }
-
 function PageHead({ total, fiveStars, averageLevel }: { total: number; fiveStars: number; averageLevel: number }) {
   return (
     <>
@@ -72,9 +70,6 @@ const CharacterCard = memo(function CharacterCard({ character, favorite, onFavor
             aria-label={`${favorite ? 'Remove' : 'Add'} ${character.name} ${favorite ? 'from' : 'to'} favorites`}
             onClick={(event) => { event.stopPropagation(); onFavorite(character.id) }}
           ><Star size={13} fill={favorite ? 'currentColor' : 'none'} /></button>
-          <div className="weapon-chip" title={WEAPON_LABELS[character.weaponType] ?? 'Unknown weapon'}>
-            {character.weaponType === 1 ? <Sword size={14} /> : character.weaponType === 11 ? <Axe size={14} /> : character.weaponType === 10 ? <Orbit size={14} /> : <Crosshair size={14} />}
-          </div>
         </div>
       </div>
       <div className="character-scrim">

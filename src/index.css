@@ -543,13 +543,12 @@ body::before {
 .art-unknown { background: radial-gradient(circle at 50% 30%, #515c76, #171d2b 75%); }
 .character-initial { color: rgba(255,255,255,.9); font-family: var(--font-display); font-size: 3rem; font-weight: 700; }
 .card-corner-top { align-items: flex-start; display: flex; justify-content: space-between; left: .55rem; position: absolute; right: .55rem; top: .55rem; z-index: 2; }
-.element-chip, .favorite-button, .weapon-chip { align-items: center; background: rgba(10,14,22,.82); border: 1px solid rgba(255,255,255,.14); display: flex; justify-content: center; }
+.element-chip, .favorite-button { align-items: center; background: rgba(10,14,22,.82); border: 1px solid rgba(255,255,255,.14); display: flex; justify-content: center; }
 .element-chip { border-radius: 50%; height: 25px; width: 25px; }
 .el-hydro { color: var(--color-hydro); }.el-pyro { color: var(--color-pyro); }.el-electro { color: var(--color-electro); }.el-cryo { color: var(--color-cryo); }.el-anemo { color: var(--color-anemo); }.el-geo { color: var(--color-geo); }.el-dendro { color: var(--color-dendro); }
 .card-action-stack { align-items: flex-end; display: flex; flex-direction: column; gap: .35rem; }
-.favorite-button, .weapon-chip { border-radius: 50%; color: rgba(255,255,255,.55); cursor: pointer; height: 25px; width: 25px; }
+.favorite-button { border-radius: 50%; color: rgba(255,255,255,.55); cursor: pointer; height: 25px; width: 25px; }
 .favorite-button.on { color: var(--color-gold-bright); border-color: var(--gold-line); }
-.weapon-chip { border-radius: .45rem; color: var(--color-text-secondary); }
 .pin-flag { background: rgba(10,14,22,.75); border: 1px solid rgba(63,189,241,.4); border-radius: .3rem; color: var(--color-hydro); font-size: .56rem; font-weight: 800; left: .55rem; letter-spacing: .04em; padding: .2rem .4rem; position: absolute; text-transform: uppercase; top: .55rem; z-index: 3; }
 .character-scrim { background: linear-gradient(180deg, transparent, rgba(6,9,15,.55) 40%, rgba(6,9,15,.95) 100%); bottom: 0; left: 0; padding: 2.5rem .65rem .65rem; position: absolute; right: 0; z-index: 2; }
 .character-name { color: #fdfaf3; font-family: var(--font-display); font-size: .97rem; font-weight: 700; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
