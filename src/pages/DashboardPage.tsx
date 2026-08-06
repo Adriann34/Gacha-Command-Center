@@ -406,6 +406,14 @@ export default function DashboardPage() {
   const abyssTarget = abyssChallenge && abyssChallenge.endTimestamp > 0 ? new Date(abyssChallenge.endTimestamp * 1000) : abyssReset.nextReset
   const theaterTarget = theaterChallenge && theaterChallenge.endTimestamp > 0 ? new Date(theaterChallenge.endTimestamp * 1000) : theaterReset.nextReset
 
+  // A stale or malformed worker record must never become a visible "next" announcement. The
+  // worker currently derives this date from the upstream notice timestamp, so treat the dashboard
+  // as the final expiry boundary even when Firestore is successfully updating.
+  const nextVersion = schedule?.nextVersion && (() => {
+    const releaseDate = safeDate(schedule.nextVersion.releaseDate)
+    return releaseDate && releaseDate.getTime() > Date.now() ? schedule.nextVersion : null
+  })()
+
   const calendarBanners: GameBanner[] | null = calendar
     ? [...calendar.characterBanners, ...calendar.weaponBanners, ...calendar.chronicledBanners].map(calendarBannerToGameBanner)
     : null
@@ -568,21 +576,21 @@ export default function DashboardPage() {
       )}
 
       {/* Next version */}
-      {schedule?.nextVersion && (
+      {nextVersion && (
         <div className="ornate" style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ width: 42, height: 42, borderRadius: '0.5rem', flexShrink: 0, border: '1px solid var(--gold-line)', color: 'var(--color-hydro)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Clock size={20} strokeWidth={1.6} />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
-              Next: v{schedule.nextVersion.version} · {schedule.nextVersion.name}
+              Next: v{nextVersion.version} · {nextVersion.name}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-              Expected {new Date(schedule.nextVersion.releaseDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+              Expected {new Date(nextVersion.releaseDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
           </div>
           <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontFamily: 'var(--font-display)' }}>
-            {daysUntil(schedule.nextVersion.releaseDate) ?? '—'}d
+            {daysUntil(nextVersion.releaseDate) ?? '—'}d
           </span>
         </div>
       )}
