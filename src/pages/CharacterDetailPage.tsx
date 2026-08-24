@@ -861,10 +861,9 @@ export default function CharacterDetailPage() {
                     {setEntries.map(([name, { count, set }]) => {
                       const active = count >= 2
                       const needsTwo = count >= 1 && count < 2
-                      const setRelics = visibleDetail.relics.filter((artifact) => artifact.set.name === name)
-                      const setIcon = count === 1
-                        ? setRelics[0]?.icon
-                        : setRelics.find((artifact) => artifact.pos === 1)?.icon
+                      const setIcon = visibleDetail.relics
+                        .filter((artifact) => artifact.set.name === name)
+                        .sort((a, b) => a.pos - b.pos)[0]?.icon
                       return (
                         <div key={name} className={`detail-set-block ${active ? 'active' : 'inactive'}`}>
                           <div className="detail-set-icon">
