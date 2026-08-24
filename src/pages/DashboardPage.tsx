@@ -21,6 +21,22 @@ function safeDate(iso: string | undefined | null): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
+/**
+ * The Worker stores `currentVersion.name` as the raw HoYoLAB notice title minus the version number
+ * (e.g. `"Everwinter Without Mercy" Update Details`), so it carries boilerplate that means nothing
+ * to the reader — the pill isn't a link to that notice. Keep only the patch codename: the quoted
+ * part when HoYoLAB quotes it, otherwise the title with the trailing boilerplate removed. Returns
+ * null when nothing meaningful is left, so the pill can fall back to just the version number.
+ */
+function versionCodename(name: string | undefined | null): string | null {
+  if (!name) return null
+  const quoted = name.match(/[“"]([^”"]+)[”"]/)
+  const codename = quoted
+    ? quoted[1]
+    : name.replace(/\s*(update\s+)?(maintenance\s+)?(details|preview)\s*$/i, '')
+  return codename.trim() || null
+}
+
 function daysUntil(iso: string | undefined | null): number | null {
   const target = safeDate(iso)
   if (!target) return null
@@ -395,6 +411,7 @@ export default function DashboardPage() {
   }, [])
 
   const firstName = user?.displayName?.split(' ')[0] ?? 'Traveler'
+  const currentCodename = versionCodename(schedule?.currentVersion?.name)
   const abyssReset = getNextAbyssReset(server ?? 'os_usa')
   const theaterReset = getNextTheaterReset(server ?? 'os_usa')
 
@@ -430,13 +447,13 @@ export default function DashboardPage() {
         </div>
         {schedule?.currentVersion && (
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.6rem 1.125rem',
+            display: 'flex', alignItems: 'center', padding: '0.6rem 1.125rem',
             borderRadius: '0.5rem', background: 'linear-gradient(90deg, rgba(211,188,142,0.16), rgba(211,188,142,0.04))',
             border: '1px solid var(--gold-line)',
           }}>
-            <Star size={15} color="var(--color-gold)" fill="var(--color-gold)" />
             <span style={{ fontSize: '0.85rem', color: 'var(--color-gold-bright)', fontWeight: 700, fontFamily: 'var(--font-display)' }}>
-              v{schedule.currentVersion.version} · {schedule.currentVersion.name}
+              Version {schedule.currentVersion.version}
+              {currentCodename && ` · ${currentCodename}`}
             </span>
           </div>
         )}
