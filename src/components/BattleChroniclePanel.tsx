@@ -169,10 +169,19 @@ function ResinTile({ notes, syncedAt, reference }: { notes: ChronicleNotes; sync
 
 const DAILY_ACCENT = 'var(--color-dendro)'
 
-/** Formats the slow stored-attendance reset countdown compactly ("17d", "6h 12m", "Ready"). */
+// One Genshin patch cycle. The Long-Term Encounter Point cycle never outruns it, and the game's own
+// panel caps the countdown here rather than showing a longer figure ("Over 42 days").
+const RESET_CAP_DAYS = 42
+
+/** Formats the slow stored-attendance reset countdown compactly ("17d", "6h 12m", "Ready").
+ *  Anything past one patch cycle collapses to "Over 42d", matching the in-game panel — HoYoLAB
+ *  sends a 0xFFFFFFFF "no reset scheduled" deadline when no cycle is queued, which reaches us as a
+ *  ~29,020-day countdown (it counts down to the 2^32 epoch rollover, not to a real reset). */
 function formatReset(seconds: number): string {
   if (seconds <= 0) return 'Ready'
-  if (seconds >= 86400) return `${Math.floor(seconds / 86400)}d`
+  const days = Math.floor(seconds / 86400)
+  if (days > RESET_CAP_DAYS) return `Over ${RESET_CAP_DAYS}d`
+  if (seconds >= 86400) return `${days}d`
   return formatDuration(seconds)
 }
 
@@ -270,16 +279,18 @@ function DailiesCard({ notes, syncedAt, reference }: { notes: ChronicleNotes; sy
               display: 'inline-flex', alignItems: 'center', gap: '0.2rem', padding: '0.1rem 0.45rem',
               borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
               fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums',
+              whiteSpace: 'nowrap', flexShrink: 0,
             }}>
               ×{notes.storedAttendance ?? '0'}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>Reset Countdown</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>Reset Countdown</span>
             <span style={{
               display: 'inline-flex', alignItems: 'center', padding: '0.1rem 0.45rem',
               borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
               fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums',
+              whiteSpace: 'nowrap', flexShrink: 0,
             }}>{formatReset(resetSeconds)}</span>
           </div>
         </div>
