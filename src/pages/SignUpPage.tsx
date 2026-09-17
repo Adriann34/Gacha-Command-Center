@@ -86,7 +86,7 @@ export default function SignUpPage() {
       <div className="fade-in" style={{ width: '100%', maxWidth: 440, position: 'relative', zIndex: 10 }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <AuthSigil />
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '1.25rem 0 0.5rem' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '1.25rem 0 0.5rem' }}>
             Start your journey
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
@@ -166,7 +166,7 @@ export default function SignUpPage() {
               type="submit"
               disabled={loading}
               className="btn-primary"
-              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 600, fontFamily: 'var(--font-body)', marginTop: '0.5rem' }}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.5rem' }}
             >
               {loading ? 'Creating account...' : 'Create free account'}
             </button>

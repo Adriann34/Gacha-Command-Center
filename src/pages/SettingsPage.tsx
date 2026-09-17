@@ -78,19 +78,19 @@ function CookieField({ label, value, onChange, placeholder }: {
   const [revealed, setRevealed] = useState(false)
   return (
     <label style={{ display: 'block' }}>
-      <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)', fontFamily: 'monospace', marginBottom: '0.35rem' }}>{label}</span>
+      <span className="ui-label technical-text" style={{ display: 'block', color: 'var(--color-text-secondary)', marginBottom: '0.35rem' }}>{label}</span>
       <div style={{ position: 'relative' }}>
         <input
           type={revealed ? 'text' : 'password'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="input-dark"
+          className="input-dark technical-text"
           placeholder={placeholder}
           spellCheck={false}
           autoComplete="off"
           autoCapitalize="off"
           autoCorrect="off"
-          style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.78rem', paddingRight: '2.5rem' }}
+          style={{ width: '100%', fontSize: '0.78rem', paddingRight: '2.5rem' }}
         />
         <button
           type="button"
@@ -132,7 +132,7 @@ function HoyoCookieForm({ ltoken, setLtoken, ltuid, setLtuid, onLink, linking, b
           className="btn-primary"
           style={{
             display: 'flex', alignItems: 'center', gap: '0.45rem', padding: '0.6rem 1.25rem',
-            borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 600, fontFamily: 'var(--font-body)',
+            borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 600,
             cursor: linking ? 'not-allowed' : 'pointer', opacity: linking ? 0.7 : 1,
           }}
         >
@@ -317,7 +317,7 @@ export default function SettingsPage() {
   return (
     <div className="fade-in">
       <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>Manage your account</div>
-      <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Settings</h1>
+      <h1 className="page-title" style={{ margin: 0 }}>Settings</h1>
       <div className="title-rule" style={{ margin: '0.9rem 0 1.75rem' }}>
         <span className="dia" /><span className="dia fill" /><span className="ln" />
       </div>
@@ -332,7 +332,7 @@ export default function SettingsPage() {
               background: activeTab === id ? 'linear-gradient(90deg, rgba(211,188,142,0.16), rgba(211,188,142,0.03))' : 'none',
               border: activeTab === id ? '1px solid var(--gold-line)' : '1px solid transparent',
               color: activeTab === id ? 'var(--color-gold-bright)' : 'var(--color-text-secondary)',
-              fontSize: '0.85rem', fontWeight: activeTab === id ? 700 : 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+              fontSize: '0.85rem', fontWeight: activeTab === id ? 700 : 600, cursor: 'pointer',
               textAlign: 'left', transition: 'all 0.2s', marginBottom: '0.125rem',
             }}>
               <Icon size={16} />
@@ -346,7 +346,7 @@ export default function SettingsPage() {
           {/* Profile tab */}
           {activeTab === 'profile' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Profile Information</h2>
+              <h2 className="card-title" style={{ color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Profile Information</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>Update your personal details.</p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.25rem 0', borderBottom: '1px solid var(--color-border)', marginBottom: '0.5rem' }}>
@@ -381,8 +381,7 @@ export default function SettingsPage() {
                         display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem',
                         borderRadius: '0.625rem', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)',
                         color: 'var(--color-violet-400)', fontSize: '0.8rem', fontWeight: 500,
-                        cursor: avatarUploading ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
-                        opacity: avatarUploading ? 0.6 : 1,
+                        cursor: avatarUploading ? 'not-allowed' : 'pointer',                         opacity: avatarUploading ? 0.6 : 1,
                       }}
                     >
                       <Upload size={14} />
@@ -395,8 +394,7 @@ export default function SettingsPage() {
                         display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem',
                         borderRadius: '0.625rem', background: 'none', border: '1px solid var(--color-border)',
                         color: 'var(--color-text-muted)', fontSize: '0.8rem', fontWeight: 500,
-                        cursor: avatarUploading ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
-                        opacity: avatarUploading ? 0.6 : 1,
+                        cursor: avatarUploading ? 'not-allowed' : 'pointer',                         opacity: avatarUploading ? 0.6 : 1,
                       }}
                     >
                       <Trash2 size={14} />
@@ -430,7 +428,7 @@ export default function SettingsPage() {
           {/* Genshin Account tab */}
           {activeTab === 'genshin' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Genshin Account</h2>
+              <h2 className="card-title" style={{ color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Genshin Account</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>
                 Connect your in-game UID to pull character builds, artifacts, and Abyss showcase via Enka.Network. This is saved to your account so you only need to set it once.
               </p>
@@ -486,7 +484,7 @@ export default function SettingsPage() {
               {/* HoYoLAB Battle Chronicle linking — powers the live account panel on the dashboard
                   (resin, expeditions, realm currency, commissions, weekly bosses, transformer). */}
               <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-border)' }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Link2 size={16} color="var(--color-gold)" /> HoYoLAB Battle Chronicle
                 </h3>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.25rem', lineHeight: 1.6 }}>
@@ -529,7 +527,7 @@ export default function SettingsPage() {
                           display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem',
                           borderRadius: '0.625rem', background: 'none', border: '1px solid var(--color-border)',
                           color: 'var(--color-text-muted)', fontSize: '0.8rem', fontWeight: 600,
-                          cursor: unlinking ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', opacity: unlinking ? 0.6 : 1,
+                          cursor: unlinking ? 'not-allowed' : 'pointer', opacity: unlinking ? 0.6 : 1,
                         }}
                       >
                         {unlinking ? <Loader2 size={14} className="spin" /> : <Unlink size={14} />} Unlink
@@ -590,7 +588,7 @@ export default function SettingsPage() {
           {/* Notifications tab */}
           {activeTab === 'notifications' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Notifications</h2>
+              <h2 className="card-title" style={{ color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Notifications</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>
                 Control what shows up in your reminders. Changes save automatically and sync to the bell icon right away.
               </p>
@@ -615,7 +613,7 @@ export default function SettingsPage() {
           {/* Security tab */}
           {activeTab === 'security' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Security</h2>
+              <h2 className="card-title" style={{ color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Security</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>Keep your account safe.</p>
 
               <div style={{ padding: '1.25rem', background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: '0.875rem', marginBottom: '1.5rem', display: 'flex', gap: '0.875rem' }}>
@@ -627,7 +625,7 @@ export default function SettingsPage() {
               </div>
 
               <FormField label="Change Password" sublabel="You'll be sent a reset email">
-                <button style={{ padding: '0.6rem 1rem', borderRadius: '0.75rem', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', color: 'var(--color-violet-400)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 500 }}>
+                <button style={{ padding: '0.6rem 1rem', borderRadius: '0.75rem', background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', color: 'var(--color-violet-400)', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500 }}>
                   Send Reset Email
                 </button>
               </FormField>
@@ -645,14 +643,14 @@ export default function SettingsPage() {
           {/* Appearance tab */}
           {activeTab === 'appearance' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Appearance</h2>
+              <h2 className="card-title" style={{ color: 'var(--color-text-primary)', margin: '0 0 0.375rem' }}>Appearance</h2>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: '0 0 1.5rem' }}>Customize the look of your dashboard.</p>
 
               <FormField label="Theme" sublabel="Designed for dark mode — light mode is coming soon">
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   {['Dark', 'System'].map((t) => (
                     <button key={t} disabled={t === 'System'} style={{
-                      padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.82rem', fontFamily: 'var(--font-body)', fontWeight: 700,
+                      padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.82rem', fontWeight: 700,
                       background: t === 'Dark' ? 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))' : 'rgba(13,17,28,0.5)',
                       border: t === 'Dark' ? 'none' : '1px solid var(--gold-line-soft)',
                       color: t === 'Dark' ? '#241d0c' : 'var(--color-text-muted)',
@@ -670,8 +668,7 @@ export default function SettingsPage() {
             <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={handleSave} disabled={saving} className="btn-primary" style={{
                 padding: '0.7rem 1.5rem', borderRadius: '0.75rem', fontSize: '0.875rem',
-                fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-body)',
-              }}>
+                fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem',               }}>
                 {saved ? <><Check size={16} /> Saved!</> : saving ? 'Saving...' : <><Save size={16} /> Save Changes</>}
               </button>
             </div>

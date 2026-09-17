@@ -43,7 +43,7 @@ function TileShell({ icon: Icon, imgSrc, label, accent, children }: {
       <div style={{ position: 'absolute', right: -28, top: -28, width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${accent}24, transparent 70%)`, pointerEvents: 'none' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.7rem', position: 'relative' }}>
         <IconBadge imgSrc={imgSrc} icon={Icon} accent={accent} />
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
       </div>
       {children}
     </div>
@@ -52,14 +52,14 @@ function TileShell({ icon: Icon, imgSrc, label, accent, children }: {
 
 function BigValue({ children, accent }: { children: React.ReactNode; accent: string }) {
   return (
-    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: accent, letterSpacing: '0.01em', lineHeight: 1.1 }}>
+    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: accent, letterSpacing: '0.01em', lineHeight: 1.1 }}>
       {children}
     </div>
   )
 }
 
 function SubText({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>{children}</div>
+  return <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>{children}</div>
 }
 
 function Bar({ ratio, accent }: { ratio: number; accent: string }) {
@@ -103,13 +103,13 @@ function ExpeditionsCard({ notes, syncedAt, reference }: { notes: ChronicleNotes
       <div style={{ position: 'absolute', right: -28, top: -28, width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${EXPEDITION_ACCENT}24, transparent 70%)`, pointerEvents: 'none' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem', position: 'relative' }}>
         <IconBadge imgSrc="/icons/expedition.svg" accent={EXPEDITION_ACCENT} />
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
           Expeditions <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>{done}/{total || notes.maxExpeditionNum}</span>
         </div>
       </div>
 
       {total === 0 ? (
-        <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>None dispatched</div>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>None dispatched</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', position: 'relative' }}>
           {rows.map((r, i) => {
@@ -119,10 +119,10 @@ function ExpeditionsCard({ notes, syncedAt, reference }: { notes: ChronicleNotes
                 <ExpeditionAvatar src={r.avatarSideIcon} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.4rem' }}>
-                    <span style={{ fontSize: '0.74rem', fontWeight: 600, color: r.finished ? EXPEDITION_ACCENT : 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: r.finished ? EXPEDITION_ACCENT : 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                       {r.finished ? 'Ready' : 'Exploring'}
                     </span>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: r.finished ? EXPEDITION_ACCENT : 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: r.finished ? EXPEDITION_ACCENT : 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                       {r.finished ? 'Done' : formatDuration(r.secondsRemaining)}
                     </span>
                   </div>
@@ -215,7 +215,7 @@ function RewardSlot({ state, accent, children }: { state: RewardSlotState; accen
 function SlotRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginTop: '0.7rem' }}>
-      <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem', letterSpacing: '0.02em' }}>{label}</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem', letterSpacing: '0.02em' }}>{label}</div>
       <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>{children}</div>
     </div>
   )
@@ -243,7 +243,7 @@ function DailiesCard({ notes, syncedAt, reference }: { notes: ChronicleNotes; sy
       <div style={{ position: 'absolute', right: -28, top: -28, width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${accent}24, transparent 70%)`, pointerEvents: 'none' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', position: 'relative' }}>
         <IconBadge imgSrc="/icons/daily-commission.svg" accent={accent} />
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
           Daily Commissions{' '}
           <span style={{ color: done ? accent : 'var(--color-text-muted)', fontWeight: 400 }}>{notes.finishedTaskNum}/{notes.totalTaskNum}</span>
         </div>
@@ -274,22 +274,22 @@ function DailiesCard({ notes, syncedAt, reference }: { notes: ChronicleNotes; sy
           position: 'relative', display: 'flex', flexDirection: 'column', gap: '0.35rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Long-Term Encounter Points</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Long-Term Encounter Points</span>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.2rem', padding: '0.1rem 0.45rem',
               borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
-              fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums',
+              fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap', flexShrink: 0,
             }}>
               ×{notes.storedAttendance ?? '0'}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>Reset Countdown</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>Reset Countdown</span>
             <span style={{
               display: 'inline-flex', alignItems: 'center', padding: '0.1rem 0.45rem',
               borderRadius: '999px', background: 'var(--color-gold)18', border: '1px solid var(--gold-line-soft)',
-              fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums',
+              fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-gold)', fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap', flexShrink: 0,
             }}>{formatReset(resetSeconds)}</span>
           </div>
@@ -313,11 +313,11 @@ export default function BattleChroniclePanel() {
   // Section heading with refresh control, shown in every state.
   const heading = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.9rem', gap: '1rem', flexWrap: 'wrap' }}>
-      <h2 className="section-heading" style={{ fontSize: '1.05rem' }}>Battle Chronicle</h2>
+      <h2 className="section-heading">Battle Chronicle</h2>
       {chronicle.linked && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {chronicle.syncedAt && (
-            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
               Synced {chronicle.syncedAt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
@@ -328,8 +328,7 @@ export default function BattleChroniclePanel() {
             style={{
               display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.7rem',
               borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)', border: '1px solid var(--gold-line-soft)',
-              color: 'var(--color-gold)', fontSize: '0.74rem', fontWeight: 700, fontFamily: 'var(--font-body)',
-              cursor: chronicle.syncing ? 'not-allowed' : 'pointer', opacity: chronicle.syncing ? 0.6 : 1,
+              color: 'var(--color-gold)', fontSize: '0.75rem', fontWeight: 700,               cursor: chronicle.syncing ? 'not-allowed' : 'pointer', opacity: chronicle.syncing ? 0.6 : 1,
             }}
           >
             <RefreshCw size={12} className={chronicle.syncing ? 'spin' : undefined} /> Refresh
@@ -351,7 +350,7 @@ export default function BattleChroniclePanel() {
           </div>
           <button onClick={() => navigate('/settings')} style={{
             padding: '0.45rem 0.875rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)',
-            border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, flexShrink: 0,
+            border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700, flexShrink: 0,
           }}>
             Link account
           </button>
@@ -395,7 +394,7 @@ export default function BattleChroniclePanel() {
           {chronicle.cookieExpired && (
             <button onClick={() => navigate('/settings')} style={{
               padding: '0.4rem 0.75rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)',
-              border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.74rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, flexShrink: 0,
+              border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 700, flexShrink: 0,
             }}>Reconnect</button>
           )}
         </div>

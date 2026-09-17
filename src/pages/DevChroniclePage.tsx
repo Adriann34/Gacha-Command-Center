@@ -82,7 +82,7 @@ function RawPayloadPanel({ tab, hidden }: { tab: TabDef; hidden: boolean }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         <button onClick={load} disabled={loading} className="btn-primary" style={{
           display: 'flex', alignItems: 'center', gap: '0.45rem', padding: '0.6rem 1.25rem',
-          borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 600, fontFamily: 'var(--font-body)',
+          borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 600,
           cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
         }}>
           <RefreshCw size={15} className={loading ? 'spin' : undefined} /> {loading ? 'Fetching…' : 'Fetch raw payload'}
@@ -91,7 +91,7 @@ function RawPayloadPanel({ tab, hidden }: { tab: TabDef; hidden: boolean }) {
           <button onClick={copy} style={{
             display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1rem',
             borderRadius: '0.75rem', background: 'rgba(13,17,28,0.6)', border: '1px solid var(--gold-line-soft)',
-            color: 'var(--color-gold)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+            color: 'var(--color-gold)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer',
           }}>
             {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy JSON</>}
           </button>
@@ -110,10 +110,10 @@ function RawPayloadPanel({ tab, hidden }: { tab: TabDef; hidden: boolean }) {
       )}
 
       {result != null && (
-        <pre style={{
+        <pre className="technical-text" style={{
           background: 'var(--color-surface-900, #0b0e18)', border: '1px solid var(--color-border)', borderRadius: '0.75rem',
           padding: '1.25rem', overflowX: 'auto', fontSize: '0.78rem', lineHeight: 1.6, color: 'var(--color-text-secondary)',
-          fontFamily: 'monospace', maxHeight: '65vh',
+          maxHeight: '65vh',
         }}>
           {JSON.stringify(result.raw, null, 2)}
         </pre>
@@ -130,7 +130,7 @@ export default function DevChroniclePage() {
       <div className="eyebrow" style={{ marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
         <Terminal size={13} /> Developer tools
       </div>
-      <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Battle Chronicle — Raw Payload</h1>
+      <h1 className="page-title" style={{ margin: 0 }}>Battle Chronicle — Raw Payload</h1>
       <div className="title-rule" style={{ margin: '0.9rem 0 1.5rem' }}>
         <span className="dia" /><span className="dia fill" /><span className="ln" />
       </div>
@@ -145,7 +145,7 @@ export default function DevChroniclePage() {
               onClick={() => setActive(t.key)}
               style={{
                 padding: '0.5rem 1rem', borderRadius: '0.6rem', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontSize: '0.82rem', fontWeight: 600,
+                fontSize: '0.82rem', fontWeight: 600,
                 background: isActive ? 'rgba(211,188,142,0.14)' : 'rgba(13,17,28,0.6)',
                 border: `1px solid ${isActive ? 'var(--gold-line)' : 'var(--gold-line-soft)'}`,
                 color: isActive ? 'var(--color-gold-bright)' : 'var(--color-text-muted)',

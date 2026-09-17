@@ -134,7 +134,7 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
                 {dotCount > 0 && (
                   <span
                     style={{
-                      fontSize: '0.55rem', fontWeight: 700, color: 'var(--color-text-muted)', lineHeight: 1,
+                      fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', lineHeight: 1,
                       padding: '0.08rem 0.25rem', borderRadius: '0.2rem', flexShrink: 0,
                       background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.06)',
                     }}
@@ -158,13 +158,13 @@ function ArtifactCard({ artifact, propMap }: { artifact: HoyoDetailArtifact; pro
 }
 
 const LAYOUT_CSS = `
-.detail-page { width:100%; max-width:1120px; margin:0 auto; }
+.detail-page { width:100%; max-width:1120px; margin:0 auto; font-variant-numeric:tabular-nums lining-nums; }
 
 .detail-back {
   display:inline-flex; align-items:center; gap:8px; color:var(--color-gold);
   font-size:13.5px; font-weight:700; text-decoration:none; margin-bottom:20px;
   letter-spacing:.2px; background:none; border:none; cursor:pointer; padding:0;
-  font-family:var(--font-body);
+  font-family:var(--font-ui);
 }
 .detail-back:hover { color:var(--color-gold-bright); }
 
@@ -185,7 +185,7 @@ const LAYOUT_CSS = `
 }
 .detail-rail-item:hover .detail-rail-avatar { transform:translateY(-2px); }
 .detail-rail-name {
-  font-size:9.5px; color:var(--color-text-muted); text-align:center; line-height:1.1;
+  font-size:12px; color:var(--color-text-muted); text-align:center; line-height:1.1;
   max-width:60px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .detail-rail-item.active .detail-rail-name { color:var(--color-gold-bright); }
@@ -218,7 +218,7 @@ const LAYOUT_CSS = `
 .detail-element-mark { width:34px; height:34px; border-radius:0.55rem; display:flex; align-items:center; justify-content:center; border:1px solid var(--gold-line); }
 .detail-hero-info { display:flex; flex-direction:column; justify-content:center; min-width:0; position:relative; z-index:1; }
 .detail-char-name {
-  font-family:var(--font-display); font-weight:700; font-size:2.55rem; letter-spacing:.5px;
+  font-family:var(--font-ui); font-weight:700; font-size:2.55rem; letter-spacing:.5px;
   color:var(--color-text-primary); line-height:1.05; margin:0;
 }
 .detail-stars { display:flex; gap:3px; margin:17px 0 20px; color:#c9962e; font-size:1rem; letter-spacing:2px; }
@@ -230,33 +230,33 @@ const LAYOUT_CSS = `
 }
 .detail-tag-weapon { background:rgba(211,188,142,0.12); border-color:var(--gold-line); color:var(--color-gold-bright); }
 .detail-left-cv { margin-top:7px; }
-.detail-left-cv-num { color:var(--color-text-primary); font:600 1.05rem/1.1 "JetBrains Mono",monospace; }
-.detail-left-cv-label { color:var(--color-text-muted); font-size:10px; margin-top:5px; line-height:1.2; white-space:nowrap; }
+.detail-left-cv-num { color:var(--color-text-primary); font:600 1.05rem/1.1 var(--font-ui); }
+.detail-left-cv-label { color:var(--color-text-muted); font-size:12px; margin-top:5px; line-height:1.2; white-space:nowrap; }
 
-.detail-right-level { display:flex; align-items:center; gap:10px; color:var(--color-text-primary); font-family:var(--font-display); font-size:1.15rem; }
+.detail-right-level { display:flex; align-items:center; gap:10px; color:var(--color-text-primary); font-family:var(--font-ui); font-size:1.15rem; }
 .detail-right-level .detail-element-mark { width:29px; height:29px; border-radius:.45rem; }
 .detail-hero-stat-list { display:flex; flex-direction:column; gap:0; margin-top:18px; }
-.detail-hero-stat { display:flex; align-items:center; gap:9px; min-height:31px; color:var(--color-text-muted); font-size:11.5px; }
+.detail-hero-stat { display:flex; align-items:center; gap:9px; min-height:31px; color:var(--color-text-muted); font-size:12px; }
 .detail-hero-stat svg { color:var(--color-gold); opacity:.82; flex:0 0 auto; }
 .detail-hero-stat span:nth-child(2) { flex:1; }
-.detail-hero-stat strong { color:var(--color-text-primary); font:600 11.5px "JetBrains Mono",monospace; }
-.detail-hero-friendship { display:flex; align-items:center; gap:9px; margin-top:14px; font-size:10.5px; color:var(--color-text-muted); }
+.detail-hero-stat strong { color:var(--color-text-primary); font:600 12px var(--font-ui); }
+.detail-hero-friendship { display:flex; align-items:center; gap:9px; margin-top:14px; font-size:12px; color:var(--color-text-muted); }
 .detail-hero-friendship .progress-bar { height:5px; flex:1; min-width:45px; }
-.detail-hero-friendship b { color:var(--color-gold-bright); font:600 10.5px "JetBrains Mono",monospace; white-space:nowrap; }
+.detail-hero-friendship b { color:var(--color-gold-bright); font:600 12px var(--font-ui); white-space:nowrap; }
 
 .detail-section-nav { position:relative; z-index:2; display:flex; justify-content:center; align-items:flex-start; gap:39px; padding-top:6px; transform:translateX(-24px); }
 .detail-section-nav-item { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:70px; padding:0; color:var(--color-text-secondary); background:none; border:0; cursor:pointer; font:inherit; }
 .detail-section-nav-icon { width:52px; height:52px; display:grid; place-items:center; border:1px solid var(--gold-line); border-radius:50%; color:var(--color-gold); background:rgba(13,17,28,.7); transition:background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease; }
 .detail-section-nav-item:hover .detail-section-nav-icon, .detail-section-nav-item.active .detail-section-nav-icon { color:#191207; background:var(--color-gold); box-shadow:0 0 0 4px rgba(211,188,142,.08), 0 0 20px rgba(211,188,142,.18); transform:translateY(-2px); }
-.detail-section-nav-label { font-size:11px; font-weight:600; white-space:nowrap; }
+.detail-section-nav-label { font-size:12px; font-weight:600; white-space:nowrap; }
 
 /* section headers */
 .detail-section { margin-bottom:26px; scroll-margin-top:84px; }
 .detail-section-head { display:flex; align-items:baseline; gap:10px; margin-bottom:14px; }
-.detail-section-head .dia { color:var(--color-gold); font-size:11px; }
+.detail-section-head .dia { color:var(--color-gold); font-size:12px; }
 .detail-section-title {
-  font-family:var(--font-display); font-weight:600; font-size:1.15rem; letter-spacing:1.5px;
-  text-transform:uppercase; color:var(--color-gold-bright);
+  font-family:var(--font-ui); font-weight:700; font-size:1.15rem; letter-spacing:.01em;
+  color:var(--color-gold-bright);
 }
 
 /* stats grid */
@@ -270,11 +270,11 @@ const LAYOUT_CSS = `
 .detail-stat:nth-last-child(-n+2) { border-bottom:none; }
 .detail-stat.accent { background:none; }
 .detail-stat.accent::before { content:none; }
-.detail-stat-label { grid-column:1; grid-row:1; font-size:11px; color:var(--color-text-muted); letter-spacing:.4px; display:flex; align-items:center; gap:6px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.detail-stat-label { grid-column:1; grid-row:1; font-size:12px; color:var(--color-text-muted); letter-spacing:.4px; display:flex; align-items:center; gap:6px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .detail-stat-label svg { opacity:.7; }
-.detail-stat-value { grid-column:3; grid-row:1; justify-self:end; font-family:"JetBrains Mono", monospace; font-weight:600; font-size:17px; color:var(--color-text-primary); margin:0; text-align:right; white-space:nowrap; }
+.detail-stat-value { grid-column:3; grid-row:1; justify-self:end; font-family:var(--font-ui); font-weight:600; font-size:17px; color:var(--color-text-primary); margin:0; text-align:right; white-space:nowrap; }
 .detail-stat.accent .detail-stat-value { color:var(--color-gold-bright); }
-.detail-stat-breakdown { grid-column:2; grid-row:1; justify-self:end; font-size:10.5px; color:var(--color-text-muted); margin:0; font-family:"JetBrains Mono", monospace; min-height:1.3em; text-align:right; white-space:nowrap; }
+.detail-stat-breakdown { grid-column:2; grid-row:1; justify-self:end; font-size:12px; color:var(--color-text-muted); margin:0; font-family:var(--font-ui); min-height:1.3em; text-align:right; white-space:nowrap; }
 
 /* loadout */
 .detail-loadout { display:grid; grid-template-columns:1.1fr 1.4fr; gap:16px; }
@@ -288,18 +288,18 @@ const LAYOUT_CSS = `
   border:1px solid var(--gold-line); display:flex; align-items:center; justify-content:center; color:var(--color-gold-bright);
 }
 .detail-weapon-name-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
-.detail-weapon-name { font-family:var(--font-display); font-weight:600; font-size:1.15rem; color:var(--color-text-primary); }
-.detail-refine { font-size:10.5px; font-weight:800; color:#0e1a12; background:var(--color-gold-bright); padding:2px 7px; border-radius:0.3rem; }
-.detail-weapon-meta { font-size:11.5px; color:var(--color-text-muted); margin-bottom:10px; }
+.detail-weapon-name { font-family:var(--font-ui); font-weight:600; font-size:1.15rem; color:var(--color-text-primary); }
+.detail-refine { font-size:12px; font-weight:800; color:#0e1a12; background:var(--color-gold-bright); padding:2px 7px; border-radius:0.3rem; }
+.detail-weapon-meta { font-size:12px; color:var(--color-text-muted); margin-bottom:10px; }
 .detail-weapon-stars { color:var(--color-gold-bright); letter-spacing:1px; }
 .detail-weapon-stats { display:flex; gap:22px; flex-wrap:wrap; }
-.detail-weapon-stat .l { font-size:10.5px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; }
-.detail-weapon-stat .v { font-family:"JetBrains Mono", monospace; font-weight:600; font-size:15.5px; color:var(--color-text-primary); margin-top:2px; }
+.detail-weapon-stat .l { font-size:12px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; }
+.detail-weapon-stat .v { font-family:var(--font-ui); font-weight:600; font-size:15.5px; color:var(--color-text-primary); margin-top:2px; }
 .detail-weapon-passive {
   font-size:0.75rem; color:var(--color-text-muted); line-height:1.6;
   border-top:1px solid var(--gold-line-soft); padding-top:12px; margin-top:12px;
 }
-.detail-set-title { font-size:11px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:12px; }
+.detail-set-title { font-size:12px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:12px; }
 .detail-set-block { display:flex; gap:12px; padding:12px; border-radius:0.5rem; border:1px solid var(--gold-line-soft); margin-bottom:10px; }
 .detail-set-block:last-child { margin-bottom:0; }
 .detail-set-block.active { border-color:var(--gold-line); background:rgba(211,188,142,0.05); }
@@ -307,10 +307,10 @@ const LAYOUT_CSS = `
 .detail-set-icon { width:38px; height:38px; border-radius:0.5rem; flex:0 0 auto; background:var(--color-surface-800); display:flex; align-items:center; justify-content:center; color:var(--color-gold); }
 .detail-set-name-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .detail-set-name { font-weight:700; font-size:13.5px; color:var(--color-text-primary); }
-.detail-set-count { font-size:10.5px; color:var(--color-gold-bright); font-family:"JetBrains Mono", monospace; }
-.detail-set-desc { font-size:11.5px; color:var(--color-text-muted); line-height:1.5; margin-top:4px; }
+.detail-set-count { font-size:12px; color:var(--color-gold-bright); font-family:var(--font-ui); }
+.detail-set-desc { font-size:12px; color:var(--color-text-muted); line-height:1.5; margin-top:4px; }
 .detail-set-desc b { color:var(--color-gold-bright); font-weight:600; }
-.detail-set-need { font-size:11px; color:var(--color-text-muted); font-style:italic; margin-top:2px; }
+.detail-set-need { font-size:12px; color:var(--color-text-muted); font-style:italic; margin-top:2px; }
 
 /* artifacts */
 .detail-artifacts { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:10px; }
@@ -322,17 +322,17 @@ const LAYOUT_CSS = `
   background:var(--color-surface-800); color:var(--color-gold-bright);
   display:flex; align-items:center; justify-content:center;
 }
-.detail-art-stars { color:#c9962e; font-size:10px; letter-spacing:1px; text-align:right; white-space:nowrap; }
-.detail-art-lv { font-size:10px; color:var(--color-text-muted); font-family:"JetBrains Mono", monospace; margin-top:3px; text-align:right; }
-.detail-art-set { font-size:10.5px; color:var(--color-text-muted); line-height:1.3; margin-bottom:10px; min-height:26px; }
-.detail-art-mainlabel { font-size:10.5px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; }
-.detail-art-mainvalue { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:24px; color:var(--color-gold-bright); margin:3px 0 12px; }
+.detail-art-stars { color:#c9962e; font-size:12px; letter-spacing:1px; text-align:right; white-space:nowrap; }
+.detail-art-lv { font-size:12px; color:var(--color-text-muted); font-family:var(--font-ui); margin-top:3px; text-align:right; }
+.detail-art-set { font-size:12px; color:var(--color-text-muted); line-height:1.3; margin-bottom:10px; min-height:26px; }
+.detail-art-mainlabel { font-size:12px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; }
+.detail-art-mainvalue { font-family:var(--font-ui); font-weight:700; font-size:24px; color:var(--color-gold-bright); margin:3px 0 12px; }
 .detail-art-divider { height:1px; background:var(--gold-line-soft); margin-bottom:10px; }
 .detail-substat { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px; }
 .detail-substat:last-child { margin-bottom:0; }
 .detail-substat-label { display:flex; align-items:center; gap:6px; min-width:0; }
-.detail-substat-name { font-size:11.5px; color:var(--color-text-muted); min-width:0; }
-.detail-substat-value { font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--color-text-primary); font-weight:600; flex-shrink:0; }
+.detail-substat-name { font-size:12px; color:var(--color-text-muted); min-width:0; }
+.detail-substat-value { font-family:var(--font-ui); font-size:12px; color:var(--color-text-primary); font-weight:600; flex-shrink:0; }
 
 /* talents */
 .detail-tabs { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin-bottom:16px; }
@@ -351,17 +351,17 @@ const LAYOUT_CSS = `
 .detail-tab-text { display:flex; align-items:baseline; flex:1 1 auto; gap:6px; min-width:0; overflow:hidden; }
 .detail-tab-name { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; font-size:12px; font-weight:700; color:var(--color-text-muted); line-height:1.2; white-space:nowrap; }
 .detail-tab.active .detail-tab-name { color:var(--color-text-primary); }
-.detail-tab-lv { flex:0 0 auto; font-size:10px; color:var(--color-text-muted); font-family:"JetBrains Mono", monospace; white-space:nowrap; }
+.detail-tab-lv { flex:0 0 auto; font-size:12px; color:var(--color-text-muted); font-family:var(--font-ui); white-space:nowrap; }
 .detail-talent-panel { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:24px; }
 .detail-talent-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
 .detail-tab-icon-lg { width:40px; height:40px; border-radius:0.6rem; color:var(--color-gold-bright); }
-.detail-talent-title { font-family:var(--font-display); font-weight:600; font-size:1.3rem; color:var(--color-text-primary); line-height:1.2; }
-.detail-talent-sub { font-size:11.5px; color:var(--color-text-muted); margin-top:2px; }
+.detail-talent-title { font-family:var(--font-ui); font-weight:600; font-size:1.3rem; color:var(--color-text-primary); line-height:1.2; }
+.detail-talent-sub { font-size:12px; color:var(--color-text-muted); margin-top:2px; }
 .detail-talent-body { font-size:13.5px; color:var(--color-text-secondary); line-height:1.7; margin-bottom:18px; white-space:pre-wrap; }
 .detail-combo { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; }
 .detail-combo-cell { background:var(--color-surface-800); border:1px solid var(--gold-line-soft); border-radius:0.5rem; padding:12px 14px; min-width:0; }
-.detail-combo-label { font-size:10.5px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:5px; }
-.detail-combo-value { font-family:"JetBrains Mono", monospace; font-weight:600; font-size:14.5px; color:var(--color-gold-bright); }
+.detail-combo-label { font-size:12px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:5px; }
+.detail-combo-value { font-family:var(--font-ui); font-weight:600; font-size:14.5px; color:var(--color-gold-bright); }
 
 /* constellations */
 .detail-const-path { background:var(--color-card); border:1px solid var(--gold-line-soft); border-radius:0.55rem; padding:28px 30px 22px; margin-bottom:16px; }
@@ -380,7 +380,7 @@ const LAYOUT_CSS = `
 .detail-const-node.unlocked .detail-const-circle { border-color:var(--color-gold); color:var(--color-gold-bright); box-shadow:0 0 0 4px rgba(211,188,142,0.10), 0 0 18px rgba(211,188,142,0.25); }
 .detail-const-node.active .detail-const-circle { background:var(--color-gold); color:#191207; }
 .detail-const-node:hover .detail-const-circle { transform:translateY(-2px); }
-.detail-const-label { font-size:11px; font-weight:700; color:var(--color-text-muted); white-space:nowrap; }
+.detail-const-label { font-size:12px; font-weight:700; color:var(--color-text-muted); white-space:nowrap; }
 .detail-const-node.unlocked .detail-const-label { color:var(--color-gold-bright); }
 .detail-const-status { text-align:center; font-size:12px; color:var(--color-text-secondary); margin-top:6px; }
 .detail-const-status b { color:var(--color-gold-bright); }
@@ -390,8 +390,8 @@ const LAYOUT_CSS = `
   width:42px; height:42px; border-radius:0.5rem; overflow:hidden; flex:0 0 auto;
   background:var(--color-surface-800); display:flex; align-items:center; justify-content:center; color:var(--color-gold-bright);
 }
-.detail-const-title { font-family:var(--font-display); font-weight:600; font-size:1.1rem; color:var(--color-text-primary); line-height:1.3; }
-.detail-const-badge { font-size:10px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; padding:3px 8px; border-radius:0.35rem; margin-left:auto; white-space:nowrap; flex-shrink:0; }
+.detail-const-title { font-family:var(--font-ui); font-weight:600; font-size:1.1rem; color:var(--color-text-primary); line-height:1.3; }
+.detail-const-badge { font-size:12px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; padding:3px 8px; border-radius:0.35rem; margin-left:auto; white-space:nowrap; flex-shrink:0; }
 .detail-const-badge.on { background:rgba(211,188,142,0.16); color:var(--color-gold-bright); }
 .detail-const-badge.off { background:rgba(255,255,255,0.04); color:var(--color-text-muted); }
 .detail-const-desc { font-size:13.5px; color:var(--color-text-secondary); line-height:1.75; white-space:pre-wrap; }
@@ -415,7 +415,7 @@ const LAYOUT_CSS = `
   .detail-section-nav { gap:10px; justify-content:space-between; padding-top:14px; transform:none; }
   .detail-section-nav-item { min-width:0; }
   .detail-section-nav-icon { width:44px; height:44px; }
-  .detail-section-nav-label { font-size:9.5px; }
+  .detail-section-nav-label { font-size:12px; }
   .detail-stats { grid-template-columns:1fr; padding:14px 16px; }
   .detail-stat:nth-last-child(-n+2) { border-bottom:1px solid rgba(211,188,142,0.09); }
   .detail-stat:last-child { border-bottom:none; }
@@ -575,7 +575,7 @@ export default function CharacterDetailPage() {
     return (
       <div className="fade-in" style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center', paddingTop: '3rem' }}>
         <Sparkles size={40} style={{ margin: '0 auto 1rem', opacity: 0.4, color: 'var(--color-gold)' }} />
-        <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontWeight: 700, fontFamily: 'var(--font-display)' }}>
+        <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontWeight: 700 }}>
           Character not found
         </p>
         <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.5rem' }}>
@@ -583,7 +583,7 @@ export default function CharacterDetailPage() {
         </p>
         <button onClick={() => navigate('/characters')} className="btn-primary" style={{
           padding: '0.65rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.875rem',
-          fontWeight: 700, fontFamily: 'var(--font-body)',
+          fontWeight: 700,
         }}>
           <ArrowLeft size={16} style={{ marginRight: '0.375rem' }} /> Back to My Characters
         </button>
@@ -669,7 +669,7 @@ export default function CharacterDetailPage() {
               display: 'flex', alignItems: 'center', gap: '0.3rem', padding: '0.4rem 0.75rem',
               borderRadius: '0.4rem', background: 'rgba(211,188,142,0.1)', border: '1px solid var(--gold-line)',
               color: 'var(--color-gold)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
-              fontFamily: 'var(--font-body)', flexShrink: 0,
+              flexShrink: 0,
             }}
           >
             <RefreshCw size={13} /> Retry

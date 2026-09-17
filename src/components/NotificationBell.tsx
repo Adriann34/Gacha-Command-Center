@@ -43,7 +43,7 @@ function ReminderRow({ reminder, onDismiss }: { reminder: Reminder; onDismiss: (
         <div style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
           {reminder.title}
         </div>
-        <div style={{ fontSize: '0.75rem', color: accent, fontFamily: 'var(--font-display)', marginTop: '0.2rem' }}>
+        <div style={{ fontSize: '0.75rem', color: accent, marginTop: '0.2rem' }}>
           {reminder.detail}
         </div>
       </div>
@@ -99,8 +99,8 @@ export default function NotificationBell() {
             style={{
               position: 'absolute', top: -5, right: -5, minWidth: 17, height: 17, padding: '0 4px',
               borderRadius: 9, background: 'var(--color-gold-bright)', color: '#241d0c',
-              fontSize: '0.62rem', fontWeight: 800, lineHeight: '17px', textAlign: 'center',
-              fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums',
+              fontSize: '0.75rem', fontWeight: 800, lineHeight: '17px', textAlign: 'center',
+              fontVariantNumeric: 'tabular-nums',
               border: '1.5px solid var(--color-surface-800)', boxShadow: '0 0 6px rgba(240,220,172,0.55)',
             }}
           >
@@ -122,7 +122,7 @@ export default function NotificationBell() {
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
               Reminders
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
               2 days or less
             </div>
           </div>

@@ -56,7 +56,7 @@ function RewardChip({ event }: { event: CalendarEvent }) {
           : <Gift size={18} color={MUTED} />}
       </div>
       {r && r.num > 0 && (
-        <span style={{ fontSize: '0.66rem', fontWeight: 700, color: 'var(--color-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
           {r.num.toLocaleString()}
         </span>
       )}
@@ -166,7 +166,7 @@ export default function EventsOverview({ events }: { events: CalendarEvent[] }) 
               <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {e.name}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', color: MUTED, marginTop: '0.15rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: MUTED, marginTop: '0.15rem' }}>
                 <Clock size={12} />
                 {e.status === 1 ? 'Not started yet' : `Time Remaining: ${formatTimeRemaining(remaining)}`}
               </div>
@@ -184,7 +184,7 @@ export default function EventsOverview({ events }: { events: CalendarEvent[] }) 
           onClick={() => setExpanded((v) => !v)}
           style={{
             width: '100%', padding: '0.6rem', background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--color-gold)', fontSize: '0.78rem', fontWeight: 700, fontFamily: 'var(--font-body)',
+            color: 'var(--color-gold)', fontSize: '0.78rem', fontWeight: 700,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem',
           }}
         >

@@ -116,7 +116,7 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
         padding: '2rem', width: '100%', maxWidth: 480,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-gold-bright)', margin: 0, letterSpacing: '0.02em' }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-gold-bright)', margin: 0, letterSpacing: '0.02em' }}>
             {initial ? 'Edit Goal' : 'New Goal'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', display: 'flex', borderRadius: '0.5rem', padding: '0.25rem' }}>
@@ -174,12 +174,11 @@ function GoalModal({ open, onClose, onSave, initial }: GoalModalProps) {
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
           <button onClick={onClose} style={{
             flex: 1, padding: '0.7rem', borderRadius: '0.75rem', background: 'var(--color-surface-700)',
-            border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
-          }}>
+            border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: '0.875rem',           }}>
             Cancel
           </button>
           <button onClick={handleSave} disabled={saving || !form.name.trim()} className="btn-primary" style={{
-            flex: 2, padding: '0.7rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontFamily: 'var(--font-body)', fontWeight: 600,
+            flex: 2, padding: '0.7rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontWeight: 600,
           }}>
             {saving ? 'Saving...' : initial ? 'Save Changes' : 'Add Goal'}
           </button>
@@ -229,7 +228,7 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
               }}>
                 <button
                   onClick={() => { setMenuOpen(false); onEdit(goal) }}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: 'var(--color-parch-ink)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: 'var(--color-parch-ink)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(74,66,49,0.1)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
                 >
@@ -237,7 +236,7 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
                 </button>
                 <button
                   onClick={() => { setMenuOpen(false); onDelete(goal.id) }}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: '#b23f2c', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: 'none', border: 'none', color: '#b23f2c', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(178,63,44,0.1)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
                 >
@@ -249,7 +248,7 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
         </div>
 
         <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--color-parch-ink)', marginBottom: '0.35rem', lineHeight: 1.25, textDecoration: isDone ? 'line-through' : 'none' }}>
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-parch-ink)', marginBottom: '0.35rem', lineHeight: 1.25, textDecoration: isDone ? 'line-through' : 'none' }}>
             {goal.name}
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--color-parch-ink-dim)', margin: 0, lineHeight: 1.5 }}>
@@ -261,21 +260,21 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
             padding: '0.22rem 0.6rem', borderRadius: '9999px',
-            fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
+            fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
             background: st.bg, color: st.text, border: `1px solid ${st.border}`,
           }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: st.dot }} />
             {goal.status}
           </span>
           {goal.dueDate && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.74rem', color: 'var(--color-parch-ink-dim)', fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', fontWeight: 600 }}>
               <Calendar size={12} /> {goal.dueDate}
             </span>
           )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', borderTop: '1px solid rgba(74,66,49,0.14)', paddingTop: '0.8rem' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem', color: 'var(--color-parch-ink)', fontWeight: 700 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--color-parch-ink)', fontWeight: 700 }}>
             <span style={{ width: 7, height: 7, transform: 'rotate(45deg)', background: accent, flexShrink: 0 }} />
             {goal.category}
           </span>
@@ -283,7 +282,7 @@ function GoalCard({ goal, accent, onEdit, onDelete, onToggleDone }: GoalCardProp
             title={isDone ? 'Mark as not done' : 'Mark as done'}
             style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', flexShrink: 0 }}
           >
-            <span style={{ fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', userSelect: 'none', fontWeight: 600 }}>Done</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', userSelect: 'none', fontWeight: 600 }}>Done</span>
             <input
               type="checkbox"
               checked={isDone}
@@ -384,12 +383,11 @@ export default function TrackerPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>Things to do in-game</div>
-          <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Adventurer's Log</h1>
+          <h1 className="page-title" style={{ margin: 0 }}>Adventurer's Log</h1>
         </div>
         <button onClick={() => { setEditing(null); setModalOpen(true) }} className="btn-primary" style={{
           padding: '0.65rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.875rem',
-          fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
-        }}>
+          fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.375rem',         }}>
           <Plus size={16} /> New Goal
         </button>
       </div>
@@ -405,7 +403,7 @@ export default function TrackerPage() {
           return (
             <button key={s} onClick={() => setFilter(s)} style={{
               padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s',
+              cursor: 'pointer', transition: 'all 0.2s',
               background: active ? 'linear-gradient(135deg, var(--color-gold-bright), var(--color-gold-deep))' : 'rgba(13,17,28,0.5)',
               color: active ? '#241d0c' : 'var(--color-text-secondary)',
               border: active ? 'none' : '1px solid var(--gold-line-soft)',
@@ -442,8 +440,7 @@ export default function TrackerPage() {
           <p style={{ fontSize: '0.85rem' }}>Add a goal — an event to finish, materials to farm, a banner to save for.</p>
           <button onClick={() => setModalOpen(true)} className="btn-primary" style={{
             marginTop: '1rem', padding: '0.65rem 1.25rem', borderRadius: '0.75rem',
-            fontSize: '0.875rem', fontWeight: 600, fontFamily: 'var(--font-body)',
-          }}>
+            fontSize: '0.875rem', fontWeight: 600,           }}>
             <Plus size={16} style={{ display: 'inline', marginRight: 4 }} /> New Goal
           </button>
         </div>

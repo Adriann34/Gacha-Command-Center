@@ -38,8 +38,8 @@ function StatPill({ label, value, accent }: { label: string; value: string | num
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem',
       padding: '0.75rem 0.5rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.4)', border: '1px solid var(--gold-line-soft)', flex: '1 1 88px', minWidth: 88,
     }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: accent }}>{value}</div>
-      <div style={{ fontSize: '0.64rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{label}</div>
+      <div style={{ fontSize: '1.1rem', fontWeight: 700, color: accent }}>{value}</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{label}</div>
     </div>
   )
 }
@@ -75,27 +75,27 @@ function CharacterCard({ avatar, roster }: { avatar: EnkaAvatarInfo; roster: Rec
           )}
         </div>
         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-parch-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-parch-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {meta.name}
             {!meta.resolved && (
-              <span style={{ fontSize: '0.62rem', color: 'var(--color-parch-ink-dim)', fontWeight: 600, marginLeft: '0.4rem' }}>(unrecognized)</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', fontWeight: 600, marginLeft: '0.4rem' }}>(unrecognized)</span>
             )}
           </div>
           {meta.resolved && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', margin: '0.2rem 0', fontSize: '0.74rem', fontWeight: 700, color: 'var(--color-parch-ink)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', margin: '0.2rem 0', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-parch-ink)' }}>
               <ElementGem color={accent} /> {meta.element} · {meta.weapon}
             </div>
           )}
-          <div style={{ color: '#c9962e', fontSize: '0.72rem', letterSpacing: '0.5px' }}>
+          <div style={{ color: '#c9962e', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
             {meta.resolved ? '★'.repeat(meta.rarity) : ''}
             <span style={{ color: 'var(--color-parch-ink-dim)', marginLeft: meta.resolved ? '0.4rem' : 0 }}>C{constellations}</span>
           </div>
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-parch-ink)', flexShrink: 0 }}>Lv.{level ?? '?'}</div>
+        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-parch-ink)', flexShrink: 0 }}>Lv.{level ?? '?'}</div>
       </div>
 
       {!meta.resolved && (
-        <div style={{ fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', padding: '0.5rem 0.875rem', background: 'rgba(74,66,49,0.06)' }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', padding: '0.5rem 0.875rem', background: 'rgba(74,66,49,0.06)' }}>
           Character ID {avatar.avatarId} isn't in the live database yet — usually resolves within a day.
         </div>
       )}
@@ -112,7 +112,7 @@ function CharacterCard({ avatar, roster }: { avatar: EnkaAvatarInfo; roster: Rec
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem', fontSize: '0.72rem', color: 'var(--color-parch-ink-dim)', borderTop: '1px solid rgba(74,66,49,0.12)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem', fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', borderTop: '1px solid rgba(74,66,49,0.12)' }}>
         <Shield size={13} style={{ flexShrink: 0 }} />
         {artifacts.length}/5 artifacts · Friendship {friendship}
       </div>
@@ -120,7 +120,7 @@ function CharacterCard({ avatar, roster }: { avatar: EnkaAvatarInfo; roster: Rec
       {avatar.fightPropMap && (
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', padding: '0 0.875rem 0.75rem' }}>
           {REFRESH_KEYS.filter((k) => avatar.fightPropMap[k] !== undefined).slice(0, 4).map((k) => (
-            <div key={k} style={{ fontSize: '0.68rem', color: 'var(--color-parch-ink)', background: 'rgba(74,66,49,0.1)', padding: '0.2rem 0.45rem', borderRadius: '0.35rem' }}>
+            <div key={k} style={{ fontSize: '0.75rem', color: 'var(--color-parch-ink)', background: 'rgba(74,66,49,0.1)', padding: '0.2rem 0.45rem', borderRadius: '0.35rem' }}>
               {fightPropLabel(k)}: <span style={{ fontWeight: 700 }}>{formatFightProp(k, avatar.fightPropMap[k])}</span>
             </div>
           ))}
@@ -130,14 +130,14 @@ function CharacterCard({ avatar, roster }: { avatar: EnkaAvatarInfo; roster: Rec
   )
 }
 
-/** Reused page header: eyebrow + Cinzel title + title-rule. */
+/** Reused page header: eyebrow + Alegreya title + title-rule. */
 function PageHead({ eyebrow, title, right }: { eyebrow: string; title: string; right?: React.ReactNode }) {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>{eyebrow}</div>
-          <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>{title}</h1>
+          <h1 className="page-title" style={{ margin: 0 }}>{title}</h1>
         </div>
         {right}
       </div>
@@ -184,14 +184,13 @@ export default function AccountPage() {
         <PageHead eyebrow="Your character showcase" title="My Account" />
         <div className="ornate" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
           <Sparkles size={40} style={{ margin: '0 auto 1rem', opacity: 0.6, color: 'var(--color-gold)' }} />
-          <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontWeight: 700, fontFamily: 'var(--font-display)' }}>No Genshin UID connected yet</p>
+          <p style={{ fontSize: '1rem', color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontWeight: 700 }}>No Genshin UID connected yet</p>
           <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1.5rem', maxWidth: 420, marginInline: 'auto' }}>
             Add your in-game UID in Settings to pull your characters, builds, weapons, and artifacts from your public Character Showcase.
           </p>
           <button onClick={() => navigate('/settings')} className="btn-primary" style={{
             padding: '0.65rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.875rem',
-            fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontFamily: 'var(--font-body)',
-          }}>
+            fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.375rem',           }}>
             <SettingsIcon size={16} /> Go to Settings
           </button>
         </div>
@@ -220,8 +219,7 @@ export default function AccountPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.55rem 1rem',
                 borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)', border: '1px solid var(--gold-line)',
-                color: 'var(--color-gold)', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)',
-              }}
+                color: 'var(--color-gold)', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',               }}
             >
               <RefreshCw size={14} className={loading ? 'spin' : ''} />
               Refresh
@@ -253,7 +251,7 @@ export default function AccountPage() {
                 <Avatar size={64} />
               </div>
               <div style={{ flex: 1, minWidth: 200 }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                   {player.nickname}
                 </div>
                 {player.signature && <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem' }}>{player.signature}</div>}
@@ -300,11 +298,11 @@ export default function AccountPage() {
                 </div>
               )}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.9rem' }}>
-                <h2 className="section-heading" style={{ fontSize: '1.05rem' }}>Character Showcase</h2>
+                <h2 className="section-heading">Character Showcase</h2>
                 <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{avatars.length} character{avatars.length !== 1 ? 's' : ''}</span>
               </div>
               {avatars.length >= 12 && (
-                <p style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', margin: '0 0 1rem' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', margin: '0 0 1rem' }}>
                   This is your in-game Character Showcase, capped at 12 slots by Genshin itself — to feature a
                   different roster, change which characters are showcased in-game (Profile → Edit Profile →
                   Character Showcase), then hit Refresh here.

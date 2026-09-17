@@ -210,7 +210,7 @@ export default function GlobalSearch() {
         }}>
           {matchedPages.length > 0 && (
             <div style={{ padding: '0.5rem' }}>
-              <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
                 Pages
               </div>
               {matchedPages.map((p, i) => {
@@ -226,8 +226,7 @@ export default function GlobalSearch() {
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
                       padding: '0.55rem 0.625rem', borderRadius: '0.6rem', textAlign: 'left',
                       background: active ? 'rgba(211,188,142,0.1)' : 'none', border: 'none',
-                      color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    }}
+                      color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer',                     }}
                   >
                     <Icon size={15} color="var(--color-gold)" />
                     {p.label}
@@ -239,7 +238,7 @@ export default function GlobalSearch() {
           )}
 
           <div style={{ padding: '0.5rem', borderTop: matchedPages.length > 0 ? '1px solid var(--color-border)' : 'none' }}>
-            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-gold)', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.4rem 0.5rem' }}>
               Tracker Goals
             </div>
             {!user ? (
@@ -263,12 +262,11 @@ export default function GlobalSearch() {
                       width: '100%', display: 'flex', alignItems: 'center', gap: '0.625rem',
                       padding: '0.55rem 0.625rem', borderRadius: '0.6rem', textAlign: 'left',
                       background: active ? 'rgba(211,188,142,0.1)' : 'none', border: 'none',
-                      color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    }}
+                      color: 'var(--color-text-primary)', fontSize: '0.85rem', cursor: 'pointer',                     }}
                   >
                     <ListChecks size={15} color="var(--color-hydro)" style={{ flexShrink: 0 }} />
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.name}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: '0.68rem', color: 'var(--color-text-muted)', flexShrink: 0 }}>{g.status}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--color-text-muted)', flexShrink: 0 }}>{g.status}</span>
                   </button>
                 )
               })

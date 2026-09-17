@@ -111,10 +111,10 @@ export default function DashboardLayout() {
             <Sigil size={38} />
             {expanded && (
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.92rem', color: 'var(--color-gold-bright)', lineHeight: 1.15, letterSpacing: '0.01em' }}>
+                <div style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--color-gold-bright)', lineHeight: 1.15, letterSpacing: '0.01em' }}>
                   Gacha Command Center
                 </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>Genshin Impact Companion</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>Genshin Impact Companion</div>
               </div>
             )}
           </div>
@@ -130,7 +130,7 @@ export default function DashboardLayout() {
         {/* Nav */}
         <nav style={{ flex: 1, padding: expanded ? '0 0.85rem' : '0.5rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: expanded ? 0 : '0.5rem' }}>
           {expanded && (
-            <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.22em', textTransform: 'uppercase', padding: '0 0.5rem 0.65rem', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.22em', textTransform: 'uppercase', padding: '0 0.5rem 0.65rem', whiteSpace: 'nowrap' }}>
               Main Menu
             </div>
           )}
@@ -170,7 +170,7 @@ export default function DashboardLayout() {
                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {user?.displayName ?? 'Traveler'}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {user?.email}
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export default function DashboardLayout() {
                     width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem',
                     padding: '0.625rem 0.75rem', borderRadius: '0.5rem',
                     background: 'none', border: 'none', color: 'var(--color-red-400)',
-                    fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600,
+                    fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600,
                     transition: 'background 0.15s',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,128,113,0.1)' }}

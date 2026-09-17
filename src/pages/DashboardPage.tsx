@@ -70,17 +70,17 @@ function calendarBannerToGameBanner(b: CalendarBanner): GameBanner {
   } as GameBanner
 }
 
-/** Section heading: Cinzel gold text with a leading diamond and an optional right-side link. */
+/** Section heading: Alegreya gold text with a leading diamond and an optional right-side link. */
 function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.9rem', gap: '1rem' }}>
-      <h2 className="section-heading" style={{ fontSize: '1.05rem' }}>{title}</h2>
+      <h2 className="section-heading">{title}</h2>
       {action}
     </div>
   )
 }
 
-/** Ornate reset-countdown card — glyph + Cinzel timer, tinted by an elemental accent. Optionally
+/** Ornate reset-countdown card — glyph + Alegreya timer, tinted by an elemental accent. Optionally
  *  enriched with the account's live progress (Abyss stars / Theater act) and headline primogem
  *  reward from the HoYoLAB event calendar, when a Battle Chronicle account is linked. */
 function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, footNote, serverIsGuessed, reward, badge }: {
@@ -105,11 +105,11 @@ function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, foot
             : Icon ? <Icon size={21} strokeWidth={1.6} /> : null}
         </div>
         <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{periodNote}</div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{periodNote}</div>
         </div>
       </div>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.7rem', fontWeight: 700, color: accent, letterSpacing: '0.02em', position: 'relative' }}>
+      <div style={{ fontSize: '1.7rem', fontWeight: 700, color: accent, letterSpacing: '0.02em', position: 'relative' }}>
         {countdown}
       </div>
 
@@ -132,9 +132,9 @@ function ResetCard({ icon: Icon, imgSrc, label, target, accent, periodNote, foot
         </div>
       )}
 
-      <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>{footNote}</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>{footNote}</div>
       {serverIsGuessed && (
-        <div style={{ fontSize: '0.68rem', color: 'var(--color-gold)', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-gold)', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
           <AlertTriangle size={11} style={{ flexShrink: 0 }} />
           Assuming America server — set yours in Settings
         </div>
@@ -186,7 +186,7 @@ function PortraitImg({ item }: { item: FeaturedItem }) {
     return <img src={item.icon} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setFailed(true)} />
   }
   return (
-    <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.92)', fontWeight: 600 }}>
+    <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.92)', fontWeight: 600 }}>
       {item.kind === 'weapon' ? '⚔' : (item.name.slice(0, 2).toUpperCase() || '★')}
     </span>
   )
@@ -248,14 +248,14 @@ function BannerCard({ banner }: { banner: GameBanner }) {
       </div>
       {/* Parchment plate */}
       <div className="parchment" style={{ border: 'none', borderRadius: 0, padding: '0.75rem 0.875rem 0.875rem', flex: 1 }}>
-        <div style={{ fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-parch-ink-dim)', fontWeight: 700, marginBottom: '0.2rem' }}>
+        <div style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-parch-ink-dim)', fontWeight: 700, marginBottom: '0.2rem' }}>
           {category}
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-parch-ink)', marginBottom: '0.35rem', lineHeight: 1.2 }}>
+        <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-parch-ink)', marginBottom: '0.35rem', lineHeight: 1.2 }}>
           {items.map((i) => i.name).join(' · ') || banner.name}
         </div>
-        <div style={{ color: '#e0a52e', fontSize: '0.72rem', letterSpacing: '1px', marginBottom: '0.55rem' }}>★★★★★</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)', gap: '0.4rem', flexWrap: 'wrap', rowGap: '0.35rem' }}>
+        <div style={{ color: '#e0a52e', fontSize: '0.75rem', letterSpacing: '1px', marginBottom: '0.55rem' }}>★★★★★</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)', gap: '0.4rem', flexWrap: 'wrap', rowGap: '0.35rem' }}>
           <span style={{ whiteSpace: 'nowrap' }}>{endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'}</span>
           <span style={{
             fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: 20, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
@@ -289,8 +289,8 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', padding: '0.6rem 0.95rem',
         background: 'linear-gradient(90deg, var(--r5-b), var(--r5-a))',
       }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.9rem', color: '#3a2c12', letterSpacing: '0.02em' }}>{category}</span>
-        <span style={{ fontWeight: 800, fontSize: '0.72rem', color: '#3a2c12', background: 'rgba(255,255,255,0.35)', padding: '0.2rem 0.55rem', borderRadius: 20, fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#3a2c12', letterSpacing: '0.02em' }}>{category}</span>
+        <span style={{ fontWeight: 800, fontSize: '0.75rem', color: '#3a2c12', background: 'rgba(255,255,255,0.35)', padding: '0.2rem 0.55rem', borderRadius: 20, fontVariantNumeric: 'tabular-nums' }}>
           {countdown ?? '—'}
         </span>
       </div>
@@ -309,7 +309,7 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
                 <PortraitImg item={it} />
               </div>
               <span style={{
-                fontSize: '0.63rem', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--color-parch-ink)',
+                fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-parch-ink)',
                 textAlign: 'center', lineHeight: 1.15, maxWidth: 66,
                 display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
               }}>
@@ -329,7 +329,7 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
                 <PortraitImg item={it} />
               </div>
               <span style={{
-                fontSize: '0.55rem', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--color-parch-ink)',
+                fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-parch-ink)',
                 textAlign: 'center', lineHeight: 1.15, maxWidth: 56,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
@@ -338,7 +338,7 @@ function PoolBannerCard({ banner }: { banner: GameBanner }) {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: '0.75rem', fontSize: '0.7rem', color: 'var(--color-parch-ink-dim)' }}>
+        <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-parch-ink-dim)' }}>
           {endDate ? `Ends ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'End date unavailable'} · {items.length} featured 5{hasFourStar ? ` + ${fourStarItems.length} 4★` : '★'}
         </div>
       </div>
@@ -382,7 +382,7 @@ function EventCard({ event, upcoming }: { event: GameEvent; upcoming: boolean })
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{event.name}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
           {relevantDate
             ? `${upcoming ? 'Starts' : 'Ends'} ${relevantDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
             : 'Date unavailable'}
@@ -443,7 +443,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>{greeting}, {firstName}</div>
-          <h1 className="page-title" style={{ fontSize: '2.1rem', margin: 0 }}>Teyvat Overview</h1>
+          <h1 className="page-title" style={{ margin: 0 }}>Teyvat Overview</h1>
         </div>
         {schedule?.currentVersion && (
           <div style={{
@@ -451,7 +451,7 @@ export default function DashboardPage() {
             borderRadius: '0.5rem', background: 'linear-gradient(90deg, rgba(211,188,142,0.16), rgba(211,188,142,0.04))',
             border: '1px solid var(--gold-line)',
           }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-gold-bright)', fontWeight: 700, fontFamily: 'var(--font-display)' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--color-gold-bright)', fontWeight: 700 }}>
               Version {schedule.currentVersion.version}
               {currentCodename && ` · ${currentCodename}`}
             </span>
@@ -470,7 +470,7 @@ export default function DashboardPage() {
           </div>
           <button onClick={() => navigate('/settings')} style={{
             padding: '0.45rem 0.875rem', borderRadius: '0.5rem', background: 'rgba(13,17,28,0.6)',
-            border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, flexShrink: 0,
+            border: '1px solid var(--gold-line)', color: 'var(--color-gold)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700, flexShrink: 0,
           }}>
             Set up
           </button>
@@ -560,7 +560,7 @@ export default function DashboardPage() {
 
           {!!schedule?.upcomingBanners?.length && (
             <>
-              <div style={{ fontSize: '0.72rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: '1.5rem 0 0.875rem' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: '1.5rem 0 0.875rem' }}>
                 Upcoming
               </div>
               <BannerGroup banners={schedule.upcomingBanners} />
@@ -580,7 +580,7 @@ export default function DashboardPage() {
               <>
                 {schedule?.currentEvents?.map((e) => <EventCard key={e.id} event={e} upcoming={false} />)}
                 {!!schedule?.upcomingEvents?.length && (
-                  <div style={{ fontSize: '0.68rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: '1rem 0 0.25rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', margin: '1rem 0 0.25rem' }}>
                     Upcoming
                   </div>
                 )}
@@ -599,14 +599,14 @@ export default function DashboardPage() {
             <Clock size={20} strokeWidth={1.6} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
               Next: v{nextVersion.version} · {nextVersion.name}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
               Expected {new Date(nextVersion.releaseDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
           </div>
-          <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-gold-bright)', fontFamily: 'var(--font-display)' }}>
+          <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-gold-bright)' }}>
             {daysUntil(nextVersion.releaseDate) ?? '—'}d
           </span>
         </div>
@@ -615,8 +615,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button onClick={() => navigate('/settings')} style={{
           display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none',
-          color: 'var(--color-text-muted)', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'var(--font-body)',
-        }}>
+          color: 'var(--color-text-muted)', fontSize: '0.78rem', cursor: 'pointer',         }}>
           <SettingsIcon size={13} /> Server region: {server ?? 'America'}
         </button>
       </div>
